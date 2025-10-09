@@ -74,7 +74,6 @@ static THD_FUNCTION(selector_thd, arg)
 {
     (void) arg;
     chRegSetThreadName(__FUNCTION__);
-
     uint8_t stop_loop = 0;
     systime_t time;
 
@@ -614,9 +613,13 @@ static THD_FUNCTION(selector_thd, arg)
 				/*
 				// Debug ICM20948 IMU
 				messagebus_topic_wait(imu_topic, &imu_values, sizeof(imu_values));
-				chprintf((BaseSequentialStream *)&SDU1, "IMU\r\n");
+				//chprintf((BaseSequentialStream *)&SDU1, "IMU\r\n");
 		    	chprintf((BaseSequentialStream *)&SDU1, "Ax=%-7d Ay=%-7d Az=%-7d Gx=%-7d Gy=%-7d Gz=%-7d\r\n", imu_values.acc_raw[0], imu_values.acc_raw[1], imu_values.acc_raw[2], imu_values.gyro_raw[0], imu_values.gyro_raw[1], imu_values.gyro_raw[2]);
+		    	chprintf((BaseSequentialStream *)&SDU1, "Acceleration: %f, %f, %f\r\n", imu_values.acceleration[0], imu_values.acceleration[1], imu_values.acceleration[2]);
+		    	chprintf((BaseSequentialStream *)&SDU1, "Gyro rate: %f, %f, %f\r\n", imu_values.gyro_rate[0], imu_values.gyro_rate[1], imu_values.gyro_rate[2]);
 		    	chprintf((BaseSequentialStream *)&SDU1, "Mx=%f My=%f Mz=%f\r\n", imu_values.magnetometer[0], imu_values.magnetometer[1], imu_values.magnetometer[2]);
+		    	chprintf((BaseSequentialStream *)&SDU1, "roll, pitch, yaw(deg): [%d,%d,%d]\r\n", imu_values.roll, imu_values.pitch, imu_values.yaw);
+		    	chprintf((BaseSequentialStream *)&SDU1, "accuracy: acc=%d, gyro=%d, mag=%d\r\n", imu_values.acc_accuracy, imu_values.gyro_accuracy, imu_values.mag_accuracy);
 		    	if(geo_offsets_max[0] < imu_values.magnetometer[0])
 		    	{
 		    	    geo_offsets_max[0] = imu_values.magnetometer[0];
@@ -644,12 +647,12 @@ static THD_FUNCTION(selector_thd, arg)
 		    	geo_offsets[0] = (geo_offsets_max[0] + geo_offsets_min[0])/2;
 		    	geo_offsets[1] = (geo_offsets_max[1] + geo_offsets_min[1])/2;
 		    	geo_offsets[2] = (geo_offsets_max[2] + geo_offsets_min[2])/2;
-		    	chprintf((BaseSequentialStream *)&SDU1, "mag_offs: x=%f y=%f z=%f\r\n\n", geo_offsets[0], geo_offsets[1], geo_offsets[2]);
+		    	//chprintf((BaseSequentialStream *)&SDU1, "mag_offs: x=%f y=%f z=%f\r\n\n", geo_offsets[0], geo_offsets[1], geo_offsets[2]);
 		        compass = atan2(imu_values.magnetometer[0]-geo_offsets[0], imu_values.magnetometer[1]-geo_offsets[1]);
 		        compass = compass * 180 / M_PI;
-		        chprintf((BaseSequentialStream *)&SDU1, "comp deg: x=%f\r\n", compass);
+		        //chprintf((BaseSequentialStream *)&SDU1, "comp deg: x=%f\r\n", compass);
 		        chThdSleepMilliseconds(100);
-		        */
+				*/
 
 				switch(hw_test_state) {
 					case 0: // Init hardware.

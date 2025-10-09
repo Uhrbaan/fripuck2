@@ -66,7 +66,8 @@ bool mpu9250_ping(void);
  * @param status		pointer to store the interrupt status of the sensor
  */
 int8_t mpu9250_read(float *gyro, float *acc, float *temp, float *magnet, int16_t *gyro_raw, 
-					int16_t *acc_raw, int16_t *gyro_offset, int16_t *acc_offset, uint8_t *status);
+					int16_t *acc_raw, int16_t *gyro_offset, int16_t *acc_offset, uint8_t *status,
+					int16_t *roll, int16_t *pitch);
 
 /**
 * @brief	Read the sensitivity adjustment values from the sensor; these values come from factory calibration.

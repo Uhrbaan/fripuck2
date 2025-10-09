@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright © 2016, STMicroelectronics International N.V.
+Copyright ï¿½ 2016, STMicroelectronics International N.V.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -75,7 +75,7 @@ VL53L0X_Error VL53L0X_get_measurement_timing_budget_micro_seconds(VL53L0X_DEV De
 		uint32_t *pMeasurementTimingBudgetMicroSeconds);
 
 VL53L0X_Error VL53L0X_load_tuning_settings(VL53L0X_DEV Dev,
-		uint8_t *pTuningSettingBuffer);
+		const uint8_t *pTuningSettingBuffer);
 
 VL53L0X_Error VL53L0X_calc_sigma_estimate(VL53L0X_DEV Dev,
 		VL53L0X_RangingMeasurementData_t *pRangingMeasurementData,

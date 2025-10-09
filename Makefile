@@ -19,7 +19,7 @@ ifeq ($(USE_OPT),)
   USE_OPT += -fno-strict-aliasing
 
   # Protection against stack overflows
-  USE_OPT += -fstack-protector-all -L .
+  USE_OPT += -fstack-usage -fstack-protector-all -L .
 endif
 
 # C specific options here (added to USE_OPT).
@@ -74,7 +74,7 @@ endif
 # Stack size to be allocated to the Cortex-M process stack. This stack is
 # the stack used by the main() thread.
 ifeq ($(USE_PROCESS_STACKSIZE),)
-  USE_PROCESS_STACKSIZE = 0x400
+  USE_PROCESS_STACKSIZE = 0x800
 endif
 
 # Stack size to the allocated to the Cortex-M main/exceptions stack. This

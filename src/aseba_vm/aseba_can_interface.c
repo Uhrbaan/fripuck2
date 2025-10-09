@@ -6,9 +6,8 @@
 
 #include "aseba_can_interface.h"
 
-#define ASEBA_CAN_SEND_QUEUE_SIZE       512//1024
-#define ASEBA_CAN_RECEIVE_QUEUE_SIZE    512//1024
-
+#define ASEBA_CAN_SEND_QUEUE_SIZE       256 //1024
+#define ASEBA_CAN_RECEIVE_QUEUE_SIZE    256 //1024
 
 
 CanFrame aseba_can_send_queue[ASEBA_CAN_SEND_QUEUE_SIZE];

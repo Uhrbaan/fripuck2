@@ -4,9 +4,6 @@
 #include "../i2c_bus.h"
 #include "imu.h"
 
-#define STANDARD_GRAVITY    9.80665f 
-#define DEG2RAD(deg) (deg / 180 * M_PI)
-
 #define RES_2G      2.0f
 #define RES_250DPS  250.0f
 #define MAX_INT16   32768.0f
@@ -242,7 +239,7 @@ bool mpu9250_ping(void) {
 	return id == 0x71;
 }
 
-int8_t mpu9250_read(float *gyro, float *acc, float *temp, float *magnet, int16_t *gyro_raw, int16_t *acc_raw, int16_t *gyro_offset, int16_t *acc_offset, uint8_t *status) {
+int8_t mpu9250_read(float *gyro, float *acc, float *temp, float *magnet, int16_t *gyro_raw, int16_t *acc_raw, int16_t *gyro_offset, int16_t *acc_offset, uint8_t *status, int16_t *roll, int16_t *pitch) {
 	int8_t err = 0;
 
     static uint8_t buf[1 + 6 + 2 + 6 + 6 + 1]; // interrupt status, accel, temp, gyro, magnetometer, status magnetometer
@@ -266,6 +263,8 @@ int8_t mpu9250_read(float *gyro, float *acc, float *temp, float *magnet, int16_t
         //specific case for the z axis because it should not be zero but -1g
         //deletes the standard gravity to have only the offset
         acc[Z_AXIS] = (acc_raw[Z_AXIS] - acc_offset[Z_AXIS] - (MAX_INT16 / RES_2G)) * STANDARD_GRAVITY * ACC_RAW2G;
+		*pitch = -RAD2DEG(atan2(acc_raw[1], sqrt(acc_raw[0]*acc_raw[0] + acc_raw[2]*acc_raw[2])));
+		*roll = RAD2DEG(atan2(acc_raw[0], -acc_raw[2]));
     }
     if (temp) {
         *temp = (float)((read_word(&buf[7]) - 21.0f) / 333.87f) + 21.0f; // Degrees.

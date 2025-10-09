@@ -93,6 +93,8 @@ int run_asercom2(void) {
     float tempf = 0.0;
     uint32_t tempi = 0;
     uint8_t rx_buff[19] = {0};
+    static int16_t pitch = 0, roll = 0, yaw = 0;
+    static uint8_t acc_accuracy = 0, gyro_accuracy = 0, mag_accuracy = 0;
 
     //e_init_port();    // configure port pins
     //e_start_agendas_processing();
@@ -722,6 +724,114 @@ int run_asercom2(void) {
 
                         buffer[i++] = 0; // success
 
+						break;
+
+					case 0x12: // Get all sensors 2.2 (compact)
+						// Read accelerometer.
+                        if(gumstix_connected == 0) {
+                        	pitch = get_pitch();
+                        	roll = get_roll();
+                        	yaw = get_yaw();
+                        	acc_accuracy = get_acc_accuracy();
+                        	gyro_accuracy = get_gyro_accuracy();
+                        	mag_accuracy = get_mag_accuracy();
+                        } else {
+                        	pitch = 0;
+                        	roll = 0;
+                        	yaw = 0;
+                        	acc_accuracy = 0;
+                        	gyro_accuracy = 0;
+                        	mag_accuracy = 0;
+                        }
+                        buffer[i++] = pitch & 0xff;
+                        buffer[i++] = pitch >> 8;
+                        buffer[i++] = roll & 0xff;
+                        buffer[i++] = roll >> 8;
+                        buffer[i++] = yaw & 0xff;
+                        buffer[i++] = yaw >> 8;
+                        buffer[i++] = acc_accuracy;
+                        buffer[i++] = gyro_accuracy;
+                        buffer[i++] = mag_accuracy;
+
+                        // Read temperature.
+                    	if(gumstix_connected == 0) {
+                    		buffer[i++] = getTemperature();
+                    	} else {
+                            buffer[i++] = 0;
+                        }
+
+                        // Read proximities.
+                    	for (j=0; j<8; j++) {
+                    		n = e_get_calibrated_prox(j); // or ? n=e_get_prox(j);
+                    		buffer[i++] = n & 0xff;
+                    		buffer[i++] = n >> 8;
+                    	}
+
+                    	// Read ToF.
+						if(gumstix_connected == 0) {
+							n = VL53L0X_get_dist_mm();
+							buffer[i++] = n & 0xff;
+							buffer[i++] = n >> 8;
+						} else {
+							buffer[i++] = 0;
+							buffer[i++] = 0;
+						}
+
+                    	// Read microphones.
+                        n = e_get_micro_volume(0);
+                        buffer[i++] = n & 0xff;
+                        buffer[i++] = n >> 8;
+                        n = e_get_micro_volume(1);
+                        buffer[i++] = n & 0xff;
+                        buffer[i++] = n >> 8;
+                        n = e_get_micro_volume(2);
+                        buffer[i++] = n & 0xff;
+                        buffer[i++] = n >> 8;
+                        n = e_get_micro_volume(3);
+                        buffer[i++] = n & 0xff;
+                        buffer[i++] = n >> 8;
+
+						// Read encoders.
+                        n = e_get_steps_left();
+                        buffer[i++] = n & 0xff;
+                        buffer[i++] = n >> 8;
+                        n = e_get_steps_right();
+                        buffer[i++] = n & 0xff;
+                        buffer[i++] = n >> 8;
+
+                        // Read battery.
+                    	battValue = getBatteryValueRaw();
+                    	buffer[i++] = battValue & 0xFF;
+                    	buffer[i++] = battValue >> 8;
+
+						// Read micro sd state.
+						if(sdio_is_present()) {
+							n = !sdio_connect();
+							buffer[i++] = n & 0xff;
+							sdio_disconnect();
+						} else {
+							buffer[i++] = 0;
+						}
+
+						// Read tv remote.
+						buffer[i++] = e_get_data();
+
+						// Read selector.
+	                    selector = SELECTOR0 + 2 * SELECTOR1 + 4 * SELECTOR2 + 8 * SELECTOR3;
+	                    buffer[i++] = selector;
+
+                    	// Read ground sensor proximity.
+                    	for (j=0; j<3; j++) {
+                    		n = get_ground_prox(j);
+                    		buffer[i++] = n & 0xff;
+                    		buffer[i++] = n >> 8;
+                    	}
+
+                    	// Button state => ESP32
+                    	buffer[i++] = button_get_state();
+
+						// Additional empty byte for future use.
+						buffer[i++] = 0;
 						break;
 
                     case 'a': // Read acceleration sensors in a non filtered way, same as ASCII

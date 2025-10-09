@@ -7,7 +7,11 @@ extern "C" {
 
 #include <hal.h>
 #include "sensors/mpu9250.h"
-#include "sensors/icm20948/ICM_20948_C.h"
+#include "sensors/icm20948/SensorICM20948.h"
+
+#define RAD2DEG(rad) (rad / M_PI * 180.0)
+#define DEG2RAD(deg) (deg / 180.0 * M_PI)
+#define STANDARD_GRAVITY    9.80665f
 
 typedef enum{
     X_AXIS = 0,
@@ -32,6 +36,12 @@ typedef struct {
     float mag_sens_adjust[3]; // Axial sensitivity adjustment factors.
     float mag_offset[3]; // Hard iron calibration factors.
     float mag_scale[3]; // Soft iron calibration factors.
+    int16_t pitch;
+    int16_t roll;
+    int16_t yaw;
+    uint8_t acc_accuracy;
+    uint8_t gyro_accuracy;
+    uint8_t mag_accuracy;
 } imu_msg_t;
 
 
@@ -192,6 +202,48 @@ void calibrate_magnetometer(void);
 *                  to which store the corrected measures
 */
 void get_mag_filtered(float *values);
+
+/**
+* @brief   Returns the last pitch measured.
+*
+* @return          Last pitch measured in degrees [-180; 180]
+*/
+int16_t get_pitch(void);
+
+/**
+* @brief   Returns the last roll measured.
+*
+* @return          Last roll measured in degrees [-180; 180]
+*/
+int16_t get_roll(void);
+
+/**
+* @brief   Returns the last yaw measured.
+*
+* @return          Last yaw measured in degrees [0; 360]
+*/
+int16_t get_yaw(void);
+
+/**
+* @brief   Returns the last accelerometer accuracy read from IMU.
+*
+* @return          Last accelerometer accuracy [0; 3] (3 means max accuracy)
+*/
+uint8_t get_acc_accuracy(void);
+
+/**
+* @brief   Returns the last gyroscope accuracy read from IMU.
+*
+* @return          Last gyroscope accuracy [0; 3] (3 means max accuracy)
+*/
+uint8_t get_gyro_accuracy(void);
+
+/**
+* @brief   Returns the last magnetometer accuracy read from IMU.
+*
+* @return          Last magnetometer accuracy [0; 3] (3 means max accuracy)
+*/
+uint8_t get_mag_accuracy(void);
 
 #ifdef __cplusplus
 }

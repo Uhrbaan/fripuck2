@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright © 2016, STMicroelectronics International N.V.
+Copyright ï¿½ 2016, STMicroelectronics International N.V.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,7 @@ extern "C" {
 #endif
 
 
-uint8_t InterruptThresholdSettings[] = {
+const uint8_t InterruptThresholdSettings[] = {
 
 	/* Start of Interrupt Threshold Settings */
 	0x1, 0xff, 0x00,

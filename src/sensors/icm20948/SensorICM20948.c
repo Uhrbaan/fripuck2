@@ -12,6 +12,7 @@
 #include "SensorTypes.h"
 #include "Icm20948MPUFifoControl.h"
 #include "Icm20948Setup.h"
+#include "Icm20948SelfTest.h"
 
 #include "../../i2c_bus.h"
 #include "../imu.h"

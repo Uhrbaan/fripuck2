@@ -5,6 +5,8 @@
 extern "C" {
 #endif
 
+#include <stdint.h>
+
 typedef enum {
 	SIZE_VGA = 0x00,
 	SIZE_QVGA = 0x01,

@@ -9,6 +9,10 @@ extern "C" {
 #include "sensors/mpu9250.h"
 #include "sensors/icm20948/SensorICM20948.h"
 
+#define IMU_NOT_FOUND -1
+#define IMU_MPU9250 0
+#define IMU_ICM20948 1
+
 #define RAD2DEG(rad) (rad / M_PI * 180.0)
 #define DEG2RAD(deg) (deg / 180.0 * M_PI)
 #define STANDARD_GRAVITY    9.80665f
@@ -244,6 +248,13 @@ uint8_t get_gyro_accuracy(void);
 * @return          Last magnetometer accuracy [0; 3] (3 means max accuracy)
 */
 uint8_t get_mag_accuracy(void);
+
+/**
+* @brief   Returns the current available IMU model.
+*
+* @return  -1 = imu not found, 0 = mpu9250, 1 = icm20942
+*/
+int8_t get_imu_model(void);
 
 #ifdef __cplusplus
 }

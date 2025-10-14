@@ -1,10 +1,22 @@
 #include "DataEEPROM.h"
+#include "../camera/camera.h"
+#include "../sensors/imu.h"
 
 int ReadEE(int Page, int Offset, int* DataOut, int Size) {
 	(void)Size;
 	if(Page==0x7F && Offset==0xFFFE) {
-		*DataOut = 0xFFF7;	// The last two bytes of the EEPROM, at address 0x7FFFFE, were used in the e-puck1.x to store the camera model and related orientation.
-							// The e-puck2 has no EEPROM storage and has only one camera model, that is the PO8030 with no rotation, thus return 0xFFF7.
+		if(get_imu_model() == IMU_ICM20948) // ICM20942 available only with e-puck 2.2
+		{
+			*DataOut = 0xFFF5;
+		}
+		else if(cam_get_id() == 0x7670)
+		{
+			*DataOut = 0xFFF6; // E-puck2 with ov7670 camera
+		}
+		else
+		{
+			*DataOut = 0xFFF7;	// The last two bytes of the EEPROM, at address 0x7FFFFE, were used in the e-puck1.x to store the camera model and related orientation.
+		}						// The e-puck2 has no EEPROM storage and the first camera model is the PO8030 with no rotation, thus return 0xFFF7.
 	} else {
 		*DataOut = 0; 		// No EEPROM storage available on e-puck2, thus return 0 when other sections are requested.
 	}

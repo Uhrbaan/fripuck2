@@ -1654,9 +1654,9 @@ int run_asercom2(void) {
                     if (gumstix_connected) { // Communicate with gumstix (i2c).
 
                     } else if (use_bt) { // Communicate with ESP32 (uart) => BT.
-                    	uart1_send_static_text("v,Version 2.0 January 2018 GCtronic\r\n");
+                    	uart1_send_static_text("v,Version 2.1 January 2018 GCtronic\r\n");
                     } else { // Communicate with the pc (usb).
-                    	uart2_send_static_text("v,Version 2.0 January 2018 GCtronic\r\n");
+                    	uart2_send_static_text("v,Version 2.1 January 2018 GCtronic\r\n");
                     }
                     sprintf(buffer, "HW version: %X\r\n", HWversion);
                     if (gumstix_connected) { // Communicate with gumstix (i2c).

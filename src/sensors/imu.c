@@ -10,10 +10,6 @@
 #include <math.h>
 #include "icm20948/SensorICM20948.h"
 
-#define IMU_NOT_FOUND -1
-#define IMU_MPU9250 0
-#define IMU_ICM20948 1
-
 static imu_msg_t imu_values;
 
 static uint8_t accAxisFilteringInProgress = 0;
@@ -509,6 +505,10 @@ uint8_t get_mag_accuracy(void)
 	return imu_values.mag_accuracy;
 }
 
+int8_t get_imu_model(void)
+{
+	return imuModel;
+}
 
 /**************************END PUBLIC FUNCTIONS***********************************/
 

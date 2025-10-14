@@ -122,10 +122,11 @@ static THD_FUNCTION(selector_thd, arg)
 	double heading = 0.0;
 	float mag_values[3];
 
-	static float geo_offsets[3] = {0, 0, 0};
-	static float geo_offsets_max[3] = {-1000, -1000, -1000};
-	static float geo_offsets_min[3] = {1000, 1000, 1000};
-	static float compass = 0;
+	//debug variables
+	//static float geo_offsets[3] = {0, 0, 0};
+	//static float geo_offsets_max[3] = {-1000, -1000, -1000};
+	//static float geo_offsets_min[3] = {1000, 1000, 1000};
+	//static float compass = 0;
 
 	calibrate_acc();
 	calibrate_gyro();

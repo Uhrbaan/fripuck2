@@ -7,6 +7,7 @@
 ifndef GLOBAL_PATH
 	GLOBAL_PATH = ./
 	CSRC += (GLOBAL_PATH)/src/main.c
+#   CSRC += (GLOBAL_PATH)/ChibiOS/os/various/syscalls.c
 	# Define project name here
 	PROJECT = e-puck2_main-processor
 endif

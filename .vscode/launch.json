@@ -10,11 +10,16 @@
             "executable": "${workspaceRoot}/build/e-puck2_main-processor.elf",
             "request": "launch",
             "type": "cortex-debug",
-            
+
             // setup gdb
             "servertype": "external",
-            "gdbPath": "${workspaceRoot}/gcc-arm-none-eabi-9-2019-q4-major/bin/arm-none-eabi-gdb",
-            
+            "gdbPath": "${workspaceRoot}/arm-gnu-toolchain-11.3.rel1-x86_64-arm-none-eabi/bin/gdb-wrapper.sh",
+            "armToolchainPath": "${workspaceRoot}/arm-gnu-toolchain-11.3.rel1-x86_64-arm-none-eabi/bin",
+            // "objdumpPath": /arm-none-eabi-objdump",
+            // "nmPath": "${workspaceRoot}/arm-gnu-toolchain-14.3.rel1-x86_64-arm-none-eabi/bin/arm-none-eabi-nm",
+            // "objcopyPath": "${workspaceRoot}/arm-gnu-toolchain-14.3.rel1-x86_64-arm-none-eabi/bin/arm-none-eabi-objcopy",
+            // "gdbPath": "${workspaceRoot}/arm-gnu-toolchain-14.3.rel1-x86_64-arm-none-eabi/bin/arm-none-eabi-gdb",  
+
             "preLaunchCommands": [
                 "target extended-remote /dev/ttyACM0",
                 "monitor reset halt",

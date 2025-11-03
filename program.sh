@@ -4,7 +4,7 @@
 #GDB="arm-gnu-toolchain-12.2.rel1-x86_64-arm-none-eabi/bin/arm-none-eabi-gdb"
 #GDB="arm-gnu-toolchain-14.2.rel1-x86_64-arm-none-eabi/bin/arm-none-eabi-gdb"
 # GDB="arm-gnu-toolchain-12.2.rel1-x86_64-arm-none-eabi/bin/arm-none-eabi-gdb"
-GDB="gcc-arm-none-eabi-9-2019-q4-major/bin/arm-none-eabi-gdb"
+GDB="gcc-arm-none-eabi-7-2017-q4-major/bin/arm-none-eabi-gdb"
 
 port=$(python3 list_com_ports_F407.py);
 if [ "$port" = "" ]; then

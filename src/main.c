@@ -74,25 +74,28 @@ static bool load_config(void)
     return config_load(&parameter_root, &_config_start);
 }
 
-static int enable_four_leds(lua_State *L) {
+static int Lenable_four_leds(lua_State *L) {
 	// check the first integer passed as argument
 	int bits = luaL_checkinteger(L, 1);
 
-	if (bits & 1 << 0) {
-		set_led(LED1, 1);
-	}
-	if (bits & 1 << 1) {
-		set_led(LED3, 1);
-	}
-	if (bits & 1 << 2) {
-		set_led(LED5, 1);
-	}
-	if (bits & 1 << 3) {
-		set_led(LED7, 1);
+	// clear_leds();
+	for (int i=0; i<4; i++) {
+		if (bits & 1 << i) {
+			set_led(i, 1);
+		} else {
+			set_led(i, 0);
+		}
 	}
 
 	// return the number of results, 0 in this case 
 	return 0;
+}
+
+static int Lget_accel(lua_State *L) {
+	int axis = luaL_checkinteger(L, 1);
+	double value = (double)get_acceleration(axis);
+	lua_pushnumber(L, value);
+	return 1; // since returning 1 value
 }
 
 // Declares a thread function hiding eventual compiler-specific keywords. 
@@ -155,15 +158,20 @@ static THD_FUNCTION(selector_thd, arg)
 	//static float geo_offsets_min[3] = {1000, 1000, 1000};
 	//static float compass = 0;
 
-	// calibrate_acc();
-	// calibrate_gyro();
-	// calibrate_ir();
+	calibrate_acc();
+	calibrate_gyro();
+	calibrate_ir();
 
 	lua_State *L = luaL_newstate();
-	lua_pushcfunction(L, enable_four_leds);
+	lua_pushcfunction(L, Lenable_four_leds);
     lua_setglobal(L, "enableLEDs");
+	lua_pushcfunction(L, Lget_accel);
+	lua_setglobal(L, "getAccel");
 
-	luaL_dostring(L, "enableLEDs(3)");
+	// makes four red LEDs turn on for two seconds, the turn of again.
+	luaL_dostring(L, "enableLEDs(15)");
+	chThdSleepSeconds(2);
+	luaL_dostring(L, "enableLEDs(0)");
 
 	// clean the lua VM 
 	lua_close(L);
@@ -171,7 +179,6 @@ static THD_FUNCTION(selector_thd, arg)
 
 int main(void)
 {
-
     halInit();
     chSysInit();
     mpu_init();

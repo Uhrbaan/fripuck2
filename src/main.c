@@ -53,6 +53,10 @@
 #include "ircom/ircomSend.h"
 #include "ircom/transceiver.h"
 
+#include "lua/src/lua.h"
+#include "lua/src/lauxlib.h"
+#include "lua/src/lualib.h"
+
 #define SHELL_WA_SIZE   THD_WORKING_AREA_SIZE(2048)
 
 messagebus_t bus;
@@ -68,6 +72,27 @@ static bool load_config(void)
     extern uint32_t _config_start;
 
     return config_load(&parameter_root, &_config_start);
+}
+
+static int enable_four_leds(lua_State *L) {
+	// check the first integer passed as argument
+	int bits = luaL_checkinteger(L, 1);
+
+	if (bits & 1 << 0) {
+		set_led(LED1, 1);
+	}
+	if (bits & 1 << 1) {
+		set_led(LED3, 1);
+	}
+	if (bits & 1 << 2) {
+		set_led(LED5, 1);
+	}
+	if (bits & 1 << 3) {
+		set_led(LED7, 1);
+	}
+
+	// return the number of results, 0 in this case 
+	return 0;
 }
 
 // Declares a thread function hiding eventual compiler-specific keywords. 
@@ -134,10 +159,14 @@ static THD_FUNCTION(selector_thd, arg)
 	// calibrate_gyro();
 	// calibrate_ir();
 
-	set_led(LED1, 1);
-	set_led(LED3, 1);
-	set_led(LED5, 1);
-	set_led(LED7, 1);
+	lua_State *L = luaL_newstate();
+	lua_pushcfunction(L, enable_four_leds);
+    lua_setglobal(L, "enableLEDs");
+
+	luaL_dostring(L, "enableLEDs(3)");
+
+	// clean the lua VM 
+	lua_close(L);
 }
 
 int main(void)

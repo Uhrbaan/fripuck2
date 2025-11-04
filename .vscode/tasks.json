@@ -1,0 +1,29 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build (make)",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "-j16"
+            ],
+            // Define this as the default build task
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            // Use the problem matcher for GCC compilation errors, if applicable
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "detail": "Runs 'make -j16' to compile the project using 16 parallel jobs."
+        }
+    ]
+}

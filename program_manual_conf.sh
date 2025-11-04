@@ -9,7 +9,7 @@ if [ "$filename" = "" ]; then
 fi
 echo "Robot will be updated with firmare $filename";
 
-gcc-arm-none-eabi-7-2017-q4-major/bin/arm-none-eabi-gdb --interpreter=mi -nx \
+gcc-arm-none-eabi-10.3-2021.10/bin/arm-none-eabi-gdb --interpreter=mi -nx \
 -ex "target extended-remote $port" \
 -ex "monitor swdp_scan" \
 -ex "attach 1" \

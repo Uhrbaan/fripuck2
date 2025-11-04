@@ -5,36 +5,20 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "e-puck2 GDB Serial Debug",
+            "name": "Debug (Black Magic Probe)",
             "cwd": "${workspaceRoot}",
             "executable": "${workspaceRoot}/build/e-puck2_main-processor.elf",
-            "request": "launch",
+            "request": "launch",    
+            "preLaunchTask": "Build (make)",
             "type": "cortex-debug",
+            "servertype": "bmp",
+            "interface": "swd",
+            "device": "STM32F103",
+            "BMPGDBSerialPort": "/dev/ttyACM0",  // Use whatever serial port makes sense for your OS and BMP setup
+            "runToEntryPoint": "main",
+            "armToolchainPath": "${workspaceRoot}/gcc-arm-none-eabi-10.3-2021.10/bin",
+            "showDevDebugOutput": "raw"
+        },
 
-            // setup gdb
-            "servertype": "external",
-            "gdbPath": "${workspaceRoot}/arm-gnu-toolchain-11.3.rel1-x86_64-arm-none-eabi/bin/gdb-wrapper.sh",
-            "armToolchainPath": "${workspaceRoot}/arm-gnu-toolchain-11.3.rel1-x86_64-arm-none-eabi/bin",
-            // "objdumpPath": /arm-none-eabi-objdump",
-            // "nmPath": "${workspaceRoot}/arm-gnu-toolchain-14.3.rel1-x86_64-arm-none-eabi/bin/arm-none-eabi-nm",
-            // "objcopyPath": "${workspaceRoot}/arm-gnu-toolchain-14.3.rel1-x86_64-arm-none-eabi/bin/arm-none-eabi-objcopy",
-            // "gdbPath": "${workspaceRoot}/arm-gnu-toolchain-14.3.rel1-x86_64-arm-none-eabi/bin/arm-none-eabi-gdb",  
-
-            "preLaunchCommands": [
-                "target extended-remote /dev/ttyACM0",
-                "monitor reset halt",
-                "monitor swdp_scan",
-                "attach 1", // Attach to the first/only discovered core
-            ],
-            "postLaunchCommands": [
-                "load",
-                "b main", // Set a breakpoint at main before continuing
-                "c",      // Continue execution to the breakpoint
-            ],
-            "gdbTarget": "/dev/ttyACM0",
-            "device": "STM32F407",
-            
-            "showDevDebugOutput": "raw",
-        }
     ]
 }

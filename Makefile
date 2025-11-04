@@ -229,7 +229,7 @@ INCDIR += $(STARTUPINC) $(KERNINC) $(PORTINC) $(OSALINC) \
 
 MCU  = cortex-m4
 
-TRGT = arm-none-eabi-
+TRGT = ./gcc-arm-none-eabi-10.3-2021.10/bin/arm-none-eabi-
 CC   = $(TRGT)gcc
 CPPC = $(TRGT)g++
 # Enable loading with g++ only if you need C++ runtime support.

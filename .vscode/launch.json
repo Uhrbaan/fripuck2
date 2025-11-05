@@ -14,11 +14,26 @@
             "servertype": "bmp",
             "interface": "swd",
             "device": "STM32F103",
-            "BMPGDBSerialPort": "/dev/ttyACM0",  // Use whatever serial port makes sense for your OS and BMP setup
+            "BMPGDBSerialPort": "/dev/ttyACM0",
             "runToEntryPoint": "main",
             "armToolchainPath": "${workspaceRoot}/gcc-arm-none-eabi-10.3-2021.10/bin",
             "showDevDebugOutput": "raw"
         },
+        {
+            "name": "Attach (Black Magic Probe)",
+            "cwd": "${workspaceRoot}",
+            "executable": "${workspaceRoot}/build/e-puck2_main-processor.elf",
+            "request": "attach",    
+            "type": "cortex-debug",
+            "servertype": "bmp",
+            "interface": "swd",
+            "device": "STM32F103",
+            "BMPGDBSerialPort": "/dev/ttyACM0",
+            // "runToEntryPoint": "main",
+            "armToolchainPath": "${workspaceRoot}/gcc-arm-none-eabi-10.3-2021.10/bin",
+            "showDevDebugOutput": "raw",
+            "overrideRestartCommands": ["monitor reset halt"],
 
+        },
     ]
 }

@@ -91,11 +91,10 @@ static int Lenable_four_leds(lua_State *L) {
 	return 0;
 }
 
-static int Lget_accel(lua_State *L) {
-	int axis = luaL_checkinteger(L, 1);
-	double value = (double)get_acceleration(axis);
-	lua_pushnumber(L, value);
-	return 1; // since returning 1 value
+static int Lsleep_seconds(lua_State *L) {
+	int seconds = luaL_checkinteger(L, 1);
+	chThdSleepSeconds(seconds);
+	return 0;
 }
 
 // Declares a thread function hiding eventual compiler-specific keywords. 
@@ -104,74 +103,26 @@ static THD_FUNCTION(selector_thd, arg)
 {
     (void) arg;
     chRegSetThreadName(__FUNCTION__);
-    uint8_t stop_loop = 0;
-    systime_t time;
-
-    messagebus_topic_t *prox_topic = messagebus_find_topic_blocking(&bus, "/proximity");
-    proximity_msg_t prox_values;
-    int16_t leftSpeed = 0, rightSpeed = 0;
-    int16_t prox_values_temp[8];
-
-    messagebus_topic_t *imu_topic = messagebus_find_topic_blocking(&bus, "/imu");
-    imu_msg_t imu_values;
-
-    uint16_t prox_thr = 1000;
-
-    uint8_t hw_test_state = 0;
-    uint8_t *img_buff_ptr;
-    uint16_t r = 0, g = 0, b = 0;
-    uint8_t rgb_state = 0, rgb_counter = 0;
-    uint16_t melody_state = 0, melody_counter = 0;
-    int8_t cam_error = 0;
-
-    uint8_t magneto_state = 0;
-    
-    uint8_t demo15_state = 0;
-    uint8_t temp_rx = 0;
-
-	uint8_t rab_addr = 0x20;
-	uint8_t rab_state = 0;
-	int8_t i2c_err = 0;
-	uint8_t regValue[2] = {0};
-	uint16_t rab_data = 0;
-	double rab_bearing = 0.0;
-	uint16_t rab_range = 0;
-	uint16_t rab_sensor = 0;
-	uint8_t rab_buff[35];
-	uint16_t rab_tx_data = 0;
-	uint8_t rab_counter = 0;
-
-	uint8_t back_and_forth_state = 0;
-	float turn_angle_rad = 0.0;
-	uint8_t led_animation_state = 0;
-	uint32_t led_animation_count = 0;
-
-	uint8_t wav_volume = 20;
-	uint8_t wav_play_state = 0;
-
-	double heading = 0.0;
-	float mag_values[3];
-
-	//debug variables
-	//static float geo_offsets[3] = {0, 0, 0};
-	//static float geo_offsets_max[3] = {-1000, -1000, -1000};
-	//static float geo_offsets_min[3] = {1000, 1000, 1000};
-	//static float compass = 0;
-
-	calibrate_acc();
-	calibrate_gyro();
-	calibrate_ir();
 
 	lua_State *L = luaL_newstate();
 	lua_pushcfunction(L, Lenable_four_leds);
     lua_setglobal(L, "enableLEDs");
-	lua_pushcfunction(L, Lget_accel);
-	lua_setglobal(L, "getAccel");
+	lua_pushcfunction(L, Lsleep_seconds);
+	lua_setglobal(L, "sleep");
 
-	// makes four red LEDs turn on for two seconds, the turn of again.
-	luaL_dostring(L, "enableLEDs(15)");
-	chThdSleepSeconds(2);
-	luaL_dostring(L, "enableLEDs(0)");
+	const char script[] =
+		"local led = 0\n"
+		"while true do\n"
+		"	led = led + 1\n"
+		"	if led > 15 then\n"
+		"		led = 0\n"
+		"	end\n"
+		"	enableLEDs(led)\n"
+		"	sleep(1)\n"
+		"end\n";
+
+	// blocking
+	luaL_dostring(L, script);
 
 	// clean the lua VM 
 	lua_close(L);

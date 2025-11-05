@@ -53,9 +53,9 @@
 #include "ircom/ircomSend.h"
 #include "ircom/transceiver.h"
 
-#include "lua/src/lua.h"
-#include "lua/src/lauxlib.h"
-#include "lua/src/lualib.h"
+#include "lua/lua.h"
+#include "lua/lauxlib.h"
+#include "lua/lualib.h"
 
 #define SHELL_WA_SIZE   THD_WORKING_AREA_SIZE(2048)
 

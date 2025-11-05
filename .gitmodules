@@ -28,3 +28,6 @@
 [submodule "src/serial-datagram"]
 	path = src/serial-datagram
 	url = https://github.com/cvra/serial-datagram.git
+[submodule "lua"]
+	path = lua
+	url = https://github.com/lua/lua.git

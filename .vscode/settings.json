@@ -16,6 +16,12 @@
         "ranges": "c",
         "span": "c",
         "regex": "c",
-        "valarray": "c"
+        "valarray": "c",
+        "memory_protection.h": "c",
+        "*.bak": "c",
+        "ircomsend.h": "c",
+        "main.h": "c",
+        "dcmi_camera.h": "c",
+        "parameter.h": "c"
     }
 }

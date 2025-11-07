@@ -125,57 +125,8 @@ static THD_FUNCTION(selector_thd, arg) {
 
     init_demos();
 
-    switch (get_selector()) {
-    case select_aseba_vm:
-        aseba_vm_start();
-        break;
-    case select_shell:
-        shell_start();
-        break;
-    case select_proximity_led_demo:
-        proximity_led_demo();
-        break;
-    case select_asercom_bluetooth:
-        spi_image_transfer_disable();
-        run_asercom2();
-        break;
-    case select_RaB_demo:
-        RaB_demo();
-        break;
-    case select_RaB_clustering_demo:
-        RaB_clustering_demo();
-        break;
-    case select_gyro_demo:
-        gyro_demo();
-        break;
-    case select_sound_demo:
-        sound_demo();
-        break;
-    case select_asercom_usb:
-        break;
-    case select_local_communication_demo:
-        local_communication_demo();
-        break;
-    case select_unknown:
-        break;
-    case select_obstacle_avoidance_demo:
-        obstacle_avoidance_demo();
-        break;
-    case select_hardware_test:
-        hardware_test();
-        break;
-    case select_orientation_demo:
-        orientation_demo();
-        break;
-    case select_magnetometer_demo:
-        magnetometer_demo();
-        break;
-    case select_asecrom:
-        break;
-
-    default:
-        break;
-    }
+    // The selectors will play lua files. To be implemented.
+    int select = get_selector();
 
     lua_State *L = luaL_newstate();
     lua_pushcfunction(L, Lenable_four_leds);
@@ -183,16 +134,8 @@ static THD_FUNCTION(selector_thd, arg) {
     lua_pushcfunction(L, Lsleep_seconds);
     lua_setglobal(L, "sleep");
 
-    const char script[] = "local led = 0\n"
-                          "while true do\n"
-                          "	led = led + 1\n"
-                          "	if led > 15 then\n"
-                          "		led = 0\n"
-                          "	end\n"
-                          "	enableLEDs(led)\n"
-                          "	sleep(1)\n"
-                          "end\n";
-
+    const char script[] = "local led = 1\n"
+                          "enableLEDs(led)\n";
     // blocking
     luaL_dostring(L, script);
 

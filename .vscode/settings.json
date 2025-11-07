@@ -22,6 +22,19 @@
         "ircomsend.h": "c",
         "main.h": "c",
         "dcmi_camera.h": "c",
-        "parameter.h": "c"
+        "parameter.h": "c",
+        "chrono": "c",
+        "ctime": "c",
+        "future": "c",
+        "iomanip": "c",
+        "limits": "c",
+        "numeric": "c",
+        "ratio": "c",
+        "shared_mutex": "c",
+        "streambuf": "c",
+        "tuple": "c",
+        "type_traits": "c",
+        "utility": "c",
+        "*.def": "c"
     }
 }

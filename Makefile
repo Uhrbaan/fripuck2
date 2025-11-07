@@ -133,38 +133,40 @@ endif
 # Lua integration 
 LUA = $(GLOBAL_PATH)/lua
 LUA_SRC = $(LUA)
-LUA_LIB_SRC = $(LUA)/lapi.c \
-              $(LUA)/lauxlib.c \
-              $(LUA)/lbaselib.c \
-              $(LUA)/lcode.c \
-              $(LUA)/lcorolib.c \
-              $(LUA)/lctype.c \
-              $(LUA)/ldblib.c \
-              $(LUA)/ldebug.c \
-              $(LUA)/ldo.c \
-              $(LUA)/ldump.c \
-              $(LUA)/lfunc.c \
-              $(LUA)/lgc.c \
-              $(LUA)/linit.c \
-              $(LUA)/liolib.c \
-              $(LUA)/llex.c \
-              $(LUA)/lmathlib.c \
-              $(LUA)/lmem.c \
-              $(LUA)/loadlib.c \
-              $(LUA)/lobject.c \
-              $(LUA)/lopcodes.c \
-              $(LUA)/loslib.c \
-              $(LUA)/lparser.c \
-              $(LUA)/lstate.c \
-              $(LUA)/lstring.c \
-              $(LUA)/lstrlib.c \
-              $(LUA)/ltable.c \
-              $(LUA)/ltablib.c \
-              $(LUA)/ltm.c \
-              $(LUA)/lundump.c \
-              $(LUA)/lutf8lib.c \
-              $(LUA)/lvm.c \
-              $(LUA)/lzio.c
+LUA_LIB_SRC += $(LUA)/lapi.c
+LUA_LIB_SRC += $(LUA)/lauxlib.c
+LUA_LIB_SRC += $(LUA)/lbaselib.c
+LUA_LIB_SRC += $(LUA)/lcode.c
+LUA_LIB_SRC += $(LUA)/lcorolib.c
+LUA_LIB_SRC += $(LUA)/lctype.c
+LUA_LIB_SRC += $(LUA)/ldblib.c 
+LUA_LIB_SRC += $(LUA)/ldebug.c 
+LUA_LIB_SRC += $(LUA)/ldo.c 
+LUA_LIB_SRC += $(LUA)/ldump.c 
+LUA_LIB_SRC += $(LUA)/lfunc.c 
+LUA_LIB_SRC += $(LUA)/lgc.c 
+LUA_LIB_SRC += $(LUA)/linit.c 
+LUA_LIB_SRC +=  $(LUA)/liolib.c 
+LUA_LIB_SRC += $(LUA)/llex.c 
+LUA_LIB_SRC += $(LUA)/lmathlib.c 
+LUA_LIB_SRC += $(LUA)/lmem.c 
+LUA_LIB_SRC += $(LUA)/loadlib.c 
+LUA_LIB_SRC += $(LUA)/lobject.c 
+LUA_LIB_SRC += $(LUA)/lopcodes.c 
+LUA_LIB_SRC += $(LUA)/loslib.c 
+LUA_LIB_SRC += $(LUA)/lparser.c
+LUA_LIB_SRC += $(LUA)/lstate.c
+LUA_LIB_SRC += $(LUA)/lstring.c
+LUA_LIB_SRC += $(LUA)/lstrlib.c
+LUA_LIB_SRC += $(LUA)/ltable.c
+LUA_LIB_SRC += $(LUA)/ltablib.c
+LUA_LIB_SRC += $(LUA)/ltests.c
+LUA_LIB_SRC += $(LUA)/ltm.c
+# LUA_LIB_SRC += $(LUA)/lua.c
+LUA_LIB_SRC += $(LUA)/lundump.c
+LUA_LIB_SRC += $(LUA)/lutf8lib.c
+LUA_LIB_SRC += $(LUA)/lvm.c
+LUA_LIB_SRC += $(LUA)/lzio.c
 
 # C sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.

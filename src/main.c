@@ -55,9 +55,9 @@
 #include <main.h>
 
 #include "demos.h"
-#include "lua/lauxlib.h"
-#include "lua/lua.h"
-#include "lua/lualib.h"
+#include "lua/src/lauxlib.h"
+#include "lua/src/lua.h"
+#include "lua/src/lualib.h"
 
 #define SHELL_WA_SIZE THD_WORKING_AREA_SIZE(2048)
 

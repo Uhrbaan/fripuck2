@@ -132,41 +132,39 @@ endif
 
 # Lua integration 
 LUA = $(GLOBAL_PATH)/lua
-LUA_SRC = $(LUA)
-LUA_LIB_SRC += $(LUA)/lapi.c
-LUA_LIB_SRC += $(LUA)/lauxlib.c
-LUA_LIB_SRC += $(LUA)/lbaselib.c
-LUA_LIB_SRC += $(LUA)/lcode.c
-LUA_LIB_SRC += $(LUA)/lcorolib.c
-LUA_LIB_SRC += $(LUA)/lctype.c
-LUA_LIB_SRC += $(LUA)/ldblib.c 
-LUA_LIB_SRC += $(LUA)/ldebug.c 
-LUA_LIB_SRC += $(LUA)/ldo.c 
-LUA_LIB_SRC += $(LUA)/ldump.c 
-LUA_LIB_SRC += $(LUA)/lfunc.c 
-LUA_LIB_SRC += $(LUA)/lgc.c 
-LUA_LIB_SRC += $(LUA)/linit.c 
-LUA_LIB_SRC +=  $(LUA)/liolib.c 
-LUA_LIB_SRC += $(LUA)/llex.c 
-LUA_LIB_SRC += $(LUA)/lmathlib.c 
-LUA_LIB_SRC += $(LUA)/lmem.c 
-LUA_LIB_SRC += $(LUA)/loadlib.c 
-LUA_LIB_SRC += $(LUA)/lobject.c 
-LUA_LIB_SRC += $(LUA)/lopcodes.c 
-LUA_LIB_SRC += $(LUA)/loslib.c 
-LUA_LIB_SRC += $(LUA)/lparser.c
-LUA_LIB_SRC += $(LUA)/lstate.c
-LUA_LIB_SRC += $(LUA)/lstring.c
-LUA_LIB_SRC += $(LUA)/lstrlib.c
-LUA_LIB_SRC += $(LUA)/ltable.c
-LUA_LIB_SRC += $(LUA)/ltablib.c
-LUA_LIB_SRC += $(LUA)/ltests.c
-LUA_LIB_SRC += $(LUA)/ltm.c
-# LUA_LIB_SRC += $(LUA)/lua.c
-LUA_LIB_SRC += $(LUA)/lundump.c
-LUA_LIB_SRC += $(LUA)/lutf8lib.c
-LUA_LIB_SRC += $(LUA)/lvm.c
-LUA_LIB_SRC += $(LUA)/lzio.c
+LUA_SRC = $(LUA)/src
+LUA_LIB_SRC = $(LUA)/src/lapi.c \
+              $(LUA)/src/lauxlib.c \
+              $(LUA)/src/lbaselib.c \
+              $(LUA)/src/lcode.c \
+              $(LUA)/src/lcorolib.c \
+              $(LUA)/src/lctype.c \
+              $(LUA)/src/ldblib.c \
+              $(LUA)/src/ldebug.c \
+              $(LUA)/src/ldo.c \
+              $(LUA)/src/ldump.c \
+              $(LUA)/src/lfunc.c \
+              $(LUA)/src/lgc.c \
+              $(LUA)/src/linit.c \
+              $(LUA)/src/liolib.c \
+              $(LUA)/src/llex.c \
+              $(LUA)/src/lmathlib.c \
+              $(LUA)/src/lmem.c \
+              $(LUA)/src/loadlib.c \
+              $(LUA)/src/lobject.c \
+              $(LUA)/src/lopcodes.c \
+              $(LUA)/src/loslib.c \
+              $(LUA)/src/lparser.c \
+              $(LUA)/src/lstate.c \
+              $(LUA)/src/lstring.c \
+              $(LUA)/src/lstrlib.c \
+              $(LUA)/src/ltable.c \
+              $(LUA)/src/ltablib.c \
+              $(LUA)/src/ltm.c \
+              $(LUA)/src/lundump.c \
+              $(LUA)/src/lutf8lib.c \
+              $(LUA)/src/lvm.c \
+              $(LUA)/src/lzio.c
 
 # C sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.
@@ -231,7 +229,7 @@ INCDIR += $(STARTUPINC) $(KERNINC) $(PORTINC) $(OSALINC) \
 
 MCU  = cortex-m4
 
-TRGT = ./gcc-arm-none-eabi-10.3-2021.10/bin/arm-none-eabi-
+TRGT = arm-none-eabi-
 CC   = $(TRGT)gcc
 CPPC = $(TRGT)g++
 # Enable loading with g++ only if you need C++ runtime support.

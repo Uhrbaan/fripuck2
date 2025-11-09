@@ -10,7 +10,7 @@
             "args": [
                 "-j16",
                 "USE_OPT='-O0 -ggdb'",
-                "USE_FPU=soft"
+                // "USE_FPU=soft"
             ],
             // Define this as the default build task
             "group": {

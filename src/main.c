@@ -91,8 +91,6 @@ int main(void) {
 
     parameter_namespace_declare(&parameter_root, NULL, NULL);
 
-    lua_start_vm();
-
     // Init the peripherals.
     clear_leds();
     set_body_led(0);
@@ -129,12 +127,13 @@ int main(void) {
     aseba_vm_init();
     aseba_can_start(&vmState);
 
-    chThdCreateStatic(selector_thd_wa, sizeof(selector_thd_wa), NORMALPRIO, selector_thd, NULL);
+    // chThdCreateStatic(selector_thd_wa, sizeof(selector_thd_wa), NORMALPRIO, selector_thd, NULL);
+    lua_start_vm();
 
-    // /* Infinite loop. */
-    // while (1) {
-    //     chThdSleepMilliseconds(1000);
-    // }
+    /* Infinite loop. */
+    while (1) {
+        chThdSleepMilliseconds(1000);
+    }
 }
 
 #define STACK_CHK_GUARD 0xe2dee396

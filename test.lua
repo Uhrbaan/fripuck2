@@ -1,1 +1,1 @@
-enableLEDs(1)
+enableLEDs(2)

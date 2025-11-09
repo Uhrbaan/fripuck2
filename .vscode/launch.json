@@ -15,7 +15,7 @@
             "interface": "swd",
             "device": "STM32F103",
             "BMPGDBSerialPort": "/dev/ttyACM0",
-            // "runToEntryPoint": "main",
+            "runToEntryPoint": "main",
             "armToolchainPath": "${workspaceRoot}/gcc-arm-none-eabi-10.3-2021.10/bin",
             "showDevDebugOutput": "raw"
         },

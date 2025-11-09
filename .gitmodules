@@ -31,3 +31,4 @@
 [submodule "lua"]
 	path = lua
 	url = https://github.com/lua/lua.git
+	ignore = dirty

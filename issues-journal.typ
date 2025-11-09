@@ -44,3 +44,15 @@ __asm__ volatile (
 ```
 with some standard c code (from the standard library): ```c x = sqrtf(x);```.
 This however will probably impact performance, but who cares at this point.
+
+== 2025.11.09
+So it turned out this wasn't the issue.
+The flag was removed and somehow the program now magically works without explanations.
+The change was thus reverted.
+Will have to look into it for the report.
+Will also have to look at the diff to see what could have solved the issue.
+
+If I would have to take a wild guess, I'd say that the code stopped working because I removed some necessary initialisation code withou paying attention to it.
+But this has to be confirmed.
+
+Anyway, happy that it works.

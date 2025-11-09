@@ -1,4 +1,11 @@
 # v0.0
+Version `v0` focused on testing to make sure the setup was working. 
+I got the debugger working inside of VScode (although really janky) and got a basic lua script working on the robot. 
+Later the standard lua code will be changed to simply running bytecode, for the sake of memory efficiency (parsing lua code is very memory hungry).
+Also, compiling the lua code on the host machine has the benefit that you are aware earlier of a parsing error.
+
+`v0` was achieved on the 3.11.2025.
+
 ## v0.1
 - [X] Get lua bytecode working on the robot
   - [X] Custom allocator 
@@ -32,3 +39,5 @@ xxd -i test.lua.bytecode # prints the bytes as a C array, copy and paste it into
 - [ ] Run specific bytecode based on available wheel
   
 # v1.0
+`v1` will implement the basics - getting the Lua VM to work _with_ the already existing network protocol.
+`v1` should be reached in early january.

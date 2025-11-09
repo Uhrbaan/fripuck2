@@ -422,9 +422,8 @@ static void cmd_sqrt(BaseSequentialStream *chp, int argc, char *argv[]) {
         } else {
             chSysLock();
             chTMStartMeasurementX(&tmp);
-            // x = (float)input;
-            // __asm__ volatile("vsqrt.f32 %[var], %[var]" : [var] "+t"(x));
-            x = sqrtf(x);
+            x = (float)input;
+            __asm__ volatile("vsqrt.f32 %[var], %[var]" : [var] "+t"(x));
             result = (uint16_t)x;
             chTMStopMeasurementX(&tmp);
             chSysUnlock();

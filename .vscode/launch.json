@@ -8,14 +8,14 @@
             "name": "Debug (Black Magic Probe)",
             "cwd": "${workspaceRoot}",
             "executable": "${workspaceRoot}/build/e-puck2_main-processor.elf",
-            "request": "launch",    
+            "request": "launch",
             "preLaunchTask": "Build (make)",
             "type": "cortex-debug",
             "servertype": "bmp",
             "interface": "swd",
             "device": "STM32F103",
             "BMPGDBSerialPort": "/dev/ttyACM0",
-            "runToEntryPoint": "main",
+            // "runToEntryPoint": "main",
             "armToolchainPath": "${workspaceRoot}/gcc-arm-none-eabi-10.3-2021.10/bin",
             "showDevDebugOutput": "raw"
         },
@@ -23,7 +23,7 @@
             "name": "Attach (Black Magic Probe)",
             "cwd": "${workspaceRoot}",
             "executable": "${workspaceRoot}/build/e-puck2_main-processor.elf",
-            "request": "attach",    
+            "request": "attach",
             "type": "cortex-debug",
             "servertype": "bmp",
             "interface": "swd",
@@ -32,8 +32,9 @@
             // "runToEntryPoint": "main",
             "armToolchainPath": "${workspaceRoot}/gcc-arm-none-eabi-10.3-2021.10/bin",
             "showDevDebugOutput": "raw",
-            "overrideRestartCommands": ["monitor reset halt"],
-
+            "overrideRestartCommands": [
+                "monitor reset halt"
+            ],
         },
     ]
 }

@@ -54,10 +54,7 @@
 #include "usbcfg.h"
 #include <main.h>
 
-#include "demos.h"
-#include "lua/src/lauxlib.h"
-#include "lua/src/lua.h"
-#include "lua/src/lualib.h"
+#include "lua/luavm.h"
 
 #define SHELL_WA_SIZE THD_WORKING_AREA_SIZE(2048)
 
@@ -75,72 +72,13 @@ static bool load_config(void) {
     return config_load(&parameter_root, &_config_start);
 }
 
-static int Lenable_four_leds(lua_State *L) {
-    // check the first integer passed as argument
-    int bits = luaL_checkinteger(L, 1);
-
-    // clear_leds();
-    for (int i = 0; i < 4; i++) {
-        if (bits & 1 << i) {
-            set_led(i, 1);
-        } else {
-            set_led(i, 0);
-        }
-    }
-
-    // return the number of results, 0 in this case
-    return 0;
-}
-
-static int Lsleep_seconds(lua_State *L) {
-    int seconds = luaL_checkinteger(L, 1);
-    chThdSleepSeconds(seconds);
-    return 0;
-}
-
-enum {
-    select_aseba_vm = 0,
-    select_shell,
-    select_proximity_led_demo,
-    select_asercom_bluetooth,
-    select_RaB_demo,
-    select_RaB_clustering_demo,
-    select_gyro_demo,
-    select_sound_demo,
-    select_asercom_usb,
-    select_local_communication_demo,
-    select_unknown,
-    select_obstacle_avoidance_demo,
-    select_hardware_test,
-    select_orientation_demo,
-    select_magnetometer_demo,
-    select_asecrom,
-};
-
 // Declares a thread function hiding eventual compiler-specific keywords.
 // <https://chibios.org/dokuwiki/doku.php?id=chibios:documentation:books:rt:kernel_threading>
 static THD_FUNCTION(selector_thd, arg) {
     (void)arg;
     chRegSetThreadName(__FUNCTION__);
 
-    init_demos();
-
-    // The selectors will play lua files. To be implemented.
-    int select = get_selector();
-
-    lua_State *L = luaL_newstate();
-    lua_pushcfunction(L, Lenable_four_leds);
-    lua_setglobal(L, "enableLEDs");
-    lua_pushcfunction(L, Lsleep_seconds);
-    lua_setglobal(L, "sleep");
-
-    const char script[] = "local led = 1\n"
-                          "enableLEDs(led)\n";
-    // blocking
-    luaL_dostring(L, script);
-
-    // clean the lua VM
-    lua_close(L);
+    // do nothing
 }
 
 int main(void) {
@@ -152,6 +90,8 @@ int main(void) {
     messagebus_init(&bus, &bus_lock, &bus_condvar);
 
     parameter_namespace_declare(&parameter_root, NULL, NULL);
+
+    lua_start_vm();
 
     // Init the peripherals.
     clear_leds();
@@ -191,10 +131,10 @@ int main(void) {
 
     chThdCreateStatic(selector_thd_wa, sizeof(selector_thd_wa), NORMALPRIO, selector_thd, NULL);
 
-    /* Infinite loop. */
-    while (1) {
-        chThdSleepMilliseconds(1000);
-    }
+    // /* Infinite loop. */
+    // while (1) {
+    //     chThdSleepMilliseconds(1000);
+    // }
 }
 
 #define STACK_CHK_GUARD 0xe2dee396

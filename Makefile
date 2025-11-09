@@ -120,6 +120,7 @@ include $(CHIBIOS)/test/rt/test.mk
 include $(CHIBIOS_EXT)/ext/fatfs/fatfs.mk
 include $(GLOBAL_PATH)/src/aseba_vm/aseba.mk
 include $(GLOBAL_PATH)/src/src.mk
+include $(GLOBAL_PATH)/src/lua/lua.mk
 
 # Define linker script file here
 LDSCRIPT= $(STARTUPLD)/STM32F407xG.ld
@@ -129,42 +130,6 @@ ifeq ($(USE_ASEBA_BOOTLOADER),yes)
 else
 	LDSCRIPT= $(GLOBAL_PATH)/stm32f407xG_no_bootloader.ld
 endif
-
-# Lua integration 
-LUA = $(GLOBAL_PATH)/lua
-LUA_SRC = $(LUA)/src
-LUA_LIB_SRC = $(LUA)/src/lapi.c \
-              $(LUA)/src/lauxlib.c \
-              $(LUA)/src/lbaselib.c \
-              $(LUA)/src/lcode.c \
-              $(LUA)/src/lcorolib.c \
-              $(LUA)/src/lctype.c \
-              $(LUA)/src/ldblib.c \
-              $(LUA)/src/ldebug.c \
-              $(LUA)/src/ldo.c \
-              $(LUA)/src/ldump.c \
-              $(LUA)/src/lfunc.c \
-              $(LUA)/src/lgc.c \
-              $(LUA)/src/linit.c \
-              $(LUA)/src/liolib.c \
-              $(LUA)/src/llex.c \
-              $(LUA)/src/lmathlib.c \
-              $(LUA)/src/lmem.c \
-              $(LUA)/src/loadlib.c \
-              $(LUA)/src/lobject.c \
-              $(LUA)/src/lopcodes.c \
-              $(LUA)/src/loslib.c \
-              $(LUA)/src/lparser.c \
-              $(LUA)/src/lstate.c \
-              $(LUA)/src/lstring.c \
-              $(LUA)/src/lstrlib.c \
-              $(LUA)/src/ltable.c \
-              $(LUA)/src/ltablib.c \
-              $(LUA)/src/ltm.c \
-              $(LUA)/src/lundump.c \
-              $(LUA)/src/lutf8lib.c \
-              $(LUA)/src/lvm.c \
-              $(LUA)/src/lzio.c
 
 # C sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.
@@ -181,7 +146,7 @@ CSRC += $(STARTUPSRC) \
         $(CHIBIOS)/os/hal/lib/streams/chprintf.c \
         $(FATFSSRC) \
         $(ASEBASRC) \
-        $(LUA_LIB_SRC)
+        $(LUASRC) \
 
 # C++ sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.
@@ -217,7 +182,7 @@ INCDIR += $(STARTUPINC) $(KERNINC) $(PORTINC) $(OSALINC) \
           $(ASEBAINC) \
           $(FATFSINC) \
           $(GLOBAL_PATH)/src \
-          $(LUA_SRC)
+          $(LUAINC)
 
 #
 # Project, sources and paths

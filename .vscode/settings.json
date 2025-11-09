@@ -35,6 +35,15 @@
         "tuple": "c",
         "type_traits": "c",
         "utility": "c",
-        "*.def": "c"
+        "*.def": "c",
+        "ch.h": "c",
+        "chprintf.h": "c",
+        "hal.h": "c",
+        "leds.h": "c",
+        "transceiver.h": "c",
+        "lua.h": "c",
+        "lauxlib.h": "c",
+        "luadecl.h": "c",
+        "csetjmp": "c"
     }
 }

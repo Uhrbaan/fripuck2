@@ -1,0 +1,44 @@
+LUA = $(GLOBAL_PATH)/lua
+
+LUASRC = $(LUA)/lapi.c
+LUASRC += $(LUA)/lauxlib.c
+LUASRC += $(LUA)/lbaselib.c # base library - could keep
+LUASRC += $(LUA)/lcode.c # if lua is already converted to bytecode, not needed. TODO later !
+LUASRC += $(LUA)/lcorolib.c # coroutine library - could be useful
+LUASRC += $(LUA)/lctype.c
+LUASRC += $(LUA)/ldblib.c # debug library - could be useful
+LUASRC += $(LUA)/ldebug.c 
+LUASRC += $(LUA)/ldo.c
+LUASRC += $(LUA)/ldump.c
+LUASRC += $(LUA)/lfunc.c
+LUASRC += $(LUA)/lgc.c
+LUASRC += $(LUA)/linit.c # only used by the main lua interpreter
+LUASRC += $(LUA)/liolib.c # io library - removing since not on real operating system
+LUASRC += $(LUA)/llex.c
+LUASRC += $(LUA)/lmathlib.c # math library - could be useful 
+LUASRC += $(LUA)/lmem.c
+LUASRC += $(LUA)/loadlib.c
+LUASRC += $(LUA)/lobject.c
+LUASRC += $(LUA)/lopcodes.c
+LUASRC += $(LUA)/loslib.c # os library - removing since not on real operaing system
+LUASRC += $(LUA)/lparser.c # if lua is already converted to bytecode, not needed. TODO later !
+LUASRC += $(LUA)/lstate.c
+LUASRC += $(LUA)/lstring.c
+LUASRC += $(LUA)/lstrlib.c # strings library - could be useful
+LUASRC += $(LUA)/ltable.c
+LUASRC += $(LUA)/ltablib.c # table library - could be useful
+LUASRC += $(LUA)/ltests.c # only used by the main lua interpreter. 
+LUASRC += $(LUA)/ltm.c
+# LUASRC += $(LUA)/lua.c # redefine main.c error
+LUASRC += $(LUA)/lundump.c
+LUASRC += $(LUA)/lutf8lib.c
+LUASRC += $(LUA)/lvm.c
+LUASRC += $(LUA)/lzio.c
+# LUASRC += $(LUA)/onelua.c # multiple redefine errors
+
+LUASRC += $(GLOBAL_PATH)/src/lua/luadecl.c 
+LUASRC += $(GLOBAL_PATH)/src/lua/luaport.c 
+LUASRC += $(GLOBAL_PATH)/src/lua/luavm.c
+
+LUAINC = $(LUA)
+LUAINC += $(GLOBAL_PATH)/src/lua

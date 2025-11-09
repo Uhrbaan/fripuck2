@@ -106,5 +106,3 @@ CSRC += $(GLOBAL_PATH)/src/ircom/ircomTools.c
 CSRC += $(GLOBAL_PATH)/src/ircom/ircomMessages.c
 CSRC += $(GLOBAL_PATH)/src/ircom/ircomSend.c
 CSRC += $(GLOBAL_PATH)/src/ircom/transceiver.c
-CSRC += $(GLOBAL_PATH)/src/lua_port.c
-CSRC += $(GLOBAL_PATH)/src/demos.c

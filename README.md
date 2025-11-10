@@ -21,7 +21,7 @@ Once that is done, you need to download the `gcc-arm-none-eabi` toolchain, the v
 You can download it from arm's website or [here](https://developer.arm.com/-/media/Files/downloads/gnu-rm/10.3-2021.10/gcc-arm-none-eabi-10.3-2021.10-x86_64-linux.tar.bz2?rev=78196d3461ba4c9089a67b5f33edf82a&revision=78196d34-61ba-4c90-89a6-7b5f33edf82a&hash=B94A380A17942218223CD08320496FB1) (last checked the 2025.11.05).
 
 Once you have finished the download, extract it into the root of your project. 
-The file structure should look something like this: 
+The file structure should look something like this:
 
 ```
 fripuck2

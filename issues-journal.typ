@@ -56,3 +56,18 @@ If I would have to take a wild guess, I'd say that the code stopped working beca
 But this has to be confirmed.
 
 Anyway, happy that it works.
+
+== 2025.11.14
+Working on reimplementing the old asercom protocol and making it run alongside the lua VM.
+
+Had to connect the robot to my network.
+Thankfully, Gtronic has a pretty good guide here: https://www.gctronic.com/doc/index.php?title=e-puck2_PC_side_development how to configure the wifi, which went quite well.
+
+Then, the asercom protocol worked without many issues.
+
+When creating a thread for the asercom protocol I simply reused the selector thread that I wasn't using, and created a separate thread for lua.
+
+At first it worked, but then I compiled the project again and it stopped working for some reason.
+One of the issues could be traced back to a stack overflow thrown by the TOF thread, so I increased the size to 1024, which seemed to fix the panic.
+
+However, now the robot doesn't panic but it doesn't seem to launch the lua nor the asercom thread, and instead gets stuck in a `_idle_thread` which does nothing.

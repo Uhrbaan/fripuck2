@@ -45,6 +45,7 @@
         "lauxlib.h": "c",
         "luadecl.h": "c",
         "csetjmp": "c",
-        "asercom2.h": "c"
+        "asercom2.h": "c",
+        "complex": "c"
     }
 }

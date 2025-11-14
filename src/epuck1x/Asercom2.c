@@ -1,5 +1,8 @@
-//#include "p30F6014A.h"
-// Advanced Sercom B
+// #include "p30F6014A.h"
+//  Advanced Sercom B
+
+// For some reason formatting the file breaks things
+// clang-format off
 
 #define CLIFF_SENSORS
 #define FLOOR_SENSORS	// define to enable floor sensors
@@ -103,17 +106,12 @@ int run_asercom2(void) {
     //e_init_ad_scan();
 
     selector = getselector(); //SELECTOR0 + 2*SELECTOR1 + 4*SELECTOR2 + 8*SELECTOR3;
-    if (selector == 3 || selector == 15) {
-        use_bt = 1;
-    } else {
-        use_bt = 0;
-    }
-    if(selector == 10) {
-    	gumstix_connected = 1;
-    } else {
-    	gumstix_connected = 0;
-    }
-
+    // Since we are only using radio connectivity (wifi), let's set the variables
+    // This is really not clean, but who cares for now
+    // TODO: Replace it with something a little cleaner 
+    use_bt = 1; // bt and wifi have the same settings 
+    gumstix_connected = 0; // gumstix long depricated
+    
 #ifdef FLOOR_SENSORS
     if (gumstix_connected == 0) { // the I2C must remain disabled when using the gumstix extension
         e_i2cp_init();

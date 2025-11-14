@@ -24,14 +24,20 @@ xxd -i test.lua.bytecode # prints the bytes as a C array, copy and paste it into
 
 ## v0.2
 - [ ] Run lua code in parallell of default asercom protocol 
-  - [ ] Restore old protocol
-  - [ ] Create 4 modes: 
-    - `0`: nothing (run `main.c` in `Project_template`, which can be implemented by a student in C)
-    - `1`: lua only (runs a single provided lua script, later will load latest from memory)
-    - `2`: legacy: run asercom2 protocol just like it used to 
-    - `3`: lua + asercom: run the two protocols in paralell (without communication between them for now) 
-  - [ ] Create a separate thread for lua and asercom
-  - [ ] Make them run in paralell without running out of memory
+  - [X] Restore old protocol
+  - [X] Create 4 modes: 
+    - `0`: legacy: run asercom2 protocol just like it used to 
+    - `1`: lua + asercom: run the two protocols in paralell (without communication between them for now) 
+    - `2-9`: Reseved for future use 
+    - `A-F`: Places where students can save lua scripts on ROM to load later (can be used for demonstrations).
+      - This may change later. 
+      - NOT YET IMPLEMENTED.
+  - [X] Create a separate thread for lua and asercom
+  - [X] Make them run in paralell without running out of memory
+
+> Note: currently, since the python api constantly sends datapackets that set *everything* on the robot, the example lights will flicker, since lua will enable the leds, and a milisecond after the asercom protocol gets a new packet where the state is "off". 
+> This means one will have to rework the interpretation of packets so the data doesn't get updated if it is not intentionally set. 
+> This can be tricky since we have to decide on the priority.
 
 ## v0.3
 - [ ] Upload bytecode to the robot

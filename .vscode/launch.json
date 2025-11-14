@@ -17,7 +17,7 @@
             "BMPGDBSerialPort": "/dev/ttyACM0",
             "runToEntryPoint": "main",
             "armToolchainPath": "${workspaceRoot}/gcc-arm-none-eabi-10.3-2021.10/bin",
-            "showDevDebugOutput": "raw"
+            "showDevDebugOutput": "raw",
         },
         {
             "name": "Attach (Black Magic Probe)",

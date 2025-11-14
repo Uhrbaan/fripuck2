@@ -57,13 +57,22 @@
 
 #include "lua/luavm.h"
 
-#define SHELL_WA_SIZE THD_WORKING_AREA_SIZE(2048)
-
 messagebus_t bus;
 MUTEX_DECL(bus_lock);
 CONDVAR_DECL(bus_condvar);
 
 parameter_namespace_t parameter_root, aseba_ns;
+
+// delcaring the lua thread
+static THD_WORKING_AREA(lua_thd_wa, 8192);
+
+// Thread function for the Lua VM
+static THD_FUNCTION(lua_thd, arg) {
+    (void)arg;
+    chRegSetThreadName(__FUNCTION__);
+
+    lua_start_vm();
+}
 
 static THD_WORKING_AREA(selector_thd_wa, 2048);
 
@@ -103,6 +112,22 @@ static THD_FUNCTION(selector_thd, arg) {
 
     run_asercom2();
 }
+
+enum selector_states {
+    SELECT_ASERCOM,
+    SELECT_ASERCOM_NO_CAMERA,
+    SELECT_LUA_AND_ASERCOM,
+    SELECT_LUA_AND_ASERCOM_NO_CAMERA,
+    // 3-9 reserved
+    // Saved lua scripts for example.
+    // NOT YET IMPLEMENTED
+    SELECT_LUA_SCRIPT_A = 10,
+    SELECT_LUA_SCRIPT_B,
+    SELECT_LUA_SCRIPT_C,
+    SELECT_LUA_SCRIPT_D,
+    SELECT_LUA_SCRIPT_E,
+    SELECT_LUA_SCRIPT_F
+};
 
 int main(void) {
     halInit();
@@ -150,8 +175,20 @@ int main(void) {
     aseba_vm_init();
     aseba_can_start(&vmState);
 
-    chThdCreateStatic(selector_thd_wa, sizeof(selector_thd_wa), NORMALPRIO, selector_thd, NULL);
-    // lua_start_vm();
+    int selection = get_selector();
+    switch (selection) {
+    case SELECT_ASERCOM:
+        chThdCreateStatic(selector_thd_wa, sizeof(selector_thd_wa), NORMALPRIO, selector_thd, NULL);
+        break;
+    case SELECT_LUA_AND_ASERCOM:
+        chThdCreateStatic(selector_thd_wa, sizeof(selector_thd_wa), NORMALPRIO, selector_thd, NULL);
+        chThdCreateStatic(lua_thd_wa, sizeof(lua_thd_wa), NORMALPRIO, lua_thd, NULL);
+        break;
+
+    default:
+        panic_handler("Invalid selector");
+        break;
+    }
 
     /* Infinite loop. */
     while (1) {

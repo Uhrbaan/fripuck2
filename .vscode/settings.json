@@ -44,6 +44,7 @@
         "lua.h": "c",
         "lauxlib.h": "c",
         "luadecl.h": "c",
-        "csetjmp": "c"
+        "csetjmp": "c",
+        "asercom2.h": "c"
     }
 }

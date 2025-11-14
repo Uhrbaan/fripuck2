@@ -21,7 +21,7 @@ Once that is done, you need to download the `gcc-arm-none-eabi` toolchain, the v
 You can download it from arm's website or [here](https://developer.arm.com/-/media/Files/downloads/gnu-rm/10.3-2021.10/gcc-arm-none-eabi-10.3-2021.10-x86_64-linux.tar.bz2?rev=78196d3461ba4c9089a67b5f33edf82a&revision=78196d34-61ba-4c90-89a6-7b5f33edf82a&hash=B94A380A17942218223CD08320496FB1) (last checked the 2025.11.05).
 
 Once you have finished the download, extract it into the root of your project. 
-The file structure should look something like this: 
+The file structure should look something like this:
 
 ```
 fripuck2
@@ -108,6 +108,7 @@ It will first start by building the firmware, and then will automatically load i
 After that, you can set breakpoints and use the debugger like you usually do. 
 
 > Note: I have not yet had the time to attempt the installation and debugging process on a new machine. If you do and you encounter errors, please open an issue so I can fix the instructions.
+<<<<<<< HEAD
 
 ## Changing the Wifi/radio settings
 This section only covers wifi, but the steps should be relatively easy. 
@@ -155,3 +156,5 @@ Then, open a web browser on the adress `192.168.1.1`, and connect to an availabl
 > **⚠️ Warning ⚠️**: the wifi configuration with the plain text password and ssid of the wifi configure for the robot is dumped on the `/dev/ttyACM1` serial interface, so anyone who has access to the robots will have access to your credentials.
 > 
 > Note: This work is not mine, it has been implemented by GCtronic. 
+=======
+>>>>>>> d50bf5f9db14dccf27caa9c1062c62a82ea52299

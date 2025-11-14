@@ -26,6 +26,7 @@
 #include "epuck1x/Asercom2.h"
 #include "epuck1x/a_d/advance_ad_scan/e_acc.h"
 #include "epuck1x/motor_led/advance_one_timer/e_led.h"
+#include "epuck1x/uart/e_uart_char.h"
 #include "epuck1x/utility/utility.h"
 #include "exti.h"
 #include "fat.h"
@@ -78,7 +79,29 @@ static THD_FUNCTION(selector_thd, arg) {
     (void)arg;
     chRegSetThreadName(__FUNCTION__);
 
-    // do nothing
+    uint8_t temp_rx = 0;
+
+    if (cam_advanced_config(FORMAT_COLOR, 0, 0, 640, 480, SUBSAMPLING_X4, SUBSAMPLING_X4) != MSG_OK) {
+        set_led(LED1, 1);
+    }
+    cam_set_exposure(512, 0); // Fix the exposure to have a stable framerate.
+
+    dcmi_set_capture_mode(CAPTURE_ONE_SHOT);
+
+    if (dcmi_prepare() < 0) {
+        set_led(LED5, 1);
+    }
+
+    spi_image_transfer_enable();
+
+    mpu9250_magnetometer_setup();
+
+    // Flush the uart input to avoid interpreting garbage as real commands.
+    while (chnReadTimeout(&SD3, (uint8_t *)&temp_rx, 1, MS2ST(1) > 0)) {
+        chThdSleepMilliseconds(1);
+    }
+
+    run_asercom2();
 }
 
 int main(void) {
@@ -127,8 +150,8 @@ int main(void) {
     aseba_vm_init();
     aseba_can_start(&vmState);
 
-    // chThdCreateStatic(selector_thd_wa, sizeof(selector_thd_wa), NORMALPRIO, selector_thd, NULL);
-    lua_start_vm();
+    chThdCreateStatic(selector_thd_wa, sizeof(selector_thd_wa), NORMALPRIO, selector_thd, NULL);
+    // lua_start_vm();
 
     /* Infinite loop. */
     while (1) {

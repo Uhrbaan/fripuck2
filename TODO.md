@@ -47,8 +47,12 @@ xxd -i test.lua.bytecode # prints the bytes as a C array, copy and paste it into
   - [ ] Restart upload if checksum fails
 - [ ] Save the bytecode on device
 - [ ] Run specific bytecode based on the selector, maybe ?
-  
-## v0.4 
+
+## v0.4
+- [ ] Update the communication protocol to limit conflicts between lua and python.
+  - [ ] ...
+
+## v0.5
 - [ ] Create a basic library of functions students can use
   - [ ] Decide on which default lua modules to keep 
   - [ ] Implement all the hardware initialization functions 

@@ -27,6 +27,7 @@
 #include "sdio.h"
 #include "serial_comm.h"
 #include "behaviors.h"
+#include "chprintf.h"
 
 #include <string.h>
 #include <ctype.h>
@@ -289,21 +290,16 @@ int run_asercom2(void) {
 #endif
         }
 
+        chprintf((BaseSequentialStream*)&SDU1, "Got a command. c = 0x%x, -c = 0x%x.\r\n", (int8_t)c, (int8_t)-c);
         if ((int8_t)c < 0) { // binary mode (big endian)
             i = 0;
             do {
                 switch ((int8_t)-c) {
 					case 0x8: // Get all sensors.
 						// Read accelerometer.
-                        if(gumstix_connected == 0) {
-                            accx = e_get_acc(0);
-                            accy = e_get_acc(1);
-                            accz = e_get_acc(2);
-                        } else {
-                        	accx = 0;
-                        	accy = 0;
-                        	accz = 0;
-                        }
+                        accx = e_get_acc(0);
+                        accy = e_get_acc(1);
+                        accz = e_get_acc(2);
                         buffer[i++] = accx & 0xff;
                         buffer[i++] = accx >> 8;
                         buffer[i++] = accy & 0xff;
@@ -311,13 +307,7 @@ int run_asercom2(void) {
                         buffer[i++] = accz & 0xff;
                         buffer[i++] = accz >> 8;
 
-                        if(gumstix_connected == 0) {
-                            accelero = e_read_acc_spheric();
-                        } else {
-                        	accelero.acceleration = 0.0;
-                        	accelero.inclination = 0.0;
-                        	accelero.orientation = 0.0;
-                        }
+                        accelero = e_read_acc_spheric();
                         ptr = (char *) &accelero.acceleration;
                         buffer[i++] = (*ptr);
                         ptr++;
@@ -346,22 +336,13 @@ int run_asercom2(void) {
                         buffer[i++] = (*ptr);
 
                     	// Read gyro.
-                    	if(gumstix_connected == 0) {
-                            getAllAxesGyro(&gyrox, &gyroy, &gyroz);
-                            buffer[i++] = gyrox & 0xFF;
-                            buffer[i++] = gyrox >> 8;
-                            buffer[i++] = gyroy & 0xFF;
-                            buffer[i++] = gyroy >> 8;
-                            buffer[i++] = gyroz & 0xFF;
-                            buffer[i++] = gyroz >> 8;
-                    	} else {
-							buffer[i++] = 0;
-							buffer[i++] = 0;
-							buffer[i++] = 0;
-							buffer[i++] = 0;
-							buffer[i++] = 0;
-							buffer[i++] = 0;
-                    	}
+                        getAllAxesGyro(&gyrox, &gyroy, &gyroz);
+                        buffer[i++] = gyrox & 0xFF;
+                        buffer[i++] = gyrox >> 8;
+                        buffer[i++] = gyroy & 0xFF;
+                        buffer[i++] = gyroy >> 8;
+                        buffer[i++] = gyroz & 0xFF;
+                        buffer[i++] = gyroz >> 8;
 
 						// Read magnetometer.
                     	for (j=0; j<3; j++) {
@@ -374,11 +355,7 @@ int run_asercom2(void) {
                     	}
 
                         // Read temperature.
-                    	if(gumstix_connected == 0) {
-                    		buffer[i++] = getTemperature();
-                    	} else {
-                            buffer[i++] = 0;
-                        }
+                        buffer[i++] = getTemperature();
 
                         // Read proximities.
                     	for (j=0; j<8; j++) {
@@ -395,14 +372,9 @@ int run_asercom2(void) {
                     	}
 
                     	// Read ToF.
-						if(gumstix_connected == 0) {
-							n = VL53L0X_get_dist_mm();
-							buffer[i++] = n & 0xff;
-							buffer[i++] = n >> 8;
-						} else {
-							buffer[i++] = 0;
-							buffer[i++] = 0;
-						}
+                        n = VL53L0X_get_dist_mm();
+                        buffer[i++] = n & 0xff;
+                        buffer[i++] = n >> 8;
 
                     	// Read microphones.
                         n = e_get_micro_volume(0);
@@ -469,9 +441,7 @@ int run_asercom2(void) {
 
 					case 0x9: // Set all actuators.
 
-                        if(gumstix_connected) { // Communicate with gumstix (i2c).
-
-                        } else if (use_bt) { // Communicate with ESP32 (uart) => BT.
+                        if (use_bt) { // Communicate with ESP32 (uart) => BT.
                         	chSequentialStreamRead(&SD3, (uint8_t*)rx_buff, 19);
                         } else { // Communicate with the pc (usb).
                         	if (SDU1.config->usbp->state == USB_ACTIVE) {
@@ -831,6 +801,14 @@ int run_asercom2(void) {
 						// Additional empty byte for future use.
 						buffer[i++] = 0;
 						break;
+
+                    case 0x13: // read file
+                        chprintf((BaseSequentialStream*)&SD3, "Recieved packet with code 0x13 !!");
+                        set_led(LED3, 1);
+                        chThdSleep(S2ST(1));
+                        set_led(LED3, 0);
+
+                        break;
 
                     case 'a': // Read acceleration sensors in a non filtered way, same as ASCII
                         if(gumstix_connected == 0) {

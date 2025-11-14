@@ -78,3 +78,27 @@ It is normal that there is an idle thread that does nothing.
 The issue was that the update to `Asercom.c` made the `use_bt = 0` which meant that the protocol was not set to look for bytes arriving on wifi (logically, since we didn't set the bluetooth flag 🤷).
 
 So I replace the block that chose the flag based on the selector simply to be fixed to 1, since we don't even launch the thread if we don't want wifi support.
+
+#line(length: 100%)
+
+Now, we have to do a file upload.
+Looking at the way the Asercom protocol is implemented, the first byte of the packet determines the case that will decrypt it.
+To send a file, we either have to send a really large stream of data, which is usually advised against, or blocks of data -- let's go with this, more common approach.
+
+We will allocate an empty ID -> `0x13` as the packet command for the file transfer.
+It will then be followed by a packet id (in case it is out-of-order), the length of the data, the data and a checksum (CRC since it looks quite easy to copy the implementation from other places, and is the standard for other protocols).
+
+Also, the fact that I couldn't print stuff for information or logging was annoying.
+Turned out the solution was to use the `chprintf` fonction on the `SDU1` serial over usb.
+Then, I can `screen` `/dev/ttyACM2` to see the prints.
+
+However the method seems unreliable, and doesn't seem to work outside of the main function.
+But technically, if brave, this:
+```c
+chprintf((BaseSequentialStream*)&SDU1, "Got command %#02x\n", c);
+```
+technically works. Then just:
+```sh
+screen /dev/ttyACM2
+```
+if it exists.

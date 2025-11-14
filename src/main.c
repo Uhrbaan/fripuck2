@@ -193,6 +193,7 @@ int main(void) {
     /* Infinite loop. */
     while (1) {
         chThdSleepMilliseconds(1000);
+        chprintf((BaseSequentialStream *)&SDU1, "SDUI alive...\r\n");
     }
 }
 

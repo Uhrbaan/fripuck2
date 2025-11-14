@@ -46,6 +46,7 @@
         "luadecl.h": "c",
         "csetjmp": "c",
         "asercom2.h": "c",
-        "complex": "c"
+        "complex": "c",
+        "utility.h": "c"
     }
 }

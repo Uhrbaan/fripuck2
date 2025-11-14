@@ -69,5 +69,12 @@ When creating a thread for the asercom protocol I simply reused the selector thr
 
 At first it worked, but then I compiled the project again and it stopped working for some reason.
 One of the issues could be traced back to a stack overflow thrown by the TOF thread, so I increased the size to 1024, which seemed to fix the panic.
+Also increased the thread size of the lua VM to 8kb insdead of 2, which is more realistic.
 
 However, now the robot doesn't panic but it doesn't seem to launch the lua nor the asercom thread, and instead gets stuck in a `_idle_thread` which does nothing.
+
+This was a mistake.
+It is normal that there is an idle thread that does nothing.
+The issue was that the update to `Asercom.c` made the `use_bt = 0` which meant that the protocol was not set to look for bytes arriving on wifi (logically, since we didn't set the bluetooth flag 🤷).
+
+So I replace the block that chose the flag based on the selector simply to be fixed to 1, since we don't even launch the thread if we don't want wifi support.

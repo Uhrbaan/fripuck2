@@ -108,3 +108,50 @@ It will first start by building the firmware, and then will automatically load i
 After that, you can set breakpoints and use the debugger like you usually do. 
 
 > Note: I have not yet had the time to attempt the installation and debugging process on a new machine. If you do and you encounter errors, please open an issue so I can fix the instructions.
+
+## Changing the Wifi/radio settings
+This section only covers wifi, but the steps should be relatively easy. 
+
+<!-- Connectivity runs on a separate espressif chip, which has to be prgrammed separately (Yay... 🥲).
+The implementation of the wifi module for the e-puck2 robot is a slightly derived version from the standard `esp-idf` implementation. 
+The official documentation can be found [here](https://www.gctronic.com/doc/index.php?title=e-puck2_radio_module_development).
+
+First start by cloning the repository: 
+```sh 
+git clone -b wifi --recursive https://github.com/e-puck2/esp-idf.git
+cd esp-idf
+``` 
+
+Then, you need to setup a python environment and install the packages in `requirements.txt`: 
+```sh
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+Once that is done, you have to configure the wifi settings. 
+You will find under `esp-idf/Projects/ESP32_E-Puck_2/main` a `wifi_manager.h` file where all the wifi settings are declared. 
+However, I would recommend simply using the gcc definition `-D` flags so you don't have to change that file. 
+
+> Note: the wifi configuration with the plain text password and ssid of the wifi you will configure for the robot is dumped on the `/dev/ttyACM1` serial interface, so please be mindful of your security and set up a specific wifi *only* for the robots. 
+
+Here are the compilation flags you should set for a simple wifi setup: 
+- `-DDEFAULT_AP_SSID=` should be the _ssid_ of you wifi. 
+- `-DDEFAULT_AP_PASSWORD=` should be the password to your wifi. 
+- `-DDEFAULT_AP_CHANNEL=` should be 5 for reliability, 11 for speed (can change depending on parts of the world. Read `wifi_manager.h`.)
+- `-DDEFAULT_AP_BANDWIDTH=` should be 1 for reliability, 2 for speed. 
+ -->
+
+To configure the wifi network the robot connects to, you can follow th guide [here](https://www.gctronic.com/doc/index.php?title=e-puck2_PC_side_development).
+In short, start by pressing down the button labeled `esp32` next to the GCtronic logo for at least two seconds. 
+The robot will discard its current configuration and start in _Access Point_ mode. 
+You can either use this mode, or configure you robot to connect to an available network. 
+
+To do so, first connect to the robot's access point, named `e-puck2_#####` (where `#` are numbers) and use the default password `e-puck2robot`. 
+Then, open a web browser on the adress `192.168.1.1`, and connect to an available network. Voilà !
+
+> **⚠️ Warning ⚠️**: When pressing the button, you permanently reset the ROM of the robot, so other configurations are also lost. 
+>
+> **⚠️ Warning ⚠️**: the wifi configuration with the plain text password and ssid of the wifi configure for the robot is dumped on the `/dev/ttyACM1` serial interface, so anyone who has access to the robots will have access to your credentials.
+> 
+> Note: This work is not mine, it has been implemented by GCtronic. 

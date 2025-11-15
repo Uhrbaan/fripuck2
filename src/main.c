@@ -8,6 +8,7 @@
 #include "hal.h"
 #include "shell.h"
 
+#include "Asercom3.h"
 #include "aseba_vm/aseba_bridge.h"
 #include "aseba_vm/aseba_can_interface.h"
 #include "aseba_vm/aseba_node.h"
@@ -110,7 +111,7 @@ static THD_FUNCTION(selector_thd, arg) {
         chThdSleepMilliseconds(1);
     }
 
-    run_asercom2();
+    run_asercom3((BaseSequentialStream *)&SDU1);
 }
 
 enum selector_states {
@@ -193,7 +194,6 @@ int main(void) {
     /* Infinite loop. */
     while (1) {
         chThdSleepMilliseconds(1000);
-        chprintf((BaseSequentialStream *)&SDU1, "SDUI alive...\r\n");
     }
 }
 

@@ -102,3 +102,23 @@ technically works. Then just:
 screen /dev/ttyACM2
 ```
 if it exists.
+
+
+Another problem is endianness.
+Since we are working with a network protocol, we use big-endianness, which mixes up some numbers.
+We have to take care of that.
+
+In the end of this session, I had some issues with the robot not wanting to behave and connect to my home network.
+
+== 2025.11.15
+Having issues with the debugging and understanding the flow of the code of the asercom 2 protocol.
+Have started to restructure the code in a more modern way, using function pointers in a dispatch table.
+This should also make debugging easier, since each packet type is isolated into its own function.
+
+Half of the asercom 1 protocol (the ascii part) has already been ported over.
+Will do the binary part and additions another day.
+This is all in preparation to do v0.3.
+
+Will also have to think about using a microsd to store the lua bytecode on the robot, instead of placing it on the flash, which to my small research is advised agains ?
+If using the flash, I will have to look into how to store files into it, which isn't trivial.
+Maybe I will postpone this part to a later update, maybe even 1.x.

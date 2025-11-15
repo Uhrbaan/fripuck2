@@ -47,6 +47,10 @@
         "csetjmp": "c",
         "asercom2.h": "c",
         "complex": "c",
-        "utility.h": "c"
+        "utility.h": "c",
+        "stdlib.h": "c",
+        "battery_level.h": "c",
+        "netfwd": "c",
+        "e_epuck_ports.h": "c"
     }
 }

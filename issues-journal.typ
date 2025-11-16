@@ -122,3 +122,23 @@ This is all in preparation to do v0.3.
 Will also have to think about using a microsd to store the lua bytecode on the robot, instead of placing it on the flash, which to my small research is advised agains ?
 If using the flash, I will have to look into how to store files into it, which isn't trivial.
 Maybe I will postpone this part to a later update, maybe even 1.x.
+
+== 2025.11.16
+While porting to asercom3, I also noticed there are a lot of these statements:
+```c
+while (e_getchar_uart1(&c1) == 0);
+```
+
+Which translate to:
+```c
+while (chSequentialStreamRead(uart_target, &c1, 1) == 0)
+    ;
+```
+
+in Asercom3.
+I just don't understand why we are waiting to read something that is not of length 0.
+
+$=>$ wait, we are simply waiting for the bytes to arrive I gues...
+
+All of the necessary functions were ported over.
+Testing is needed. Also the report should mention all of them that didn't get included and for which reastons: $=>$ extensions that are not in use, etc.

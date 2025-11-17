@@ -41,12 +41,13 @@ xxd -i test.lua.bytecode # prints the bytes as a C array, copy and paste it into
 
 ## v0.3
 - [ ] Upload bytecode to the robot
-  - [ ] Modify asecom 2 for a new "bytecode upload" mode 
+  - [X] Design new protocol for data upload 
+  - [X] Create new entry in the asercom protocol (0x1b)
+  - [ ] Verify checksums 
+  - [ ] Load bytecode to Lua 
   - [ ] Update the python library to check and compile lua code to bytecode
   - [ ] Update the python library to upload the bytecode with a checksum
   - [ ] Restart upload if checksum fails
-- [ ] Save the bytecode on device
-- [ ] Run specific bytecode based on the selector, maybe ?
 
 ## v0.4
 - [ ] Update the communication protocol to limit conflicts between lua and python.

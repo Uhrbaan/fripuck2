@@ -779,7 +779,8 @@ int asercom_get_all_sensors_compact_binary_0xEE(int buffer_offset, BaseSequentia
     }
 
     // Read tv remote.
-    buffer[i++] = e_get_data();
+    // buffer[i++] = e_get_data();
+    // FIXME: disabled because lazy
 
     // Read selector.
     char selector = SELECTOR0 + 2 * SELECTOR1 + 4 * SELECTOR2 + 8 * SELECTOR3;
@@ -1001,6 +1002,73 @@ int asercom_get_temperature_binary_0x8C(int buffer_offset, BaseSequentialStream 
     return buffer_offset;
 }
 
+/// @brief Buffer in which the uploaded bytecode is stored.
+extern char *lua_bytecode_buffer;
+extern uint16_t lua_bytecode_buffer_size;
+extern binary_semaphore_t upload_complete;
+uint32_t bytes_uploaded = 0;
+
+/**
+ * @brief Upload lua bytecode
+ *
+ * The code has to be uploaded into segments.
+ *
+ * | Magic Number | Total size | Offset  | Length  | Data | CRC-16  |
+ * |--------------|------------|---------|---------|------|---------|
+ * | 1B (1byte)   | 2 bytes    | 2 bytes | 2 bytes |  ... | 2 bytes |
+ *
+ * The magic number should always be `1B` (which is the lua bytecode magic number by the way), the total size should be
+ * the length in bytes of the total message, offset should be the offset of the currently recieved packet compared to
+ * the start of the packet in bytes, length should be the length in bytes of the current packet, data is tha payload,
+ * and finally a CRC-16.
+ *
+ * The function will send '0' to the uart channel if the packet was recieved successfully, '1' if it fails.
+ *
+ * @param buffer_offset irrelevant
+ * @param uart_target
+ * @return int irrelevant
+ */
+int asercom_upload_lua_bytecode_0x1B(int buffer_offset, BaseSequentialStream *uart_target) {
+    uint16_t total_bytes = 0;
+    chSequentialStreamRead(uart_target, (uint8_t *)&total_bytes, 2);
+
+    uint16_t offset = 0;
+    chSequentialStreamRead(uart_target, (uint8_t *)&offset, 2);
+
+    uint16_t packet_data_size = 0;
+    chSequentialStreamRead(uart_target, (uint8_t *)&packet_data_size, 2);
+
+    // TODO: remove this debugging:
+    char s[128] = {0};
+    sprintf(s, "got data packet: total: %d, packet: %d, offset: %d\r\n", total_bytes, packet_data_size, offset);
+    chSequentialStreamWrite((BaseSequentialStream *)&SDU1, s, strlen(s));
+
+    // only allocate once
+    if (lua_bytecode_buffer_size < total_bytes) {
+        lua_bytecode_buffer_size = total_bytes;
+        lua_bytecode_buffer = chHeapAlloc(NULL, lua_bytecode_buffer_size); // NULL: use the general heap
+        if (lua_bytecode_buffer == NULL) {
+            buffer[buffer_offset++] = 1;
+            return buffer_offset;
+        }
+    }
+
+    // read stream directly into buffer to save memory
+    chSequentialStreamRead(uart_target, (uint8_t *)&lua_bytecode_buffer[offset], packet_data_size);
+
+    int16_t crc_16_checksum = 0;
+    chSequentialStreamRead(uart_target, (uint8_t *)&crc_16_checksum, 2);
+
+    // TODO: check crc
+
+    bytes_uploaded += packet_data_size;
+    if (bytes_uploaded == total_bytes) {
+        chBSemSignal(&upload_complete); // signal main process to start lua VM
+    }
+
+    return buffer[buffer_offset++] = 0;
+}
+
 command_handler_t command_table[256] = {
     // set all the entries to a default handler.
     [0 ... 255] = asercom_default_handler,
@@ -1055,17 +1123,30 @@ command_handler_t command_table[256] = {
     [0xb0] = asercom_set_motor_steps_binary_0xB0,
     [0xaf] = asercom_get_motor_steps_binary_0xAF,
     [0x8c] = asercom_get_temperature_binary_0x8C,
+
+    // Added in asercom3
+    [0x1b] = asercom_upload_lua_bytecode_0x1B,
 };
 
-void run_asercom3(int buffer_offset, BaseSequentialStream *uart_target) {
-    char c = 0;
+void run_asercom3(BaseSequentialStream *uart_target) {
+    unsigned char c = 0;
     int index;
+
+    char s[128] = {0};
+
     while (1) {
-        while (chSequentialStreamRead(uart_target, &c, 1)) {
-            index = 0;
+        index = 0;
+
+        // blocking execution until we get something
+        c = streamGet(uart_target);
+
+        if (c > 0) {
+            sprintf(s, "Got message with command %x.\r\n", c);
+            chSequentialStreamWrite((BaseSequentialStream *)&SDU1, s, strlen(s));
             index = command_table[c](index, uart_target);
-            // send answer
-            chSequentialStreamWrite(uart_target, buffer, index);
+        } else {
+            sprintf(s, "ChibiOS error %d. Could be MSG_TIMEOUT (-1) or MSG_RESET (-2) for example.\r\n", c);
+            chSequentialStreamWrite((BaseSequentialStream *)&SDU1, s, strlen(s));
         }
     }
 }

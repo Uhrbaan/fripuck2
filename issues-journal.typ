@@ -142,3 +142,73 @@ $=>$ wait, we are simply waiting for the bytes to arrive I gues...
 
 All of the necessary functions were ported over.
 Testing is needed. Also the report should mention all of them that didn't get included and for which reastons: $=>$ extensions that are not in use, etc.
+
+== 2025.11.17
+So, asercom3 was implemented, but some testing is required.
+Right now I am going to move forward and try to get file upload working.
+Thinking of a code to use, I think the easiest would be to use the magic number lua uses for its bytecode.
+Each lua bytecode stars with `\x1B Lua`, so we can use the `1b` magic number as the command, since it is not in use.
+This should also make it possible to pipe lua bytecode directly into `/dev/ttyACM2` without additional work, which could be handy.
+
+```
+❯ xxd test.lua.bytecode
+00000000: 1b4c 7561 5400 1993 0d0a 1a0a 0408 0878  .LuaT..........x
+00000010: 5600 0000 0000 0000 0000 0000 2877 4001  V...........(w@.
+00000020: 8a40 7465 7374 2e6c 7561 8080 0001 038f  .@test.lua......
+00000030: 5100 0000 0180 ff7f 1500 0080 2f00 8006  Q.........../...
+00000040: 4000 8e00 3800 0080 0180 ff7f 8b00 0000  @...8...........
+00000050: 0001 0000 c400 0201 8b00 0001 0101 0080  ................
+00000060: c400 0201 b8f9 ff7f c600 0101 8204 8b65  ...............e
+00000070: 6e61 626c 654c 4544 7304 8673 6c65 6570  nableLEDs..sleep
+00000080: 8101 0000 808f 0100 0200 0100 0102 0000  ................
+00000090: 0100 0000 0180 8184 6c65 6482 8f81 855f  ........led...._
+000000a0: 454e 56                                  ENV
+```
+
+UPDATE: I scrapped this idea. It would be really cool but by reading online, since we get the data from the connectivity processor over uart, and uart is really unreliable and slow, we should send the file in small chunks and continuously check the data integrity with a checksum, reconstruct the data etc.
+
+=== Designing the protocol
+I'll still keep the `1b` protocol because what the hell it doesn't matter anyway it's a magic number.
+
+We will segment everything in packets of 512 bytes.
+
+Here is the format I am thinking off:
+#figure(table(
+  columns: 512,
+  align: horizon + center,
+  table.cell(colspan: 512)[Total size: 512 bytes],
+  table.cell(colspan: 1)[`0x1B`\ 1 byte],
+  table.cell(colspan: 2)[total bytecode length\ 2 bytes],
+  table.cell(colspan: 2)[offset\ 2 bytes],
+  table.cell(colspan: 2)[packet length \ 2 bytes],
+  table.cell(colspan: 512 - 9)[data\ at most 503 bytes],
+  table.cell(colspan: 2)[CRC-16\ 2 bytes],
+))
+
+We first send the command, then the offset (where this data should be written in the buffer), the data and finally a CRC.
+
+== 2025.11.21
+Currently trying to test the asercom3 protocol.
+I am facing a weird issue where if I use the wifi connection (`SD3`), I always get the message `f8, f7, 0` looping, and I can't figure out why.
+For now I am going to communicate with the robot through `SDU1`, or the usb cable, to test out the different functions.
+
+Also, the lua VM must not run until the lua script is fully uploaded.
+To do that, I will just create a lock, and unlock once everything is uploaded.
+In the future, it is also important for the VM to react if a new file is uploaded while it is running. The simplest would simply be to ignore it. It's what I will do for now.
+It will work like that:
+
+At first, the buffer is `unlocked`.
+If we start recieving files, we `lock` it, undil we have recieved all the bytes.
+Once we did, we will `unlock` the buffer, letting the lua VM take car of it.
+
+Once the buffer is `unlocked` again, and the lua VM sees that there is a valid pointer to read memory from, it will `lock` the buffer, read the instructions and free the memory since it doesn't need it anymore.
+
+As long as the buffer is locked, the file upload will fail.
+If the lua VM terminates, it will unlock the file again and the process continues.
+
+$=>$ Scrap that idea. I will just reaplace that with a "upload complete" flag, which is a lot easier.
+
+$=>$ Srap: using a chibios binary semaphore to send a signal when the upload is complete.
+
+It now works. I had an issue where the lua thread wasn't blocking, but it was simply because I didn't set it to `true` initially.
+However, when changing to tcp, the problem with the repeating `f8`, `f7` and `0` still remains.

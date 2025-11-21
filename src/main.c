@@ -111,9 +111,8 @@ static THD_FUNCTION(selector_thd, arg) {
         chThdSleepMilliseconds(1);
     }
 
-    run_asercom3((BaseSequentialStream *)&SDU1);
+    run_asercom3((BaseSequentialStream *)&SD3);
 }
-
 enum selector_states {
     SELECT_ASERCOM,
     SELECT_ASERCOM_NO_CAMERA,
@@ -130,6 +129,7 @@ enum selector_states {
     SELECT_LUA_SCRIPT_F
 };
 
+extern binary_semaphore_t upload_complete;
 int main(void) {
     halInit();
     chSysInit();
@@ -176,22 +176,12 @@ int main(void) {
     aseba_vm_init();
     aseba_can_start(&vmState);
 
-    int selection = get_selector();
-    switch (selection) {
-    case SELECT_ASERCOM:
-        chThdCreateStatic(selector_thd_wa, sizeof(selector_thd_wa), NORMALPRIO, selector_thd, NULL);
-        break;
-    case SELECT_LUA_AND_ASERCOM:
-        chThdCreateStatic(selector_thd_wa, sizeof(selector_thd_wa), NORMALPRIO, selector_thd, NULL);
-        chThdCreateStatic(lua_thd_wa, sizeof(lua_thd_wa), NORMALPRIO, lua_thd, NULL);
-        break;
+    // Initialize semaphore before running the two threads
+    chBSemObjectInit(&upload_complete, true);
 
-    default:
-        panic_handler("Invalid selector");
-        break;
-    }
+    chThdCreateStatic(lua_thd_wa, sizeof(lua_thd_wa), NORMALPRIO + 1, lua_thd, NULL);
+    chThdCreateStatic(selector_thd_wa, sizeof(selector_thd_wa), NORMALPRIO, selector_thd, NULL);
 
-    /* Infinite loop. */
     while (1) {
         chThdSleepMilliseconds(1000);
     }

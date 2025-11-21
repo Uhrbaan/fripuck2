@@ -51,6 +51,7 @@
         "stdlib.h": "c",
         "battery_level.h": "c",
         "netfwd": "c",
-        "e_epuck_ports.h": "c"
+        "e_epuck_ports.h": "c",
+        "lualib.h": "c"
     }
 }

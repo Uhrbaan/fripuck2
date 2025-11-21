@@ -44,10 +44,12 @@ xxd -i test.lua.bytecode # prints the bytes as a C array, copy and paste it into
   - [X] Design new protocol for data upload 
   - [X] Create new entry in the asercom protocol (0x1b)
   - [ ] Verify checksums 
-  - [ ] Load bytecode to Lua 
+  - [X] Load bytecode to Lua 
   - [ ] Update the python library to check and compile lua code to bytecode
   - [ ] Update the python library to upload the bytecode with a checksum
   - [ ] Restart upload if checksum fails
+
+> Note, as of writing, I cannot get upload over tcp (`SD3`) working because of some noise that comes from somewhere I couldn't understand where.
 
 ## v0.4
 - [ ] Update the communication protocol to limit conflicts between lua and python.

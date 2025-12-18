@@ -1,0 +1,6 @@
+.pio
+.vscode
+build
+secrets.c
+main
+network_config.c

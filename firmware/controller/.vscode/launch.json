@@ -1,0 +1,40 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug (Black Magic Probe)",
+            "cwd": "${workspaceRoot}",
+            "executable": "${workspaceRoot}/build/e-puck2_main-processor.elf",
+            "request": "launch",
+            "preLaunchTask": "Build (make)",
+            "type": "cortex-debug",
+            "servertype": "bmp",
+            "interface": "swd",
+            "device": "STM32F103",
+            "BMPGDBSerialPort": "/dev/ttyACM0",
+            "runToEntryPoint": "main",
+            "armToolchainPath": "${workspaceRoot}/gcc-arm-none-eabi-10.3-2021.10/bin",
+            "showDevDebugOutput": "raw",
+        },
+        {
+            "name": "Attach (Black Magic Probe)",
+            "cwd": "${workspaceRoot}",
+            "executable": "${workspaceRoot}/build/e-puck2_main-processor.elf",
+            "request": "attach",
+            "type": "cortex-debug",
+            "servertype": "bmp",
+            "interface": "swd",
+            "device": "STM32F103",
+            "BMPGDBSerialPort": "/dev/ttyACM0",
+            // "runToEntryPoint": "main",
+            "armToolchainPath": "${workspaceRoot}/gcc-arm-none-eabi-10.3-2021.10/bin",
+            "showDevDebugOutput": "raw",
+            "overrideRestartCommands": [
+                "monitor reset halt"
+            ],
+        },
+    ]
+}

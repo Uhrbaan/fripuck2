@@ -25,7 +25,7 @@ xxd -i test.lua.bytecode # prints the bytes as a C array, copy and paste it into
 ## v0.2
 - [X] Run lua code in parallell of default asercom protocol 
   - [X] Restore old protocol
-  - [X] Create 4 modes: 
+  - [ ] Create 4 modes: 
     - `0`: legacy: run asercom2 protocol just like it used to 
     - `1`: lua + asercom: run the two protocols in paralell (without communication between them for now) 
     - `2-9`: Reseved for future use 

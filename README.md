@@ -8,6 +8,4 @@ Its objectives are to:
 
 To watch the advancements of this project, please check the `TODO.md` file.
 
-> Disclaimer:
->
 > This is being developped as part of my bachelor thesis.

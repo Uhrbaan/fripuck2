@@ -472,3 +472,134 @@ Technically, we can configure anything with lua, so for now I'll probably do the
 I have currently to decide what I place at the start of each packet, if anything.
 I also came accross a thing called #link("https://protobuf.dev/")[protobuf], a norm from google to serialize data simply.
 I might look into that to encode data onto spi, and decode it after it, but this decision shouldn't affect the esp firmware.
+
+== 2025.12.24
+Added skeleton for the report.
+
+Also did a small attempt at using platformIO with freeRTOS for fun.
+Gemini suggested generated the necessary configuration code with the stm32Cube IDE beforehand, which I did, following its instructions.
+
+Here are the instructions:
+```md
+Since you are using PlatformIO, the most reliable way to get "official" files without manually scouring GitHub is to use **STM32CubeMX**. It is a visual configuration tool that generates the exact `FreeRTOSConfig.h` and clock initialization code your chip needs.
+
+### Step 1: Install and Launch STM32CubeMX
+
+1.  Download and install **STM32CubeMX** from the ST website (it's free).
+2.  Open it and click **"Access to MCU Selector"**.
+3.  Search for **STM32F407VG** and start a new project.
+
+### Step 2: Configure Hardware and Middleware
+
+In the left-hand column, you need to enable two things to match your current setup:
+
+1.  **System Core -> RCC**: Set "High Speed Clock (HSE)" to **Crystal/Ceramic Resonator**. (The e-puck2/Black board has an external crystal).
+2.  **System Core -> SYS**: Set "Timebase Source" to **Timer 1** (or any timer _except_ SysTick).
+
+    > _Why?_ FreeRTOS takes over SysTick. The HAL needs its own timer to handle `HAL_Delay()` and timeouts without crashing into the OS.
+
+3.  **Middleware -> FREERTOS**: Set "Interface" to **CMSIS\_V2** (this is the modern standard for STM32).
+
+### Step 3: Set the Clock (The 168MHz Secret)
+
+Go to the **Clock Configuration** tab.
+
+1.  Input **8** MHz in the Input Frequency (HSE) box (standard for these boards).
+2.  In the "System Clock Mux," select **PLLCLK**.
+3.  In the "HCLK" box, type **168** and hit Enter. The tool will automatically calculate all the multipliers (PLL) for you.
+
+### Step 4: Generate the Code
+
+1.  Go to the **Project Manager** tab.
+2.  **Project Name:** Call it "TempProject".
+3.  **Toolchain/IDE:** Select **Makefile**. (This ensures the code is generated in a clean C structure that is easy to copy into PlatformIO).
+4.  Click **"Generate Code"** in the top right.
+* * *
+
+### Step 5: Porting to PlatformIO
+
+Once generated, open the folder. You don't need the whole project; you just need to "steal" a few specific pieces:
+
+1\. The Config File:
+
+Find Core/Inc/FreeRTOSConfig.h. Copy this into your PlatformIO /include folder.
+
+2\. The Clock Setup:
+
+Look in Core/Src/main.c. Find the function void SystemClock\_Config(void). It will look like a long list of structures. Copy that entire function and replace the empty one in your PlatformIO main.c.
+
+3\. The HAL Timer:
+
+Because you told CubeMX to use Timer 1 for the HAL, it generated a file called stm32f4xx\_hal\_timebase\_tim.c.
+
+-   Copy this file into your PlatformIO `/src` folder.
+-   This ensures `HAL_Delay()` works correctly alongside FreeRTOS.
+
+### Summary Checklist
+
+-   \[ \] `FreeRTOSConfig.h` is in `/include`.
+-   \[ \] `SystemClock_Config` is updated in `main.c`.
+-   \[ \] `stm32f4xx_hal_timebase_tim.c` is in `/src`.
+-   \[ \] `lib_deps = FreeRTOS` is in `platformio.ini`.
+**Would you like me to show you how to check the e-puck2's old `mcuconf.h` to make sure the 168MHz clock settings match exactly what the robot expects?**
+```
+
+Here is a picture of the configuration:
+#image("assets/image.png")
+It looks horible.
+
+The hard part is to configure the connectivity of the chip, since it has a lot of peripherals.
+GCtronic provides a schematic of the connections:
+#image("assets/epuck-schematic.png")
+
+I've decided that I'm not going to configure the connectivity right now, and am going to do that later, once I'm sure freeRTOS and lua can be included easily with PIO's dependency management.
+
+Also, the instructions of the AI to make FreeRTOS work are a bit iffy.
+I am basing myself of the structure of the example project at https://github.com/maxgerhardt/pio-stm32h7-stm32cube-freertos/tree/main.
+This post also seems to be quite important: https://community.platformio.org/t/platformio-stm32-and-freertos-library/44418/5.
+
+Finally, I got it working (as a test of course), so it is technically possible to implement it also inside of PlatformIO and with FreeRTOS (meaning both `radio` and `controller` processes would use the same OS, which could simplify future development).
+
+Now, this was done for fun. I believe that this is a lot more approachable than the legacy build system, but I have to evaluate the amount of work needed to see if worth doing the port (since I would still have to add back all the sensors and their management).
+
+== 2026.02.18
+I have started (and hopefully finished) transitionning the pin definitions from ChibiOS to FreeRTOS.
+This was done by checkin the board definition (at `ChibiOS_ext/os/hal/boards/epuck2/cfg/board.chcfg`) and putting the values inside STM32CubeMX to generate the basic code.
+It produced conflicts, but since the hardware can't be changed, I won't attempt to fix them right now.
+
+I now have an issue that the `/dev/serial` virtual file system isn't getting shown.
+This is probably a permission issue on my system, since I recently changed it.
+To solve it, I had to add myself to the `uucp`.
+Now it works.
+
+Code was refactored into `harware-init.c/h` and `gpio-pins.h` to make the `main.c` file more approachable.
+A small test was made to see if the body LED would blink, which worked, giving me the confidence to move forward.
+
+Now, we need to implement all the sensors individually.
+I am going to place vendor code in their respective `lib/` folders, and then adapt them in their own section in a `src/sensors` folder.
+
+The e-puck consists of the following sensors:
+- Camera: PixelPlus PO8030D CMOS image sensor, datasheet, no IR cut filter
+  - From about July 2019, the camera mounted on the e-puck2 robot is the Omnivision OV7670 CMOS image sensor, datasheet
+- Microphones: STM-MP45DT02, datasheet
+- Optical sensors: Vishay Semiconductors Reflective Optical Sensor, datasheet
+- ToF distance sensor: STM-VL53L0X, datasheet, user-manual
+- IMU: InvenSense MPU-9250, product-specification, register-map
+- Motors: details
+- Speaker: Diameter 13mm, power 500mW, 8 Ohm, DS-1389 or PSR12N08AK or similar
+- IR receiver: TSOP36230
+
+== 2026.02.19
+Moved the Core files (hardware initialisation) into its own `lib/` folder.
+Now I am trying to fix some timing issues.
+First I've changed the clock configuration in STM32CubeMX to match what is inside the `board.chcfg` file.
+Then, AI told me to change the Hardware (HAL) timer to TIM6 (or anything other than TIM1, which apparently is special).
+Then it told me to lower the TIM6 priority to 0, so it has a higher priority than the OS tick, which apparently causes some issues.
+
+Everything was done to try and fix an issue where the `HAL_GetTick()` function did not work correctly and always returns `0` (which is not correct).
+After trying, the FreeRTOS delay works fine, so it's definitely a problem with the HAL configuration.
+
+In the end, the issue seems to be that not the correct functions were invoked since PIO wasn't compiling the correct c files in the Core lib.
+The solution was to simply dump everything in a `core` folder in src for the autogenerated files, then renaming the `core/main.c` to `hardware_init.c`, creating a header file that exposes the initialisation functions, removing the static declarations to fix inclusion errors, and then stripping the default taks and the `main()` function into a separate `src/main.c` file as the entry point to keep the file concise.
+
+This way, all the essential functions are overwritten and the robot can initialize correctly.

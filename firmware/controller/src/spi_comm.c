@@ -82,7 +82,7 @@ static THD_FUNCTION(spi_thread, p) {
 				rx_err = 0;
 
 				last_img_ptr = cam_get_last_image_ptr();
-				
+
 				for(packetId=0; packetId<numPackets; packetId++) {
 					spiSelect(&SPID1);
 					spiExchange(&SPID1, SPI_PACKET_MAX_SIZE, &last_img_ptr[packetId*SPI_PACKET_MAX_SIZE], spi_rx_buff);
@@ -187,5 +187,3 @@ void spi_comm_resume(void) {
 		chSysUnlock();
 	}
 }
-
-

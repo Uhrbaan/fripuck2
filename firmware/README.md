@@ -7,3 +7,4 @@ The contents of the two folders are technically git subtrees, since both project
 They have been merged together into this monorepo for easier management.
 
 In the future, they might even be merged into a single PlatformIO project, instead of a separate `pio` project for the esp, and custom `Cmake` project for the stm chip.
+This is however, purely theoretical since the amount of work is absolutely massive.

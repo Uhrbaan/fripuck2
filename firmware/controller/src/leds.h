@@ -7,34 +7,33 @@ extern "C" {
 
 #include <hal.h>
 
-#define RGB_MAX_INTENSITY 100	//percentage
+#define RGB_MAX_INTENSITY 100 // percentage
 
-//List of the RED LEDs present on the e-puck 2
+// List of the RED LEDs present on the e-puck 2
 typedef enum {
-	LED1,
-	LED3,
-	LED5,
-	LED7,
-	NUM_LED,
+    LED1,
+    LED3,
+    LED5,
+    LED7,
+    NUM_LED,
 } led_name_t;
 
-//List of the RGB LEDs present on the e-puck 2
+// List of the RGB LEDs present on the e-puck 2
 typedef enum {
-	LED2,
-	LED4,
-	LED6,
-	LED8,
-	NUM_RGB_LED,
+    LED2,
+    LED4,
+    LED6,
+    LED8,
+    NUM_RGB_LED,
 } rgb_led_name_t;
 
-//List of the LEDs present on each RGB LED
+// List of the LEDs present on each RGB LED
 typedef enum {
-	RED_LED,
-	GREEN_LED,
-	BLUE_LED,
-	NUM_COLOR_LED,
+    RED_LED,
+    GREEN_LED,
+    BLUE_LED,
+    NUM_COLOR_LED,
 } color_led_name_t;
-
 
 /*! \brief Turn on/off the specified LED
  *
@@ -54,13 +53,12 @@ void set_led(led_name_t led_number, unsigned int value);
  */
 void clear_leds(void);
 
-void set_body_led(unsigned int value); // value (0=off 1=on higher=inverse)
-void set_front_led(unsigned int value); //value (0=off 1=on higher=inverse)
+void set_body_led(unsigned int value);  // value (0=off 1=on higher=inverse)
+void set_front_led(unsigned int value); // value (0=off 1=on higher=inverse)
 
-void get_all_rgb_state(uint8_t* values);
-void toggle_rgb_led(rgb_led_name_t led_number, color_led_name_t led, uint8_t intensity);
+void get_all_rgb_state(uint8_t *values);
+void toggle_rgb_led(rgb_led_name_t led_number, color_led_name_t led, uint9_t intensity);
 void set_rgb_led(rgb_led_name_t led_number, uint8_t red_val, uint8_t green_val, uint8_t blue_val);
-
 
 #ifdef __cplusplus
 }

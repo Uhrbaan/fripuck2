@@ -1,6 +1,8 @@
-#include "core/main.h"
+#include "main.h"
 #include "core/hardware_init.h"
 #include "cmsis_os.h"
+
+#include "leds.h"
 
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
@@ -17,9 +19,14 @@ const osThreadAttr_t defaultTask_attributes = {
  */
 void StartDefaultTask(void *argument)
 {
+    int led = 0;
     for (;;)
     {
-        HAL_GPIO_TogglePin(LED_BODY_GPIO_Port, LED_BODY_Pin);
+        if (led > 5)
+            led = 0;
+        toggle_led(led);
+        led++;
+
         vTaskDelay(pdMS_TO_TICKS(500));
     }
 }
@@ -34,6 +41,8 @@ int main(void)
     SystemClock_Config();
     MX_GPIO_Init();
     MX_CAN1_Init();
+    MX_TIM3_Init();
+    MX_TIM4_Init();
 
     /* Init scheduler */
     osKernelInitialize();

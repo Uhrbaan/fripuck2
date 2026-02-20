@@ -1,8 +1,11 @@
 #include "main.h"
 #include "core/hardware_init.h"
 #include "cmsis_os.h"
+#include "stm32f4xx_hal.h"
+#include "stm32f4xx_hal_tim.h"
 
 #include "leds.h"
+#include "motors.h"
 
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
@@ -19,15 +22,44 @@ const osThreadAttr_t defaultTask_attributes = {
  */
 void StartDefaultTask(void *argument)
 {
-    int led = 0;
-    for (;;)
+    while (1)
     {
-        if (led > 5)
-            led = 0;
-        toggle_led(led);
-        led++;
+        // --- TEST 1: Forward Movement ---
+        motor_set_direction(MOTOR_LEFT, false);
+        motor_set_direction(MOTOR_RIGHT, false);
 
-        vTaskDelay(pdMS_TO_TICKS(500));
+        // Slow
+        motor_set_speed(MOTOR_LEFT, 200);
+        motor_set_speed(MOTOR_RIGHT, 200);
+        vTaskDelay(pdMS_TO_TICKS(2000));
+
+        // Fast
+        motor_set_speed(MOTOR_LEFT, 800);
+        motor_set_speed(MOTOR_RIGHT, 800);
+        vTaskDelay(pdMS_TO_TICKS(2000));
+
+        // --- TEST 2: Stop ---
+        motor_set_speed(MOTOR_LEFT, 0);
+        motor_set_speed(MOTOR_RIGHT, 0);
+        vTaskDelay(pdMS_TO_TICKS(1000));
+
+        // --- TEST 3: Reverse Movement ---
+        motor_set_direction(MOTOR_LEFT, true);
+        motor_set_direction(MOTOR_RIGHT, true);
+
+        motor_set_speed(MOTOR_LEFT, 400);
+        motor_set_speed(MOTOR_RIGHT, 400);
+        vTaskDelay(pdMS_TO_TICKS(2000));
+
+        // --- TEST 4: Async Speeds (Turning) ---
+        motor_set_speed(MOTOR_LEFT, 800);
+        motor_set_speed(MOTOR_RIGHT, 200);
+        vTaskDelay(pdMS_TO_TICKS(3000));
+
+        // Final Stop before repeating
+        motor_set_speed(MOTOR_LEFT, 0);
+        motor_set_speed(MOTOR_RIGHT, 0);
+        vTaskDelay(pdMS_TO_TICKS(2000));
     }
 }
 
@@ -43,6 +75,8 @@ int main(void)
     MX_CAN1_Init();
     MX_TIM3_Init();
     MX_TIM4_Init();
+
+    motors_init();
 
     /* Init scheduler */
     osKernelInitialize();

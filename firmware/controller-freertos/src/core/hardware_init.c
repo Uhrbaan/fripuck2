@@ -1,20 +1,20 @@
 /* USER CODE BEGIN Header */
 /**
- ******************************************************************************
- * @file           : main.c
- * @brief          : Main program body
- ******************************************************************************
- * @attention
- *
- * Copyright (c) 2025 STMicroelectronics.
- * All rights reserved.
- *
- * This software is licensed under terms that can be found in the LICENSE file
- * in the root directory of this software component.
- * If no LICENSE file comes with this software, it is provided AS-IS.
- *
- ******************************************************************************
- */
+  ******************************************************************************
+  * @file           : main.c
+  * @brief          : Main program body
+  ******************************************************************************
+  * @attention
+  *
+  * Copyright (c) 2025 STMicroelectronics.
+  * All rights reserved.
+  *
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *
+  ******************************************************************************
+  */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
@@ -62,22 +62,22 @@ TIM_HandleTypeDef htim4;
 /* USER CODE END 0 */
 
 /**
- * @brief System Clock Configuration
- * @retval None
- */
+  * @brief System Clock Configuration
+  * @retval None
+  */
 void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
   /** Configure the main internal regulator output voltage
-   */
+  */
   __HAL_RCC_PWR_CLK_ENABLE();
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
   /** Initializes the RCC Oscillators according to the specified parameters
-   * in the RCC_OscInitTypeDef structure.
-   */
+  * in the RCC_OscInitTypeDef structure.
+  */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_BYPASS;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
@@ -92,8 +92,9 @@ void SystemClock_Config(void)
   }
 
   /** Initializes the CPU, AHB and APB buses clocks
-   */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+  */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
@@ -106,11 +107,11 @@ void SystemClock_Config(void)
 }
 
 /**
- * @brief CAN1 Initialization Function
- * @param None
- * @retval None
- */
-void MX_CAN1_Init(void)
+  * @brief CAN1 Initialization Function
+  * @param None
+  * @retval None
+  */
+ void MX_CAN1_Init(void)
 {
 
   /* USER CODE BEGIN CAN1_Init 0 */
@@ -139,14 +140,15 @@ void MX_CAN1_Init(void)
   /* USER CODE BEGIN CAN1_Init 2 */
 
   /* USER CODE END CAN1_Init 2 */
+
 }
 
 /**
- * @brief TIM3 Initialization Function
- * @param None
- * @retval None
- */
-void MX_TIM3_Init(void)
+  * @brief TIM3 Initialization Function
+  * @param None
+  * @retval None
+  */
+ void MX_TIM3_Init(void)
 {
 
   /* USER CODE BEGIN TIM3_Init 0 */
@@ -183,14 +185,15 @@ void MX_TIM3_Init(void)
   /* USER CODE BEGIN TIM3_Init 2 */
 
   /* USER CODE END TIM3_Init 2 */
+
 }
 
 /**
- * @brief TIM4 Initialization Function
- * @param None
- * @retval None
- */
-void MX_TIM4_Init(void)
+  * @brief TIM4 Initialization Function
+  * @param None
+  * @retval None
+  */
+ void MX_TIM4_Init(void)
 {
 
   /* USER CODE BEGIN TIM4_Init 0 */
@@ -227,14 +230,15 @@ void MX_TIM4_Init(void)
   /* USER CODE BEGIN TIM4_Init 2 */
 
   /* USER CODE END TIM4_Init 2 */
+
 }
 
 /**
- * @brief GPIO Initialization Function
- * @param None
- * @retval None
- */
-void MX_GPIO_Init(void)
+  * @brief GPIO Initialization Function
+  * @param None
+  * @retval None
+  */
+ void MX_GPIO_Init(void)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
   /* USER CODE BEGIN MX_GPIO_Init_1 */
@@ -250,19 +254,22 @@ void MX_GPIO_Init(void)
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOE, PULSE_2_Pin | PULSE_3_Pin | MOT_L_IN2_Pin | MOT_L_IN1_Pin | MOT_L_IN4_Pin | MOT_L_IN3_Pin | MOT_R_IN2_Pin | MOT_R_IN1_Pin | MOT_R_IN3_Pin | MOT_R_IN4_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOE, PULSE_2_Pin|PULSE_3_Pin|MOT_L_IN2_Pin|MOT_L_IN1_Pin
+                          |MOT_L_IN4_Pin|MOT_L_IN3_Pin|MOT_R_IN2_Pin|MOT_R_IN1_Pin
+                          |MOT_R_IN3_Pin|MOT_R_IN4_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, LED_BODY_Pin | PULSE_0_Pin | PULSE_1_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, LED_BODY_Pin|PULSE_0_Pin|PULSE_1_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(SPI1_CS_ENC_L_GPIO_Port, SPI1_CS_ENC_L_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOD, LED5_Pin | LED7_Pin | SPI1_CS_ENC_R_Pin | REMOTE_Pin | LED1_Pin | LED3_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOD, LED5_Pin|LED7_Pin|SPI1_CS_ENC_R_Pin|REMOTE_Pin
+                          |LED1_Pin|LED3_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOD, LED_FRONT_Pin | AUDIO_PWR_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOD, LED_FRONT_Pin|AUDIO_PWR_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(SPI1_CS_ESP32_GPIO_Port, SPI1_CS_ESP32_Pin, GPIO_PIN_SET);
@@ -270,7 +277,9 @@ void MX_GPIO_Init(void)
   /*Configure GPIO pins : PULSE_2_Pin PULSE_3_Pin MOT_L_IN2_Pin MOT_L_IN1_Pin
                            MOT_L_IN4_Pin MOT_L_IN3_Pin MOT_R_IN2_Pin MOT_R_IN1_Pin
                            MOT_R_IN3_Pin */
-  GPIO_InitStruct.Pin = PULSE_2_Pin | PULSE_3_Pin | MOT_L_IN2_Pin | MOT_L_IN1_Pin | MOT_L_IN4_Pin | MOT_L_IN3_Pin | MOT_R_IN2_Pin | MOT_R_IN1_Pin | MOT_R_IN3_Pin;
+  GPIO_InitStruct.Pin = PULSE_2_Pin|PULSE_3_Pin|MOT_L_IN2_Pin|MOT_L_IN1_Pin
+                          |MOT_L_IN4_Pin|MOT_L_IN3_Pin|MOT_R_IN2_Pin|MOT_R_IN1_Pin
+                          |MOT_R_IN3_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
@@ -278,7 +287,8 @@ void MX_GPIO_Init(void)
 
   /*Configure GPIO pins : CAM_D4_Pin CAM_D6_Pin CAM_D7_Pin CAM_D2_Pin
                            CAM_D3_Pin */
-  GPIO_InitStruct.Pin = CAM_D4_Pin | CAM_D6_Pin | CAM_D7_Pin | CAM_D2_Pin | CAM_D3_Pin;
+  GPIO_InitStruct.Pin = CAM_D4_Pin|CAM_D6_Pin|CAM_D7_Pin|CAM_D2_Pin
+                          |CAM_D3_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
@@ -286,14 +296,15 @@ void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
   /*Configure GPIO pins : SEL_0_Pin SEL_1_Pin SEL_2_Pin */
-  GPIO_InitStruct.Pin = SEL_0_Pin | SEL_1_Pin | SEL_2_Pin;
+  GPIO_InitStruct.Pin = SEL_0_Pin|SEL_1_Pin|SEL_2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pins : IR6_AN_Pin IR7_AN_Pin IR0_AN_Pin IR1_AN_Pin
                            IR2_AN_Pin IR3_AN_Pin */
-  GPIO_InitStruct.Pin = IR6_AN_Pin | IR7_AN_Pin | IR0_AN_Pin | IR1_AN_Pin | IR2_AN_Pin | IR3_AN_Pin;
+  GPIO_InitStruct.Pin = IR6_AN_Pin|IR7_AN_Pin|IR0_AN_Pin|IR1_AN_Pin
+                          |IR2_AN_Pin|IR3_AN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
@@ -307,7 +318,7 @@ void MX_GPIO_Init(void)
   HAL_GPIO_Init(CAM_MCLK_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : BATT_AN_Pin AUDIO_SPEAKER_Pin */
-  GPIO_InitStruct.Pin = BATT_AN_Pin | AUDIO_SPEAKER_Pin;
+  GPIO_InitStruct.Pin = BATT_AN_Pin|AUDIO_SPEAKER_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
@@ -329,7 +340,7 @@ void MX_GPIO_Init(void)
   HAL_GPIO_Init(MIC_TIMER_OUT_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : CAM_HSYNC_Pin CAM_PCLK_Pin */
-  GPIO_InitStruct.Pin = CAM_HSYNC_Pin | CAM_PCLK_Pin;
+  GPIO_InitStruct.Pin = CAM_HSYNC_Pin|CAM_PCLK_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
@@ -345,13 +356,13 @@ void MX_GPIO_Init(void)
   HAL_GPIO_Init(SPI1_MOSI_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : IR5_AN_Pin IR4_AN_Pin */
-  GPIO_InitStruct.Pin = IR5_AN_Pin | IR4_AN_Pin;
+  GPIO_InitStruct.Pin = IR5_AN_Pin|IR4_AN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pins : LED_BODY_Pin SPI1_CS_ENC_L_Pin PULSE_0_Pin PULSE_1_Pin */
-  GPIO_InitStruct.Pin = LED_BODY_Pin | SPI1_CS_ENC_L_Pin | PULSE_0_Pin | PULSE_1_Pin;
+  GPIO_InitStruct.Pin = LED_BODY_Pin|SPI1_CS_ENC_L_Pin|PULSE_0_Pin|PULSE_1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
@@ -393,7 +404,7 @@ void MX_GPIO_Init(void)
   HAL_GPIO_Init(MIC12_DATA_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : UART_TX_Pin UART_RX_Pin */
-  GPIO_InitStruct.Pin = UART_TX_Pin | UART_RX_Pin;
+  GPIO_InitStruct.Pin = UART_TX_Pin|UART_RX_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
@@ -402,7 +413,8 @@ void MX_GPIO_Init(void)
 
   /*Configure GPIO pins : LED5_Pin LED7_Pin SPI1_CS_ENC_R_Pin LED_FRONT_Pin
                            LED1_Pin LED3_Pin */
-  GPIO_InitStruct.Pin = LED5_Pin | LED7_Pin | SPI1_CS_ENC_R_Pin | LED_FRONT_Pin | LED1_Pin | LED3_Pin;
+  GPIO_InitStruct.Pin = LED5_Pin|LED7_Pin|SPI1_CS_ENC_R_Pin|LED_FRONT_Pin
+                          |LED1_Pin|LED3_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
@@ -421,7 +433,7 @@ void MX_GPIO_Init(void)
   HAL_GPIO_Init(IMU_INT_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : CAM_D0_Pin CAM_D1_Pin */
-  GPIO_InitStruct.Pin = CAM_D0_Pin | CAM_D1_Pin;
+  GPIO_InitStruct.Pin = CAM_D0_Pin|CAM_D1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
@@ -429,7 +441,7 @@ void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pins : SDIO_D0_Pin SDIO_D1_Pin SDIO_D3_Pin SDIO_CLK_Pin */
-  GPIO_InitStruct.Pin = SDIO_D0_Pin | SDIO_D1_Pin | SDIO_D3_Pin | SDIO_CLK_Pin;
+  GPIO_InitStruct.Pin = SDIO_D0_Pin|SDIO_D1_Pin|SDIO_D3_Pin|SDIO_CLK_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
@@ -443,13 +455,13 @@ void MX_GPIO_Init(void)
   HAL_GPIO_Init(GEN_IO_1_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : USB_PRESENT_Pin DIST_INT_Pin */
-  GPIO_InitStruct.Pin = USB_PRESENT_Pin | DIST_INT_Pin;
+  GPIO_InitStruct.Pin = USB_PRESENT_Pin|DIST_INT_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : OTG_FS_DM_Pin OTG_FS_DP_Pin */
-  GPIO_InitStruct.Pin = OTG_FS_DM_Pin | OTG_FS_DP_Pin;
+  GPIO_InitStruct.Pin = OTG_FS_DM_Pin|OTG_FS_DP_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
@@ -480,7 +492,7 @@ void MX_GPIO_Init(void)
   HAL_GPIO_Init(SDIO_CMD_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : REMOTE_Pin AUDIO_PWR_Pin */
-  GPIO_InitStruct.Pin = REMOTE_Pin | AUDIO_PWR_Pin;
+  GPIO_InitStruct.Pin = REMOTE_Pin|AUDIO_PWR_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
@@ -493,7 +505,7 @@ void MX_GPIO_Init(void)
   HAL_GPIO_Init(SEL_3_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : SPI1_SCK_Pin SPI1_MISO_Pin */
-  GPIO_InitStruct.Pin = SPI1_SCK_Pin | SPI1_MISO_Pin;
+  GPIO_InitStruct.Pin = SPI1_SCK_Pin|SPI1_MISO_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
@@ -525,7 +537,7 @@ void MX_GPIO_Init(void)
   HAL_GPIO_Init(CAM_VSYNC_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : SCL_Pin SDA_Pin */
-  GPIO_InitStruct.Pin = SCL_Pin | SDA_Pin;
+  GPIO_InitStruct.Pin = SCL_Pin|SDA_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
@@ -544,13 +556,13 @@ void MX_GPIO_Init(void)
 /* USER CODE BEGIN Header_StartDefaultTask */
 
 /**
- * @brief  Period elapsed callback in non blocking mode
- * @note   This function is called  when TIM6 interrupt took place, inside
- * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
- * a global variable "uwTick" used as application time base.
- * @param  htim : TIM handle
- * @retval None
- */
+  * @brief  Period elapsed callback in non blocking mode
+  * @note   This function is called  when TIM6 interrupt took place, inside
+  * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
+  * a global variable "uwTick" used as application time base.
+  * @param  htim : TIM handle
+  * @retval None
+  */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   /* USER CODE BEGIN Callback 0 */
@@ -566,9 +578,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 }
 
 /**
- * @brief  This function is executed in case of error occurrence.
- * @retval None
- */
+  * @brief  This function is executed in case of error occurrence.
+  * @retval None
+  */
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
@@ -581,12 +593,12 @@ void Error_Handler(void)
 }
 #ifdef USE_FULL_ASSERT
 /**
- * @brief  Reports the name of the source file and the source line number
- *         where the assert_param error has occurred.
- * @param  file: pointer to the source file name
- * @param  line: assert_param error line source number
- * @retval None
- */
+  * @brief  Reports the name of the source file and the source line number
+  *         where the assert_param error has occurred.
+  * @param  file: pointer to the source file name
+  * @param  line: assert_param error line source number
+  * @retval None
+  */
 void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */

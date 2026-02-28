@@ -1,9 +1,10 @@
 #include <inttypes.h>
 #include "motors.h"
 #include "main.h"
-#include "motors_init.h"
 #include <stdbool.h>
 #include <string.h>
+#include "FreeRTOS.h"
+#include "task.h"
 
 #define ONE_MEGAHERTZ_Hz 1000000
 #define PINS_PER_MOTOR 4
@@ -91,8 +92,8 @@ void motor_microstep(enum motor_name motor_number)
 }
 
 static TIM_HandleTypeDef *motor_timer_table[] = {
-    [MOTOR_LEFT] = &htim3,
-    [MOTOR_RIGHT] = &htim4,
+    [MOTOR_LEFT] = NULL,
+    [MOTOR_RIGHT] = NULL,
 };
 
 void motor_set_speed(enum motor_name motor_number, uint16_t steps_per_second)
@@ -139,9 +140,13 @@ void motors_timer_callback(TIM_HandleTypeDef *htim)
         motor_microstep(MOTOR_RIGHT);
 }
 
+// TODO: error management if timers are invalid or uninitialized
 // This does *NOT* initialize the timers. They should be initialized at the start like any other HW intialization function.
-void motors_init()
+void motors_init(TIM_HandleTypeDef hardware_timer_left, TIM_HandleTypeDef hardware_timer_right)
 {
+    motor_timer_table[MOTOR_LEFT] = &hardware_timer_left;
+    motor_timer_table[MOTOR_RIGHT] = &hardware_timer_right;
+
     for (int i = 0; i < NUM_MOTORS; i++)
     {
         TIM_HandleTypeDef *htim = motor_timer_table[i];

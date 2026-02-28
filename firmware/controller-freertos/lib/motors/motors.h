@@ -23,7 +23,7 @@ enum microstep_name
     MICROSTEP_HALT = 8,
 };
 
-void motors_init(void);
+void motors_init(TIM_HandleTypeDef hardware_timer_left, TIM_HandleTypeDef hardware_timer_right);
 void motor_set_speed(enum motor_name motor_number, uint16_t steps_per_second);
 void motor_set_direction(enum motor_name motor_number, bool reversed);
 

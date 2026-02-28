@@ -8,10 +8,10 @@
 // List of the RED LEDs present on the e-puck 2
 typedef enum
 {
-    LED1,
-    LED3,
-    LED5,
-    LED7,
+    LED_1,
+    LED_3,
+    LED_5,
+    LED_7,
     LED_BODY,
     LED_FRONT,
     NUM_LED,

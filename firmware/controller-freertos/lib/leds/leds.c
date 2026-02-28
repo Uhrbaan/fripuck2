@@ -9,10 +9,10 @@ struct port_pin_pair
 };
 
 static struct port_pin_pair led_port_pin_table[] = {
-    [LED1] = {LED1_GPIO_Port, LED1_Pin},
-    [LED3] = {LED3_GPIO_Port, LED3_Pin},
-    [LED5] = {LED5_GPIO_Port, LED5_Pin},
-    [LED7] = {LED7_GPIO_Port, LED7_Pin},
+    [LED_1] = {LED1_GPIO_Port, LED1_Pin},
+    [LED_3] = {LED3_GPIO_Port, LED3_Pin},
+    [LED_5] = {LED5_GPIO_Port, LED5_Pin},
+    [LED_7] = {LED7_GPIO_Port, LED7_Pin},
     [LED_BODY] = {LED_BODY_GPIO_Port, LED_BODY_Pin},
     [LED_FRONT] = {LED_FRONT_GPIO_Port, LED_BODY_Pin},
 };

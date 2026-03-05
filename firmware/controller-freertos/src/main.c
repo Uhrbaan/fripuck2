@@ -1,13 +1,20 @@
 #include "main.h"
-#include "core/hardware_init.h"
+
+#include "core/driver.h"
+#include "core/can.h"
+#include "core/gpio.h"
+#include "core/tim.h"
+#include "core/usart.h"
+#include "core/dma.h"
+
 #include "cmsis_os.h"
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_hal_tim.h"
 
 #include "leds.h"
 #include "motors.h"
+#include "uart.h"
 
-/* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
     .name = "defaultTask",
@@ -15,68 +22,43 @@ const osThreadAttr_t defaultTask_attributes = {
     .priority = (osPriority_t)osPriorityNormal,
 };
 
-/**
- * @brief  Function implementing the defaultTask thread.
- * @param  argument: Not used
- * @retval None
- */
 void StartDefaultTask(void *argument)
 {
     while (1)
     {
-        // --- TEST 1: Forward Movement ---
-        motor_set_direction(MOTOR_LEFT, false);
-        motor_set_direction(MOTOR_RIGHT, false);
-
-        // Slow
-        motor_set_speed(MOTOR_LEFT, 200);
-        motor_set_speed(MOTOR_RIGHT, 200);
-        vTaskDelay(pdMS_TO_TICKS(2000));
-
-        // Fast
-        motor_set_speed(MOTOR_LEFT, 800);
-        motor_set_speed(MOTOR_RIGHT, 800);
-        vTaskDelay(pdMS_TO_TICKS(2000));
-
-        // --- TEST 2: Stop ---
-        motor_set_speed(MOTOR_LEFT, 0);
-        motor_set_speed(MOTOR_RIGHT, 0);
-        vTaskDelay(pdMS_TO_TICKS(1000));
-
-        // --- TEST 3: Reverse Movement ---
-        motor_set_direction(MOTOR_LEFT, true);
-        motor_set_direction(MOTOR_RIGHT, true);
-
-        motor_set_speed(MOTOR_LEFT, 400);
-        motor_set_speed(MOTOR_RIGHT, 400);
-        vTaskDelay(pdMS_TO_TICKS(2000));
-
-        // --- TEST 4: Async Speeds (Turning) ---
-        motor_set_speed(MOTOR_LEFT, 800);
-        motor_set_speed(MOTOR_RIGHT, 200);
-        vTaskDelay(pdMS_TO_TICKS(3000));
-
-        // Final Stop before repeating
-        motor_set_speed(MOTOR_LEFT, 0);
-        motor_set_speed(MOTOR_RIGHT, 0);
-        vTaskDelay(pdMS_TO_TICKS(2000));
+        osDelay(pdMS_TO_TICKS(5000));
     }
 }
 
-/**
- * @brief  The application entry point.
- * @retval int
- */
-int main(void)
+int init_hardware(void)
 {
     HAL_Init();
     SystemClock_Config();
     MX_GPIO_Init();
+    osKernelInitialize(); /* Call init function for freertos objects (in cmsis_os2.c) */
+
     MX_CAN1_Init();
     MX_TIM3_Init();
     MX_TIM4_Init();
+    MX_USART3_UART_Init();
+    MX_DMA_Init();
 
-    motors_init();
+    return 0;
+}
+
+static int led_number = 0;
+void uart_action(uint8_t *data, uint16_t length)
+{
+    toggle_led(led_number);
+    led_number = (led_number + 1) & 0b111;
+}
+
+int main(void)
+{
+    init_hardware();
+    motors_init(htim3, htim4);
+    uart_init(&huart3);
+    uart_register_receive_callback(uart_action);
 
     /* Init scheduler */
     osKernelInitialize();

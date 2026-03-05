@@ -1,8 +1,8 @@
 # What there is left to do 
 ## Hardware
 - Actuators 
-    - [ ] LEDS
-    - [ ] Motors 
+    - [X] LEDS
+    - [X] Motors 
     - [ ] Motors extended (allow advancing a specific amount of steps)
 - Sensors
     - Analog
@@ -19,4 +19,6 @@
  
 ## Communication
 - [ ] UART
+    - [ ] RX
+    - [ ] TX
 - [ ] SPI

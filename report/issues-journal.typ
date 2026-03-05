@@ -684,3 +684,38 @@ HAL_StatusTypeDef HAL_TIM_RegisterCallback(TIM_HandleTypeDef *htim, HAL_TIM_Call
 
 `htim` is simply the handle to the timer.
 The second parameter is a CallBack ID, which points to which the interrupt source calls the given CallBack
+
+== 2026.02.21
+Starting to work on the IR sensors (analog).
+Looking at the old code and what is said online, we use adc (Analog Digital Converter).
+Since we have only 8 ir sensors, I will put all of them on ADC1 instead of annoying myself by using two different ADCs.
+The additional time needed when using only one channel is probably negligeable considered we have to wait for the response time of the ir sensors themselves. #link("https://projects.gctronic.com/epuck2/doc/tcrt1000.pdf", [link to the datasheet])
+
+Here is what the all mighty google gemini has to say about the adc1 configuration:
+#quote(block: true, attribution: [Google Gemini])[
+  - Mode: Independent Mode.
+  - Scan Conversion Mode: Enabled (This tells the ADC to move from one pin to the next).
+  - Continuous Conversion Mode: Enabled (This tells it to start over at Pin 0 after finishing Pin 7).
+  - DMA Continuous Requests: Enabled (Crucial: this keeps the DMA engine fed).
+  - Number of Conversions: 8.
+  - External Trigger Conversion Source: Regular Conversion launched by software.
+  - Rank Table: Assign your 8 channels to Ranks 1 through 8.
+  - Warning: Ensure the Channel numbers in the Ranks match your PROXIMITY_0 to PROXIMITY_7 physical wiring order.
+]
+
+I also need to reorder the rank of the ir pins.
+According to the channel (in the gpio name, after the IN) in #image("assets/Copie d'écran_20260222_114204.png")
+we need to reorder the rank so the numbering on the labels get read in order (so we know which ones are updated when.)
+
+
+== 2026.03.01
+Finished IR recievers last week. Will need to do some testing, especially since the old code does some smart trickery to do readings with the IR recievers off to remove the ambien light factor.
+
+Right now working on UART (USART) transmission. From my understanding there are three transmission modes: blocking, interrupts or DMA.
+blocking is the simples, where we call `HAL_USART_Receive` and we block the program until we receive some amount of bytes.
+Then, using interrupts the CPU is interrupted for each byte (or the size we get) to process the bytes and store them.
+Finally, DMA mode is where in the background the data is directly copied into memory and we interrupt when we have moved the entire data packet size.
+
+Since we will be sending variable length packets we can also use idle detection from what I can see online.
+DMA copies data automatically into the buffer, and we can have callbacks when we either get half or full data, and we can use IDLE detection when no data is being sent (finished sending).
+We can then process data either when a full sized packet has finished sending, or when a smaller packet has finished and we hit idle.

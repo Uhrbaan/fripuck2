@@ -45,66 +45,16 @@ int init_hardware(void)
     return 0;
 }
 
-#define uart_data_size 128
-static uint8_t uart_data[uart_data_size] = {0};
-
-void buffer_is_full(uint16_t size)
+void uart_action(uint8_t *data, uint16_t length)
 {
-    (void)uart_data;
-    (void)size;
+    (void)data;
+    (void)length;
 }
 
-void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
-{
-    if (huart->Instance == USART3)
-    {
-        toggle_led(LED_1);
-        buffer_is_full(Size);
-
-        // 'Size' is the number of bytes received until the IDLE event occurred.
-        // You can now process 'uart_data' directly as a full string!
-
-        // IMPORTANT: You must RE-START the listener immediately
-        HAL_UARTEx_ReceiveToIdle_IT(huart, uart_data, uart_data_size);
-    }
-}
-
-void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
-{
-    if (huart->Instance == USART3)
-    {
-        uint32_t err = HAL_UART_GetError(huart);
-
-        if (err & HAL_UART_ERROR_FE)
-        {
-            // Frame Error detected
-            toggle_led(LED_7); // Error LED
-        }
-
-        if (err & HAL_UART_ERROR_ORE)
-        {
-            // Overrun Error detected
-            __HAL_UART_CLEAR_OREFLAG(huart);
-        }
-
-        // The peripheral is now in an error state and stopped.
-        // We MUST clear the error and restart the listener.
-        huart->ErrorCode = HAL_UART_ERROR_NONE;
-        HAL_UARTEx_ReceiveToIdle_IT(huart, uart_data, uart_data_size);
-    }
-}
 int main(void)
 {
     init_hardware();
-    HAL_UARTEx_ReceiveToIdle_IT(&huart3, uart_data, uart_data_size); // motors_init(htim3, htim4);
-    // uart_init(&huart3);
-    // uart_register_receive_callback(uart_action);
-
-    // // 1. Start the UART DMA reception
-    // // This should be called in your main() or init function
-    // HAL_StatusTypeDef status = HAL_OK;
-    // status = HAL_UARTEx_ReceiveToIdle_DMA(&huart3, rx_buffer, RX_BUF_SIZE);
-    // __HAL_DMA_DISABLE_IT(&hdma_usart3_rx, DMA_IT_HT); // Optional: Disable Half-Transfer interrupt if not needed
+    uart_init(&huart3, uart_action);
 
     /* Init scheduler */
     osKernelInitialize(); /* Call init function for freertos objects (in cmsis_os2.c) */

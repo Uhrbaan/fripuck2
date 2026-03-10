@@ -11,13 +11,9 @@ typedef void (*uart_callback_fn)(uint8_t *data, uint16_t length);
 /**
  * Initialize the uart api. This function *does not* initialize the hardware for you.
  * @param huart UART handle that you initialized.
+ * @param function The function that will be called when a message is recieved from the radio chip. It should be of the shape `typedef void (*uart_callback_fn)(uint8_t *data, uint16_t length);`
  */
-void uart_init(UART_HandleTypeDef *huart);
-
-/**
- * Register a callback that will be called each time the system received
- */
-void uart_register_receive_callback(uart_callback_fn function);
+void uart_init(UART_HandleTypeDef *huart, uart_callback_fn function);
 
 /**
  * @brief Send data over UART.

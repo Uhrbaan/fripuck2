@@ -630,13 +630,13 @@ So here is my understanding:
 So, to tell the motor to move, we have to continously send instructions through the pins:
 ```c
 static const uint8_t step_table[8][4] = {
-  {1, 0, 1, 0},
+    {1, 0, 1, 0},
 	{0, 0, 1, 0},
-  {0, 1, 1, 0},
+    {0, 1, 1, 0},
 	{0, 1, 0, 0},
-  {0, 1, 0, 1},
+    {0, 1, 0, 1},
 	{0, 0, 0, 1},
-  {1, 0, 0, 1},
+    {1, 0, 0, 1},
 	{1, 0, 0, 0},
 };
 
@@ -656,7 +656,7 @@ For simplicity's sake, we'll use `TIM3` for the right motor and `TIM4` for the l
 
 === Configuring the timers
 First, not all timers are equal, each of them is linked to a timer clock, either `APB1` or `APB2`.
-#image("/assets/image.png")
+#image("assets/tim-conf.png")
 - TIM2, TIM3, TIM4, TIM5 are usually on APB1.
 - TIM1, TIM8, TIM9, TIM10, TIM11 are usually on APB2.
 
@@ -854,3 +854,43 @@ int main(void)
 
 I don't really understand what was not working before that. One issue could be that by mistake I ```c osKernelInitialize()``` in the ```c init_hardware()``` even if it should be called just before creating and starting the initial task. This could have introduced som undefined behavior.
 Secondly, I seemed to have forgotten to set the baud rate of the second chip (esp) to 115200, which produced Frame errors (`4`).
+
+Now I will move to SPI.
+Here is what SPI is:
+#quote(block: true, attribution: link(
+  "https://www.totalphase.com/blog/2016/06/spi-vs-uart-similarities-differences/",
+)[Total Phase])[
+  SPI (Serial Peripheral Interface) is a serial communication protocol originally developed by Motorola that enables communication between nearly any electronic device that supports clocked serial streams. SPI uses a master-slave method for communication that enables high-speed data streaming.
+
+  As opposed to just using two wires, SPI must use at least 4 wires. As there can be multiple slave devices in an SPI implementation, the actual amount of wires or traces used will be n+3 where n = the number of slave devices in use.
+
+  A few additional key details on SPI before we move on:
+  - SPI is synchronous
+  - SPI is a simple protocol with little overhead
+  - SPI supports full-duplex communication
+  - SPI communication does not have a means for acknowledgment or flow control
+  - SPI does not use much board space
+]
+
+#figure(image("assets/image.png"), caption: [
+  Overall communication schema of the epuck2.
+  https://www.gctronic.com/doc/index.php?title=e-puck2
+])<fig-communication-schema>
+
+Chatting with an AI and looking at the diagram in @fig-communication-schema we see that the microphones 1-4 are connected over a different protocol sister to SPI named I2S -- specifically the connections I2S2 and I2S3.
+
+#image("assets/image-1.png")
+Currently, we have too many errors. I will focus on the SPI1 connection which is connected to the radio module and the encoders.
+The encoders are simply a sensor which detect how much the wheels have turned.
+This can be useful for example to see if the robot is stuck: the step couter will go up, while the encoders will stay the same.
+If there is a difference, then the robot is stuck.
+The data from the encoders can also be used for odometry, since it is precise.
+
+The difficulty of the SPI1 connection is that we have two very different use cases for it.
+On one hand, we have the main use which is high-speed transfer from the STM to the ESP, and on the other hand we have the very low speed encoders which we need to read.
+The issue is that first, we have to chip select the correct line (which we have three of: `SPI1_CS_ENC_L_Pin, SPI1_CS_ENC_L_Pin, SPI1_CS_ESP32_Pin`), and we still have to optimise for sending packets, while still being able to receive the the encoder data.
+
+One option would be to not use the encoders. Right now in the old code does not use it so we would not loose any information if we don't either.
+Still I think it should be supported.
+Another difficulty is that I want to allow audio streaming. This means that we also have to be able to recieve high-speed data from the ESP chip.
+This however is for later. It is currently not supported by the epuck and thus isn't our priority.

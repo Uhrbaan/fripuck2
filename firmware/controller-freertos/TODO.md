@@ -17,6 +17,8 @@
     - SPI (I2S) 
         - [ ] Microphones (1-4)
         - [ ] Encoders (left and right)
+    - Binary
+        - [ ] Selector
  
 ## Communication
 - [ ] UART

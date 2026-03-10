@@ -1,8 +1,20 @@
-#include "core/main.h"
-#include "core/hardware_init.h"
-#include "cmsis_os.h"
+#include "main.h"
 
-/* Definitions for defaultTask */
+#include "core/driver.h"
+#include "core/can.h"
+#include "core/gpio.h"
+#include "core/tim.h"
+#include "core/usart.h"
+#include "core/dma.h"
+
+#include "cmsis_os.h"
+#include "stm32f4xx_hal.h"
+#include "stm32f4xx_hal_tim.h"
+
+#include "leds.h"
+#include "motors.h"
+#include "uart.h"
+
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
     .name = "defaultTask",
@@ -10,36 +22,46 @@ const osThreadAttr_t defaultTask_attributes = {
     .priority = (osPriority_t)osPriorityNormal,
 };
 
-/**
- * @brief  Function implementing the defaultTask thread.
- * @param  argument: Not used
- * @retval None
- */
 void StartDefaultTask(void *argument)
 {
-    for (;;)
+    while (1)
     {
-        HAL_GPIO_TogglePin(LED_BODY_GPIO_Port, LED_BODY_Pin);
-        vTaskDelay(pdMS_TO_TICKS(500));
+        osDelay(pdMS_TO_TICKS(5000));
     }
 }
 
-/**
- * @brief  The application entry point.
- * @retval int
- */
-int main(void)
+int init_hardware(void)
 {
     HAL_Init();
     SystemClock_Config();
     MX_GPIO_Init();
+
     MX_CAN1_Init();
+    MX_TIM3_Init();
+    MX_TIM4_Init();
+    MX_USART3_UART_Init();
+    MX_DMA_Init();
+
+    return 0;
+}
+
+void uart_action(uint8_t *data, uint16_t length)
+{
+    (void)data;
+    (void)length;
+}
+
+int main(void)
+{
+    init_hardware();
+    uart_init(&huart3, uart_action);
 
     /* Init scheduler */
-    osKernelInitialize();
+    osKernelInitialize(); /* Call init function for freertos objects (in cmsis_os2.c) */
     defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
     osKernelStart();
     while (1)
     {
+        osDelay(pdMS_TO_TICKS(5000));
     }
 }

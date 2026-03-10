@@ -77,6 +77,17 @@ static enum microstep_name motor_microstep_index_table[] = {
     [MOTOR_RIGHT] = MICROSTEP_HALT,
 };
 
+static int32_t motor_microstep_table[] = {
+    [MOTOR_LEFT] = 0,
+    [MOTOR_RIGHT] = 0,
+};
+
+int32_t motor_get_steps(enum motor_name motor_number)
+{
+    // One step is one microstep.
+    return motor_microstep_table[motor_number] / 2;
+}
+
 // Apply current motor step and switch to the next unless halted.
 void motor_microstep(enum motor_name motor_number)
 {
@@ -89,6 +100,8 @@ void motor_microstep(enum motor_name motor_number)
 
     motor_microstep_index_table[motor_number] += motor_microstep_direction_table[motor_number]; // go to next microstep
     motor_microstep_index_table[motor_number] &= 0b111;                                         // wrap if reached end of microsteps (do not reach halt)
+
+    motor_microstep_table[motor_number] += motor_microstep_direction_table[motor_number]; // update step count
 }
 
 static TIM_HandleTypeDef *motor_timer_table[] = {

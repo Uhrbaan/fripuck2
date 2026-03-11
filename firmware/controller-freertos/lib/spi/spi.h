@@ -1,6 +1,7 @@
 #ifndef SPI_H
 #define SPI_H
 
+#include "stm32f4xx_hal.h"
 #include <inttypes.h>
 #include <stm32f4xx_hal_spi.h>
 #include <stm32f4xx_hal_i2s.h>

@@ -1,17 +1,16 @@
 #include "spi.h"
 #include <cmsis_os.h>
-
-#define ESP_TX_QUEUE_SIZE 8
-#define ESP_MAX_PACKET_SIZE 128 // Adjust based on your needs
+#include "spi_conf.h"
+#include <string.h>
 
 typedef struct
 {
-    uint8_t data[ESP_MAX_PACKET_SIZE];
+    uint8_t data[RADIO_MAX_PACKET_SIZE];
     uint16_t length;
 } esp_packet_t;
 
 static osMutexId_t spi_bus_mutex = NULL;
-static osMessageQueueId_t esp_tx_queue = NULL;
+static osMessageQueueId_t radio_tx_queue = NULL;
 static osThreadId_t spi_task_id = NULL;
 
 static SPI_HandleTypeDef *spi_handle = NULL;
@@ -27,7 +26,7 @@ void spi_bus_init(SPI_HandleTypeDef *hspi)
     const osMutexAttr_t mutex_attr = {"spi_bus_mutex", osMutexRecursive | osMutexPrioInherit, NULL, 0};
     spi_bus_mutex = osMutexNew(&mutex_attr);
 
-    esp_tx_queue = osMessageQueueNew(ESP_TX_QUEUE_SIZE, sizeof(esp_packet_t), NULL);
+    radio_tx_queue = osMessageQueueNew(RADIO_TX_QUEUE_SIZE, sizeof(esp_packet_t), NULL);
 
     const osThreadAttr_t task_attr = {.name = "spi_manager", .priority = osPriorityNormal};
     spi_task_id = osThreadNew(spi_bus_manager_task, NULL, &task_attr);
@@ -35,9 +34,9 @@ void spi_bus_init(SPI_HandleTypeDef *hspi)
 
 int spi_radio_send(uint8_t *data, uint16_t length)
 {
-    if (length > ESP_MAX_PACKET_SIZE)
+    if (length > RADIO_MAX_PACKET_SIZE)
         return -1;
-    if (esp_tx_queue == NULL)
+    if (radio_tx_queue == NULL)
         return -1;
 
     esp_packet_t packet;
@@ -45,7 +44,7 @@ int spi_radio_send(uint8_t *data, uint16_t length)
     packet.length = length;
 
     // Non-blocking put into the queue
-    osStatus_t status = osMessageQueuePut(esp_tx_queue, &packet, 0U, 0U);
+    osStatus_t status = osMessageQueuePut(radio_tx_queue, &packet, 0U, 0U);
     return status;
 }
 
@@ -64,7 +63,7 @@ void spi_bus_manager_task(void *argument)
 
     for (;;)
     {
-        // --- 1. Check if it's time to poll encoders ---
+        // Poll then encoderse if it's time
         if (encoder_polling_rate_ms > 0 && (osKernelGetTickCount() - last_encoder_poll >= encoder_polling_rate_ms))
         {
 
@@ -86,9 +85,8 @@ void spi_bus_manager_task(void *argument)
             last_encoder_poll = osKernelGetTickCount();
         }
 
-        // --- 2. Check if there is data to send to the ESP32 ---
-        // We use a small timeout here to allow the loop to cycle for encoder polling
-        if (osMessageQueueGet(esp_tx_queue, &tx_packet, NULL, 10))
+        // Send data to the radio module if there is any
+        if (osMessageQueueGet(radio_tx_queue, &tx_packet, NULL, 10) == osOK)
         {
             if (osMutexAcquire(spi_bus_mutex, osWaitForever) == osOK)
             {

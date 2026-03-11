@@ -41,7 +41,6 @@
      PA3   ------> S_TIM5_CH4
      PA4   ------> DCMI_HSYNC
      PA6   ------> DCMI_PIXCLK
-     PA7   ------> SPI1_MOSI
      PB13   ------> SPI2_SCK
      PB15   ------> I2S2_SD
      PC6   ------> DCMI_D0
@@ -54,8 +53,6 @@
      PC11   ------> SDIO_D3
      PC12   ------> SDIO_CK
      PD2   ------> SDIO_CMD
-     PB3   ------> SPI1_SCK
-     PB4   ------> SPI1_MISO
      PB5   ------> I2S3_SD
      PB6   ------> DCMI_D5
      PB7   ------> DCMI_VSYNC
@@ -162,14 +159,6 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
   GPIO_InitStruct.Alternate = GPIO_AF13_DCMI;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : SPI1_MOSI_Pin */
-  GPIO_InitStruct.Pin = SPI1_MOSI_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-  GPIO_InitStruct.Alternate = GPIO_AF5_SPI1;
-  HAL_GPIO_Init(SPI1_MOSI_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : LED_BODY_Pin SPI1_CS_ENC_L_Pin PULSE_0_Pin PULSE_1_Pin */
   GPIO_InitStruct.Pin = LED_BODY_Pin|SPI1_CS_ENC_L_Pin|PULSE_0_Pin|PULSE_1_Pin;
@@ -305,14 +294,6 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(SEL_3_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : SPI1_SCK_Pin SPI1_MISO_Pin */
-  GPIO_InitStruct.Pin = SPI1_SCK_Pin|SPI1_MISO_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-  GPIO_InitStruct.Alternate = GPIO_AF5_SPI1;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pin : MIC34_DATA_Pin */
   GPIO_InitStruct.Pin = MIC34_DATA_Pin;

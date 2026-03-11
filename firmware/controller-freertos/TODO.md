@@ -27,3 +27,7 @@
         - This problem could also possibly be handled by the user, who has more context on the data.
     - [ ] TX
 - [ ] SPI
+
+## Testing
+I want to add tests using platformIO's testing framework.
+It should test for breakage and throughput mostly.

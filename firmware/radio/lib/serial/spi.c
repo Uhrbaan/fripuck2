@@ -105,8 +105,45 @@ void spi_transmitter(void *pvParameters) {
 }
 
 /**
- * @brief Gets data from the master and sends it over UDP
- *
- * @param pvParameters
+ * @brief Gets data from the master and logs it.
  */
-void spi_receiver(void *pvParameters) {}
+void spi_receiver(void *pvParameters) {
+    esp_err_t err;
+
+    // We use the DMA-capable buffer allocated in spi_init
+    spi_slave_transaction_t transaction = {
+        .tx_buffer = NULL, // We only care about receiving
+        .rx_buffer = spi_receive_buffer,
+        .length = SPI_PACKET_MAX_SIZE * 8 // Maximum space available in bits
+    };
+
+    ESP_LOGI(TAG, "SPI Receiver Task started.");
+
+    while (1) {
+        // Clear buffer before next use
+        memset(spi_receive_buffer, 0, SPI_PACKET_MAX_SIZE);
+
+        // This blocks until the Master (STM32) pulls CS low and sends clock pulses
+        err = spi_slave_transmit(VSPI_HOST, &transaction, portMAX_DELAY);
+
+        if (err == ESP_OK) {
+            // trans_len is the number of bits actually clocked by the master
+            size_t received_bytes = transaction.trans_len / 8;
+
+            if (received_bytes > 0) {
+                ESP_LOGI(TAG, "Received %d bytes from Master", received_bytes);
+
+                // Example: Log data as hex or strings
+                ESP_LOG_BUFFER_HEX(TAG, spi_receive_buffer, (received_bytes > 32 ? 32 : received_bytes));
+                ESP_LOG_BUFFER_CHAR(TAG, spi_receive_buffer, (received_bytes > 32 ? 32 : received_bytes));
+
+                // If you want to process the shared robot_packet_t:
+                // robot_packet_t *pkt = (robot_packet_t*)spi_receive_buffer;
+                // ESP_LOGI(TAG, "Timestamp: %u, L: %f, R: %f", pkt->timestamp, pkt->left_encoder, pkt->right_encoder);
+            }
+        } else {
+            ESP_LOGE(TAG, "Slave receive failed: %s", esp_err_to_name(err));
+            vTaskDelay(pdMS_TO_TICKS(10));
+        }
+    }
+}

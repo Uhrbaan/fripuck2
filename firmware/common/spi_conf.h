@@ -1,0 +1,7 @@
+#ifndef COMMON_SPI_CONF_H
+#define COMMON_SPI_CONF_H
+
+#define RADIO_TX_QUEUE_SIZE 8
+#define RADIO_MAX_PACKET_SIZE 128
+
+#endif // COMMON_SPI_CONF_H

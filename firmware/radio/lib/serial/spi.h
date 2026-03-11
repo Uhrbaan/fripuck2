@@ -5,5 +5,6 @@
 
 esp_err_t spi_init(void);
 void spi_transmitter(void *pvParameters);
+void spi_receiver(void *pvParameters);
 
 #endif

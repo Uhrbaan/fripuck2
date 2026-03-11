@@ -1,5 +1,5 @@
 #include "uart.h"
-#include "radio2controller.h"
+#include "uart_conf.h"
 
 static UART_HandleTypeDef *uart_handle = NULL;
 

@@ -20,6 +20,11 @@ enum encoder_side
 };
 
 /**
+ * Override of __weak function that gets called when SPI transmission is finished.
+ */
+void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi);
+
+/**
  * @brief Initialize the SPI1 shared bus manager.
  * Creates the FreeRTOS mutex and internal queue for ESP32 transmission.
  */

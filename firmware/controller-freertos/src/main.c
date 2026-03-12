@@ -17,6 +17,7 @@
 #include "motors.h"
 #include "uart.h"
 #include "spi.h"
+#include "spi_conf.h"
 
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
@@ -24,15 +25,6 @@ const osThreadAttr_t defaultTask_attributes = {
     .stack_size = 128 * 4,
     .priority = (osPriority_t)osPriorityNormal,
 };
-
-void StartDefaultTask(void *argument)
-{
-    while (1)
-    {
-        spi_radio_send("Hello from stm32 controller chip !", 35);
-        osDelay(pdMS_TO_TICKS(5000));
-    }
-}
 
 int init_hardware(void)
 {
@@ -56,11 +48,25 @@ void uart_action(uint8_t *data, uint16_t length)
     (void)length;
 }
 
+void StartDefaultTask(void *argument)
+{
+    spi_bus_init(&hspi1);
+    uart_init(&huart3, uart_action);
+
+    static const char SPI_PAYLOAD[RADIO_MAX_PACKET_SIZE] = "This is a payload sent over SPI.";
+    while (1)
+    {
+        int status = spi_radio_send(SPI_PAYLOAD, sizeof(SPI_PAYLOAD));
+        (void)status;
+        // uart_send(UART_PAYLOAD, sizeof(UART_PAYLOAD));
+        // osDelay(pdMS_TO_TICKS(5000));
+        // osDelay(1);
+    }
+}
+
 int main(void)
 {
     init_hardware();
-    // uart_init(&huart3, uart_action);
-    spi_bus_init(&hspi1);
 
     /* Init scheduler */
     osKernelInitialize(); /* Call init function for freertos objects (in cmsis_os2.c) */

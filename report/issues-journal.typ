@@ -894,3 +894,94 @@ One option would be to not use the encoders. Right now in the old code does not 
 Still I think it should be supported.
 Another difficulty is that I want to allow audio streaming. This means that we also have to be able to recieve high-speed data from the ESP chip.
 This however is for later. It is currently not supported by the epuck and thus isn't our priority.
+
+== 2026.03.11
+I finished the first attempt at implementing SPI1.
+Right now I am also growing tired of having no logging mechanism. I will look into that.
+
+// What seems the most straight forward option would be to use the uart3 connection to log things to the esp chip, which will then log it amongs his own logs on behalf of the stm chip.
+
+// However, this has the quite important issue that logging will inevitably introduce timing issues.
+
+== 2026.03.12
+Slightly changed the spi and uart apis on the radio chip to match the programming style of the controller chip a little more.
+
+Testing the throughput of the SPI connection from the STM to the ESP chip with the following AI-generated code:
+
+```c
+// Keep track of total bytes received
+volatile uint32_t total_bytes_received = 0;
+
+void spi_recieve_cb(uint8_t *data, uint16_t length) {
+    // Process your data here...
+
+    // Accumulate the length
+    total_bytes_received += length;
+}
+
+void throughput_monitor_task(void *pvParameters) {
+    uint32_t last_bytes = 0;
+    const uint32_t interval_ms = 2000; // 2 seconds
+
+    while (1) {
+        vTaskDelay(pdMS_TO_TICKS(interval_ms));
+
+        // Get current snapshot and calculate delta
+        uint32_t current_bytes = total_bytes_received;
+        uint32_t delta = current_bytes - last_bytes;
+        last_bytes = current_bytes;
+
+        // Calculate Throughput (Bytes per second)
+        float throughput_bps = (float)delta / (interval_ms / 1000.0);
+
+        // Print in a human-readable format
+        if (throughput_bps < 1024) {
+            printf("Throughput: %.2f B/s\n", throughput_bps);
+        } else if (throughput_bps < (1024 * 1024)) {
+            printf("Throughput: %.2f KB/s\n", throughput_bps / 1024.0);
+        } else {
+            printf("Throughput: %.2f MB/s\n", throughput_bps / (1024.0 * 1024.0));
+        }
+    }
+}
+```
+
+The results of this are:
+```
+Throughput: 32.23 KB/s
+```
+pretty consistently.
+
+This is prett low.
+Looking into it, I think it could be a few issues:
+- Overhead because I'm only sending 33 bytes at a time for testing
+- To low of a clock speed (which I don't think because it is set to a baud rate of \~2Mb/s)
+- There is some delay generated while sending
+- There is some delay generated when recieving.
+
+Trying to tacle the first issue, I simply increased the message to be a 1Kb block. This caused a segmentation fault.
+After debugging, I realized that I went over the allocated stack limit of the task I was runing it in.
+To solve it, I simply needed to declare the payload as ```c static```.
+
+Now, I was getting along the lines of
+```
+Throughput: 315.43 KB/s
+Throughput: 311.49 KB/s
+Throughput: 314.93 KB/s
+Throughput: 315.42 KB/s
+```
+Which makes me happy. I still think we could go a little higher but it is already a 10x improvement.
+
+Doubling the packet size at that point only makes the throughput go up to 317 Kb/s, so the 1Kb size seems to be the sweetspot.
+
+Currently the code is using a blocking ```c HAL_SPI_Transmit()``` call. This is pretty wasteful, and looking online it is recommended to use DMA when transfering large packets.
+
+The obvious next step is thus do do transmission over DMA.
+
+Well, it turns out the obvious solution isn't an easy one.
+I haven't managed to enable DMA because of a wierd issue where ```c HAL_SPI_TxCpltCallback()``` never gets called, which would never release the semaphore waiting for DMA to complete, and soft-lock the robot.
+
+The other easiest change we can do to change the speed is to change the prescaler.
+With a prescaler of 32, we have the 315 Kb/s we had before, and with 16 we have 620 Kb/s and finally with a prescaler of 8 we have 1.18 Mb/s.
+
+However I am going to keep the prescaler at 32 for now since it is less likely to generate noise than a lower prescaler. I might increase it later if necessary.

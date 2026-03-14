@@ -22,8 +22,13 @@
 // Keep track of total bytes received
 volatile uint32_t total_bytes_received = 0;
 
+#include <packets_reader.h>
 void spi_recieve_cb(uint8_t *data, uint16_t length) {
     // Process your data here...
+    Dummy_table_t dummy = Dummy_as_root(data);
+    uint16_t timestamp = Dummy_timestamp(dummy);
+    flatbuffers_uint8_vec_t bulk = Dummy_data(dummy);
+    ESP_LOGI("SPI FLATBUFFERS RECIEVE", "The dummy has %zu as timestamp.", timestamp);
 
     // Accumulate the length
     total_bytes_received += length;

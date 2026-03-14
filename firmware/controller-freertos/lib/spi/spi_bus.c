@@ -1,6 +1,6 @@
 #include "spi.h"
 #include <cmsis_os.h>
-#include "spi_conf.h"
+#include <spi_conf.h>
 #include <string.h>
 #include <stm32f4xx_hal_spi.h>
 

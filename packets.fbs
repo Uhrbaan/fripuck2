@@ -1,0 +1,6 @@
+table Dummy {
+  timestamp: uint16;
+  data: [ubyte]; // aray of unsigned bytes
+}
+
+root_type Dummy;

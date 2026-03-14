@@ -1,3 +1,5 @@
+#show link: it => text(fill: blue, underline(it))
+
 = Issues
 == 2025.11.06
 Having to create a lua vm with a custom allocator (```c lua_newstate(lua_Alloc, NULL)```).
@@ -985,3 +987,59 @@ The other easiest change we can do to change the speed is to change the prescale
 With a prescaler of 32, we have the 315 Kb/s we had before, and with 16 we have 620 Kb/s and finally with a prescaler of 8 we have 1.18 Mb/s.
 
 However I am going to keep the prescaler at 32 for now since it is less likely to generate noise than a lower prescaler. I might increase it later if necessary.
+
+== 2026.03.14
+It is time to move to transmit the spi packets over UDP.
+I've started by setting the maximum size of the SPI packet to 1400 bytes. Typically, we set the maximum data size of UDP/TCP packets to 1452 since that is the maximum size allowed over UDP IPv6.
+Also, testing showed that going over the 1K limit of the SPI packet doesn't improve throughput that much, so setting a 1400 byte limit doesn't seem too much of a burden.
+This will prevent fragmentation wich will hopefully increase the throughput over wifi.
+
+We also have to decide wether to add something to the UDP packets, like order.
+Since our application is purely real-time, this isn't really necessary. The data is independent, high frequency, real-time and will probably only be analyzed over time (trend analysis), so it is pretty safe to assume that we won't car if a packet is lost or not in order, as long as its timestamp is correct.
+
+For the timestamps, we need to pay attention two things: we shouldn't use up too much space to save bandwith, and we should also make sure that the reciever won't break if the packets arrive out-of-order or a packet is lost.
+
+To do that, I will probably use a 16-bit millisecond counder. It takes up 2 bytes, and will wrap around every minute or so (65'535 milliseconds \~ 65 seconds).
+
+We also need to think about how we will package our packets so they can be serialized and un-serialized very easily across all components/languages.
+This could be done in a few ways -- I could use JSON or similar, which would be inneficient, I could use simple C structs and use C-compatibility APIs in other languages, but that wouln't be very portable and hard to maintain.
+
+An alternative would be to use common serialization libraries. Protobuf seems to be popular, but it doesn't really seem fit for embedded use since it can be quite heavy on computation, and the alternative, also developed by Google is #link("https://flatbuffers.dev/", "FlatBuffers").
+
+With flatbuffer we can define all the structures in a `.fbs` schema (docs #link("https://flatbuffers.dev/schema/", "here")) and then autogenerate the code to read and encode the data with `flatc`, which produces output in all the languages we want: C, Lua (for the embedded side), Go and Python (for the remote side).
+
+Doing a first test with a simple dummy schema:
+```fbs
+table Dummy {
+  timestamp: uint16;
+  data: ubyte;
+}
+
+root_type Packet;
+```
+
+Then we can #link("https://flatbuffers.dev/quick_start/")[install] and run the `flatc` compiler to generate the C definitions inside of the `flatbuffers` library inside the shared `common` libraries.
+Note that while C is supported by flatbuffers, it comes with its own compiler `flatcc` for #link("https://flatbuffers.dev/languages/c/")[technical reasons]. #link("https://github.com/dvidelabs/flatcc")[Here] is its repository for installation.
+
+```sh
+flatcc -a packets.fbs -o firmware/common/
+```
+
+For it to compile, we will also need the flatcc header files. Let's copy them from the repository we downloaded to the common include folder.
+
+```sh
+cp /path/to/flatcc/include/flatcc firmware/common -r
+```
+
+We also need platformIO to use our flatbuffer library, so we need to add `-D FLATC_PORTABLE` to our `platformio.ini` configuration file.
+
+While configuring, I came back to errors related to the project structure. I will try to clean up how the shared definitions are structured in the codebase.
+
+Now, the shared definitions have been moved into a correct library with a `library.json` definition. The added `.ini` lines look like this:
+```ini
+lib_deps =
+  flatbuffers=symlink://../shared/flatbuffers
+  communication-config=symlink://../shared/communication
+```
+
+This is a lot more cleaner. To complete the flatbuffers library, I added the include directory of the `flatcc` project to the `include` folder of the library, alongside the generated files. To export the definition, I also exported the src files into the thing.

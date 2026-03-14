@@ -1,0 +1,7 @@
+{
+    "name": "Flatbuffers",
+    "version": "1.0.0",
+    "description": "Packs the Flatcc project, a Flatbuffers C implementation, into a PIO library form.",
+    "frameworks": "*",
+    "platforms": "*"
+}

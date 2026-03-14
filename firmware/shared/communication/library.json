@@ -1,0 +1,10 @@
+{
+    "name": "ESP-STM Communication configuration",
+    "version": "1.0.0",
+    "frameworks": "*",
+    "platforms": "*",
+    "build": {
+        "includeDir": "include",
+        "srcDir": "src"
+    }
+}

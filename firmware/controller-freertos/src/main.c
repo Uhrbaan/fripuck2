@@ -17,12 +17,12 @@
 #include "motors.h"
 #include "uart.h"
 #include "spi.h"
-#include "spi_conf.h"
+#include <spi_conf.h>
 
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
     .name = "defaultTask",
-    .stack_size = 128 * 4,
+    .stack_size = 1024 * 4,
     .priority = (osPriority_t)osPriorityNormal,
 };
 
@@ -42,28 +42,50 @@ int init_hardware(void)
     return 0;
 }
 
-void uart_action(uint8_t *data, uint16_t length)
-{
-    (void)data;
-    (void)length;
-}
+#include <flatcc/flatcc_builder.h>
+#include <packets_builder.h> // Generated header
+#define BUFFER_SIZE 128
+uint8_t msg_buffer[BUFFER_SIZE] __attribute__((aligned(8)));
+
+#define pdTICKS_TO_MS(xTicks) ((TickType_t)((uint64_t)(xTicks) * 1000 / configTICK_RATE_HZ))
 
 void StartDefaultTask(void *argument)
 {
     spi_bus_init(&hspi1);
-    uart_init(&huart3, uart_action);
 
-    static const char SPI_PAYLOAD[RADIO_MAX_PACKET_SIZE] = "This is a payload sent over SPI.";
+    // Initialize the builder
+    static flatcc_builder_t builder;
+    flatcc_builder_init(&builder);
+
+    uint8_t raw_data[] = {0xDE, 0xAD, 0xBE, 0xEF};
+    TickType_t timestamp = 0;
+
     while (1)
     {
-        int status = spi_radio_send(SPI_PAYLOAD, sizeof(SPI_PAYLOAD));
-        (void)status;
-        // uart_send(UART_PAYLOAD, sizeof(UART_PAYLOAD));
-        // osDelay(pdMS_TO_TICKS(5000));
-        // osDelay(1);
-    }
-}
+        // 1. Reset builder for a new message (reuses the internal memory)
+        flatcc_builder_reset(&builder);
 
+        Dummy_start_as_root(&builder);
+        osKernelGetTickCount();
+        Dummy_timestamp_add(&builder, (uint16_t)(++timestamp));
+
+        flatbuffers_uint8_vec_ref_t data_vec = Dummy_data_create(&builder, raw_data, 4);
+        Dummy_data_add(&builder, data_vec);
+
+        Dummy_end_as_root(&builder);
+
+        size_t buffer_size;
+        void *buffer = flatcc_builder_get_direct_buffer(&builder, &buffer_size);
+
+        if (buffer)
+            spi_radio_send((uint8_t *)buffer, (uint16_t)buffer_size);
+
+        osDelay(100); // Don't saturate the bus
+    }
+
+    // Clean up if the loop ever breaks
+    flatcc_builder_clear(&builder);
+}
 int main(void)
 {
     init_hardware();

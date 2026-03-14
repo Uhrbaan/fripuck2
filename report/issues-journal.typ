@@ -1043,3 +1043,183 @@ lib_deps =
 ```
 
 This is a lot more cleaner. To complete the flatbuffers library, I added the include directory of the `flatcc` project to the `include` folder of the library, alongside the generated files. To export the definition, I also exported the src files into the thing.
+
+Commit `a056e6e` has a test dummy object to test the transmission of dummy data as a flatbuffer.
+
+I still have to get familiar with the flatbuffers syntax and ways of thinking, but it seems to be working.
+I also now have to test sending it over UDP and opening it in another language.
+
+So here is an example of what our schema could look like:
+```fbs
+namespace MyProject;
+
+// MPU data is always fixed size, so we use a 'struct'
+// for zero-overhead inside the table.
+struct MpuData {
+  accel_x: float;
+  accel_y: float;
+  accel_z: float;
+  gyro_x: float;
+  gyro_y: float;
+  gyro_z: float;
+}
+
+table MpuReading {
+  sensor: MpuData;
+}
+
+table AudioReading {
+  samples: [int16]; // Variable length buffer
+}
+
+table CameraFragment {
+  data: [ubyte];    // The actual image bytes
+}
+
+// The Union that allows us to distinguish the packet types
+union SensorData { MpuReading, AudioReading, CameraFragment }
+
+table Entry {
+  timestamp: uint32;
+  packet: SensorData;
+}
+
+table SensorBatch {
+  entries: [Entry];
+}
+
+root_type SensorBatch;
+```
+
+We would directly use flatbuffers to serialize all of the different stuff together.
+We would sequentially add Entries to the SensorBatch until we can't fit an element that would make us go over the 1400 byte limit.
+
+Here is the conversation I had with the AI: https://gemini.google.com/share/4f0d14114464
+
+Then, recieving and "parsing" the data can be quite simple:
+```c
+#include "packets_reader.h"
+
+void process_received_spi_packet(uint8_t *buffer, size_t size) {
+    // 1. Get the root of the buffer
+    MyProject_SensorBatch_table_t batch = MyProject_SensorBatch_as_root(buffer);
+    if (!batch) return;
+
+    // 2. Access the vector of entries
+    MyProject_Entry_vec_t entries = MyProject_SensorBatch_entries(batch);
+    size_t num_entries = MyProject_Entry_vec_len(entries);
+
+    for (size_t i = 0; i < num_entries; i++) {
+        // 3. Get the individual entry
+        MyProject_Entry_table_t entry = MyProject_Entry_vec_at(entries, i);
+
+        // 4. Read the shared timestamp
+        uint32_t ts = MyProject_Entry_timestamp(entry);
+
+        // 5. Check the UNION type and cast accordingly
+        switch (MyProject_Entry_packet_type(entry)) {
+
+            case MyProject_SensorData_MpuReading: {
+                MyProject_MpuReading_table_t mpu = (MyProject_MpuReading_table_t)MyProject_Entry_packet(entry);
+                MyProject_MpuData_struct_t data = MyProject_MpuReading_sensor(mpu);
+                printf("TS: %lu | MPU: ax=%f, gx=%f\n", ts, data->accel_x, data->gyro_x);
+                break;
+            }
+
+            case MyProject_SensorData_AudioReading: {
+                MyProject_AudioReading_table_t audio = (MyProject_AudioReading_table_t)MyProject_Entry_packet(entry);
+                flatbuffers_int16_vec_t samples = MyProject_AudioReading_samples(audio);
+                size_t len = flatbuffers_int16_vec_len(samples);
+                printf("TS: %lu | Audio: %zu samples received\n", ts, len);
+                break;
+            }
+
+            case MyProject_SensorData_CameraFragment: {
+                MyProject_CameraFragment_table_t cam = (MyProject_CameraFragment_table_t)MyProject_Entry_packet(entry);
+                flatbuffers_uint8_vec_t img_data = MyProject_CameraFragment_data(cam);
+                size_t img_len = flatbuffers_uint8_vec_len(img_data);
+                printf("TS: %lu | Camera: %zu bytes fragment\n", ts, img_len);
+                break;
+            }
+
+            default:
+                printf("Unknown packet type!\n");
+                break;
+        }
+    }
+}
+```
+
+And it would work across multiple languages too !
+
+Python:
+```py
+import MyProject.SensorBatch as SensorBatch
+import MyProject.SensorData as SensorData
+
+def process_spi_data(raw_bytes):
+    # 1. Map the root
+    batch = SensorBatch.SensorBatch.GetRootAsSensorBatch(raw_bytes, 0)
+
+    # 2. Iterate through entries
+    for i in range(batch.EntriesLength()):
+        entry = batch.Entries(i)
+        ts = entry.Timestamp()
+
+        # 3. Check Union Type
+        union_type = entry.PacketType()
+
+        if union_type == SensorData.SensorData().MpuReading:
+            mpu_table = entry.Packet()
+            # Cast the generic packet to the specific MpuReading
+            from MyProject.MpuReading import MpuReading
+            mpu = MpuReading()
+            mpu.Init(mpu_table.Bytes, mpu_table.Pos)
+
+            sensor = mpu.Sensor()
+            print(f"TS: {ts} | MPU: {sensor.AccelX()}")
+
+        elif union_type == SensorData.SensorData().AudioReading:
+            # Handle Audio...
+            pass
+```
+
+Go:
+```go
+import (
+	"fmt"
+	"MyProject"
+)
+
+func processSpiData(buf []byte) {
+	// 1. Get the root
+	batch := MyProject.GetRootAsSensorBatch(buf, 0)
+
+	// 2. Loop through entries
+	for i := 0; i < batch.EntriesLength(); i++ {
+		entry := new(MyProject.Entry)
+		if batch.Entries(entry, i) {
+
+			ts := entry.Timestamp()
+
+			// 3. Handle Union via Switch
+			unionTable := new(flatbuffers.Table)
+			if entry.Packet(unionTable) {
+
+				switch entry.PacketType() {
+				case MyProject.SensorDataMpuReading:
+					mpu := new(MyProject.MpuReading)
+					mpu.Init(unionTable.Bytes, unionTable.Pos)
+					s := mpu.Sensor(nil)
+					fmt.Printf("TS: %d | MPU X: %f\n", ts, s.AccelX())
+
+				case MyProject.SensorDataAudioReading:
+					// Handle Audio...
+				}
+			}
+		}
+	}
+}
+```
+
+Note that this code is probably not valid since the AI had a lot of trouble to generate valid FlatBuffers code, but it gives an idea of how simple it will be, and easy to implement in other languages.

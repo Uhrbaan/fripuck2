@@ -1,0 +1,20 @@
+namespace Fripuck2.Telemetry;
+
+table InfoMessage {
+    text: string;
+}
+
+union Data {
+    InfoMessage,
+}
+
+table Entry {
+    timestamp: uint16;
+    content: Data;
+}
+
+table Batch {
+    entries: [Entry];
+}
+
+root_type Batch;

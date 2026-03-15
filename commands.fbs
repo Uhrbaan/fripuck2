@@ -1,0 +1,20 @@
+namespace Fripuck2.Commands;
+
+table InfoMessage {
+    text: string;
+}
+
+table DummyConfig {
+    value: uint32;
+}
+
+union Instruction {
+    DummyConfig,
+    InfoMessage
+}
+
+table Batch {
+    entries: [Instruction];
+}
+
+root_type Batch;

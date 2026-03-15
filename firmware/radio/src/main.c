@@ -22,14 +22,35 @@
 // Keep track of total bytes received
 volatile uint32_t total_bytes_received = 0;
 
-#include <packets_reader.h>
+#include <telemetry_reader.h>
+#include <telemetry_verifier.h>
 void spi_recieve_cb(uint8_t *data, uint16_t length) {
     // Process your data here...
-    Dummy_table_t dummy = Dummy_as_root(data);
-    uint16_t timestamp = Dummy_timestamp(dummy);
-    flatbuffers_uint8_vec_t bulk = Dummy_data(dummy);
-    ESP_LOGI("SPI FLATBUFFERS RECIEVE", "The dummy has %zu as timestamp.", timestamp);
+    if (Fripuck2_Telemetry_Batch_verify_as_root(data, length) != 0)
+        return;
 
+    Fripuck2_Telemetry_Batch_table_t batch = Fripuck2_Telemetry_Batch_as_root(data);
+    Fripuck2_Telemetry_Entry_vec_t entries = Fripuck2_Telemetry_Batch_entries(batch);
+    size_t n_entries = Fripuck2_Telemetry_Entry_vec_len(entries);
+
+    for (int i = 0; i < n_entries; i++) {
+        Fripuck2_Telemetry_Entry_table_t entry = Fripuck2_Telemetry_Entry_vec_at(entries, i);
+        uint32_t timestamp = Fripuck2_Telemetry_Entry_timestamp(entry);
+        Fripuck2_Telemetry_Data_union_type_t type = Fripuck2_Telemetry_Entry_content_type(entry);
+
+        switch (type) {
+        case Fripuck2_Telemetry_Data_InfoMessage:
+            Fripuck2_Telemetry_InfoMessage_table_t message =
+                (Fripuck2_Telemetry_InfoMessage_table_t)Fripuck2_Telemetry_Entry_content(entry);
+            flatbuffers_string_t text = Fripuck2_Telemetry_InfoMessage_text(message);
+            // ESP_LOGI("SPI RECIEVE FB", "(%d) Batch element %d contains text: %s", timestamp, i, text);
+            break;
+
+        default:
+            // ESP_LOGI("SPI RECIEVE FB", "(%d) Cannot read type of Batch element %d", timestamp, i);
+            break;
+        }
+    }
     // Accumulate the length
     total_bytes_received += length;
 }

@@ -27,6 +27,10 @@ typedef const struct Fripuck2_Commands_DummyConfig_table *Fripuck2_Commands_Dumm
 typedef struct Fripuck2_Commands_DummyConfig_table *Fripuck2_Commands_DummyConfig_mutable_table_t;
 typedef const flatbuffers_uoffset_t *Fripuck2_Commands_DummyConfig_vec_t;
 typedef flatbuffers_uoffset_t *Fripuck2_Commands_DummyConfig_mutable_vec_t;
+typedef const struct Fripuck2_Commands_Command_table *Fripuck2_Commands_Command_table_t;
+typedef struct Fripuck2_Commands_Command_table *Fripuck2_Commands_Command_mutable_table_t;
+typedef const flatbuffers_uoffset_t *Fripuck2_Commands_Command_vec_t;
+typedef flatbuffers_uoffset_t *Fripuck2_Commands_Command_mutable_vec_t;
 typedef const struct Fripuck2_Commands_Batch_table *Fripuck2_Commands_Batch_table_t;
 typedef struct Fripuck2_Commands_Batch_table *Fripuck2_Commands_Batch_mutable_table_t;
 typedef const flatbuffers_uoffset_t *Fripuck2_Commands_Batch_vec_t;
@@ -54,6 +58,18 @@ typedef flatbuffers_uoffset_t *Fripuck2_Commands_Batch_mutable_vec_t;
 #define Fripuck2_Commands_DummyConfig_type_identifier "\x1f\x3e\x88\x88"
 #ifndef Fripuck2_Commands_DummyConfig_file_extension
 #define Fripuck2_Commands_DummyConfig_file_extension "bin"
+#endif
+#ifndef Fripuck2_Commands_Command_file_identifier
+#define Fripuck2_Commands_Command_file_identifier 0
+#endif
+/* deprecated, use Fripuck2_Commands_Command_file_identifier */
+#ifndef Fripuck2_Commands_Command_identifier
+#define Fripuck2_Commands_Command_identifier 0
+#endif
+#define Fripuck2_Commands_Command_type_hash ((flatbuffers_thash_t)0xfd4af48)
+#define Fripuck2_Commands_Command_type_identifier "\x48\xaf\xd4\x0f"
+#ifndef Fripuck2_Commands_Command_file_extension
+#define Fripuck2_Commands_Command_file_extension "bin"
 #endif
 #ifndef Fripuck2_Commands_Batch_file_identifier
 #define Fripuck2_Commands_Batch_file_identifier 0
@@ -117,6 +133,17 @@ static inline int Fripuck2_Commands_Instruction_is_known_type(Fripuck2_Commands_
 }
 
 
+struct Fripuck2_Commands_Command_table { uint8_t unused__; };
+
+static inline size_t Fripuck2_Commands_Command_vec_len(Fripuck2_Commands_Command_vec_t vec)
+__flatbuffers_vec_len(vec)
+static inline Fripuck2_Commands_Command_table_t Fripuck2_Commands_Command_vec_at(Fripuck2_Commands_Command_vec_t vec, size_t i)
+__flatbuffers_offset_vec_at(Fripuck2_Commands_Command_table_t, vec, i, 0)
+__flatbuffers_table_as_root(Fripuck2_Commands_Command)
+
+__flatbuffers_define_scalar_field(0, Fripuck2_Commands_Command, timestamp, flatbuffers_uint16, uint16_t, UINT16_C(0))
+__flatbuffers_define_union_field(flatbuffers_, 2, Fripuck2_Commands_Command, content, Fripuck2_Commands_Instruction, 0)
+
 struct Fripuck2_Commands_Batch_table { uint8_t unused__; };
 
 static inline size_t Fripuck2_Commands_Batch_vec_len(Fripuck2_Commands_Batch_vec_t vec)
@@ -125,7 +152,7 @@ static inline Fripuck2_Commands_Batch_table_t Fripuck2_Commands_Batch_vec_at(Fri
 __flatbuffers_offset_vec_at(Fripuck2_Commands_Batch_table_t, vec, i, 0)
 __flatbuffers_table_as_root(Fripuck2_Commands_Batch)
 
-__flatbuffers_define_union_vector_field(flatbuffers_, 1, Fripuck2_Commands_Batch, entries, Fripuck2_Commands_Instruction, 0)
+__flatbuffers_define_vector_field(0, Fripuck2_Commands_Batch, entries, Fripuck2_Commands_Command_vec_t, 0)
 
 
 #include "flatcc/flatcc_epilogue.h"

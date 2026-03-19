@@ -11,9 +11,8 @@
 #include <stdalign.h>
 #endif
 #include "flatcc/flatcc_prologue.h"
-#ifndef flatbuffers_identifier
-#define flatbuffers_identifier 0
-#endif
+#undef flatbuffers_identifier
+#define flatbuffers_identifier "FRI2"
 #ifndef flatbuffers_extension
 #define flatbuffers_extension "bin"
 #endif
@@ -32,11 +31,11 @@ typedef struct Fripuck2_Telemetry_Batch_table *Fripuck2_Telemetry_Batch_mutable_
 typedef const flatbuffers_uoffset_t *Fripuck2_Telemetry_Batch_vec_t;
 typedef flatbuffers_uoffset_t *Fripuck2_Telemetry_Batch_mutable_vec_t;
 #ifndef Fripuck2_Telemetry_InfoMessage_file_identifier
-#define Fripuck2_Telemetry_InfoMessage_file_identifier 0
+#define Fripuck2_Telemetry_InfoMessage_file_identifier "FRI2"
 #endif
 /* deprecated, use Fripuck2_Telemetry_InfoMessage_file_identifier */
 #ifndef Fripuck2_Telemetry_InfoMessage_identifier
-#define Fripuck2_Telemetry_InfoMessage_identifier 0
+#define Fripuck2_Telemetry_InfoMessage_identifier "FRI2"
 #endif
 #define Fripuck2_Telemetry_InfoMessage_type_hash ((flatbuffers_thash_t)0xd5632fa5)
 #define Fripuck2_Telemetry_InfoMessage_type_identifier "\xa5\x2f\x63\xd5"
@@ -44,11 +43,11 @@ typedef flatbuffers_uoffset_t *Fripuck2_Telemetry_Batch_mutable_vec_t;
 #define Fripuck2_Telemetry_InfoMessage_file_extension "bin"
 #endif
 #ifndef Fripuck2_Telemetry_Entry_file_identifier
-#define Fripuck2_Telemetry_Entry_file_identifier 0
+#define Fripuck2_Telemetry_Entry_file_identifier "FRI2"
 #endif
 /* deprecated, use Fripuck2_Telemetry_Entry_file_identifier */
 #ifndef Fripuck2_Telemetry_Entry_identifier
-#define Fripuck2_Telemetry_Entry_identifier 0
+#define Fripuck2_Telemetry_Entry_identifier "FRI2"
 #endif
 #define Fripuck2_Telemetry_Entry_type_hash ((flatbuffers_thash_t)0x33b890e)
 #define Fripuck2_Telemetry_Entry_type_identifier "\x0e\x89\x3b\x03"
@@ -56,11 +55,11 @@ typedef flatbuffers_uoffset_t *Fripuck2_Telemetry_Batch_mutable_vec_t;
 #define Fripuck2_Telemetry_Entry_file_extension "bin"
 #endif
 #ifndef Fripuck2_Telemetry_Batch_file_identifier
-#define Fripuck2_Telemetry_Batch_file_identifier 0
+#define Fripuck2_Telemetry_Batch_file_identifier "FRI2"
 #endif
 /* deprecated, use Fripuck2_Telemetry_Batch_file_identifier */
 #ifndef Fripuck2_Telemetry_Batch_identifier
-#define Fripuck2_Telemetry_Batch_identifier 0
+#define Fripuck2_Telemetry_Batch_identifier "FRI2"
 #endif
 #define Fripuck2_Telemetry_Batch_type_hash ((flatbuffers_thash_t)0x325cb9e2)
 #define Fripuck2_Telemetry_Batch_type_identifier "\xe2\xb9\x5c\x32"

@@ -1,6 +1,6 @@
 .pio
 .vscode
 build
-secrets.c
+secrets.*
 main
 network_config.c

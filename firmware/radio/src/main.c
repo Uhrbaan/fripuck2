@@ -1,6 +1,7 @@
 #include "spi.h"
 #include "tcp.h"
 #include "uart.h"
+#include "udp.h"
 #include "wifi.h"
 
 #include "driver/uart.h"
@@ -22,37 +23,28 @@
 // Keep track of total bytes received
 volatile uint32_t total_bytes_received = 0;
 
+#include <sys/socket.h>
 #include <telemetry_reader.h>
 #include <telemetry_verifier.h>
+
+extern QueueHandle_t spi_to_udp_queue;
 void spi_recieve_cb(uint8_t *data, uint16_t length) {
+    static const char TAG[] = "SPI RX CB";
+    static telemetry_packet_t packet = {0};
     // Process your data here...
-    if (Fripuck2_Telemetry_Batch_verify_as_root(data, length) != 0)
-        return;
+    // if (Fripuck2_Telemetry_Batch_verify_as_root(data, length) != 0) {
+    //     ESP_LOGW(TAG, "Failed to verify the data coming in.");
+    //     return;
+    // }
 
-    Fripuck2_Telemetry_Batch_table_t batch = Fripuck2_Telemetry_Batch_as_root(data);
-    Fripuck2_Telemetry_Entry_vec_t entries = Fripuck2_Telemetry_Batch_entries(batch);
-    size_t n_entries = Fripuck2_Telemetry_Entry_vec_len(entries);
-
-    for (int i = 0; i < n_entries; i++) {
-        Fripuck2_Telemetry_Entry_table_t entry = Fripuck2_Telemetry_Entry_vec_at(entries, i);
-        uint32_t timestamp = Fripuck2_Telemetry_Entry_timestamp(entry);
-        Fripuck2_Telemetry_Data_union_type_t type = Fripuck2_Telemetry_Entry_content_type(entry);
-
-        switch (type) {
-        case Fripuck2_Telemetry_Data_InfoMessage:
-            Fripuck2_Telemetry_InfoMessage_table_t message =
-                (Fripuck2_Telemetry_InfoMessage_table_t)Fripuck2_Telemetry_Entry_content(entry);
-            flatbuffers_string_t text = Fripuck2_Telemetry_InfoMessage_text(message);
-            // ESP_LOGI("SPI RECIEVE FB", "(%d) Batch element %d contains text: %s", timestamp, i, text);
-            break;
-
-        default:
-            // ESP_LOGI("SPI RECIEVE FB", "(%d) Cannot read type of Batch element %d", timestamp, i);
-            break;
-        }
+    if (spi_to_udp_queue) {
+        packet.length = length;
+        memcpy(packet.data, data, length);
+        xQueueSend(spi_to_udp_queue, &packet, 0);
+        total_bytes_received += length;
+    } else {
+        // ESP_LOGW(TAG, "Failed to process spi data: Wi-fi to slow !");
     }
-    // Accumulate the length
-    total_bytes_received += length;
 }
 
 void throughput_monitor_task(void *pvParameters) {
@@ -82,14 +74,35 @@ void throughput_monitor_task(void *pvParameters) {
 }
 
 void app_main(void) {
-    // Initialize hardware
-    QueueHandle_t *uart_queue_handle = uart1_init();
-    ESP_ERROR_CHECK(spi1_init());
+    static const char TAG[] = "MAIN";
+    // Initialize non-volatile memory
+    nvs_flash_init();
 
-    // Initialize the API
+    // Net communication
+    wifi_init();
+    ESP_LOGI(TAG, "Finished Wi-Fi initialization.");
+    tcp_init_();
+    ESP_LOGI(TAG, "Finished TCP initialization");
+    ESP_ERROR_CHECK(spi1_init());
     spi_init(SPI1_HOST, spi_recieve_cb);
-    // uart_init(UART_NUM_1, uart_queue_handle, uart_recieve_cb);
-    xTaskCreate(throughput_monitor_task, "throughput_monitor", 2048, NULL, 1, NULL);
+    ESP_LOGI(TAG, "Finished SPI1 HW initialization");
+    udp_init_();
+
+    // Wait for a connection to be established
+    struct sockaddr_in client_addr;
+    int tcp_socket;
+    ESP_LOGI(TAG, "Waiting for client to connect.");
+    ESP_ERROR_CHECK(wait_for_tcp_client(&client_addr, &tcp_socket));
+    ESP_LOGI(TAG, "Client connected.");
+
+    // Start TCP tasks
+    // Currently not used
+
+    // Start UDP sending task
+    xTaskCreate(udp_transmitter, "udp_transmitter", 1024 * 4, (void *)&client_addr, 1, NULL);
+
+    // xTaskCreate(throughput_monitor_task, "throughput_monitor", 2048, NULL, 1, NULL);
+    // ESP_LOGI(TAG, "Started throughput monitor.");
 
     while (1) {
         vTaskDelay(pdMS_TO_TICKS(5000));

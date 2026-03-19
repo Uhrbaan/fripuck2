@@ -17,7 +17,7 @@ static EventGroupHandle_t wifi_event_group;
 
 static const char TAG[] = "WIFI";
 static int retries = 0;
-static int max_retries = 10;
+static int max_retries = 100;
 
 static void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data) {
     switch (event_id) {

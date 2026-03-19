@@ -10,9 +10,8 @@
 #include "flatbuffers_common_builder.h"
 #endif
 #include "flatcc/flatcc_prologue.h"
-#ifndef flatbuffers_identifier
-#define flatbuffers_identifier 0
-#endif
+#undef flatbuffers_identifier
+#define flatbuffers_identifier "FRI2"
 #ifndef flatbuffers_extension
 #define flatbuffers_extension "bin"
 #endif

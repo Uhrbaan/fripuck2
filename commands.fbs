@@ -13,8 +13,13 @@ union Instruction {
     InfoMessage
 }
 
+table Command {
+    timestamp: uint16;
+    content: Instruction;
+}
+
 table Batch {
-    entries: [Instruction];
+    entries: [Command];
 }
 
 root_type Batch;

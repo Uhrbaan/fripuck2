@@ -18,3 +18,4 @@ table Batch {
 }
 
 root_type Batch;
+file_identifier "FRI2";

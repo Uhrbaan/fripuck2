@@ -6,18 +6,20 @@
 #include <string.h>
 #include <sys/socket.h>
 
+#include <spi_conf.h>
+
+#include "udp.h"
+
+QueueHandle_t spi_to_udp_queue = NULL;
+static telemetry_packet_t item = {0};
+
+void udp_init_(void) { spi_to_udp_queue = xQueueCreate(10, sizeof(telemetry_packet_t)); }
+
 void udp_transmitter(void *pvParameters) {
     ESP_LOGI("UDP TRANSMITTER", "Starting the SPI -> UDP service.");
 
-    struct sockaddr_storage server_address;
-    struct sockaddr_in *server_addr_ip4 = (struct sockaddr_in *)&server_address;
-    server_addr_ip4->sin_addr.s_addr = htonl(INADDR_ANY);
-    server_addr_ip4->sin_family = AF_INET;
-    server_addr_ip4->sin_port = htons(udp_port);
-
-    struct sockaddr_storage *client_address = (struct sockaddr_storage *)pvParameters;
-    struct sockaddr_in *client_addr_ip4 = (struct sockaddr_in *)client_address;
-    client_addr_ip4->sin_port = htons(udp_port); // correct the port
+    struct sockaddr_in target_addr = *(struct sockaddr_in *)pvParameters;
+    target_addr.sin_port = htons(udp_port); // On s'assure du port UDP
 
     int sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     if (sock < 0) {
@@ -26,31 +28,28 @@ void udp_transmitter(void *pvParameters) {
         return;
     }
 
-    int err = bind(sock, (struct sockaddr *)&server_address, sizeof(server_address));
-    if (err < 0) {
-        ESP_LOGE("UDP TRANSMITTER", "Failed to bind to the socket: %s, (%d)", strerror(errno), errno);
-        goto clean; // OMG a goto statement 😱
+    // Disallow packet fragmentation
+    int val = 0;
+    if (setsockopt(sock, IPPROTO_IP, IP_FRAG, &val, sizeof(val)) < 0) {
+        ESP_LOGE("UDP TRANSMITTER", "Failed to set IP_DONTFRAG: %d", errno);
     }
 
-    char addr_str[16];
-    struct sockaddr_in *s = (struct sockaddr_in *)client_address;
-    inet_ntoa_r(s->sin_addr, addr_str, sizeof(addr_str));
-    ESP_LOGI("UDP TRANSMITTER", "UDP target is: %s:%d", addr_str, ntohs(s->sin_port));
+    ESP_LOGI("UDP TRANSMITTER", "Service démarré vers %s:%d", inet_ntoa(target_addr.sin_addr), udp_port);
 
-    const uint8_t data[] = "Hello, world !\n";
     while (1) {
-        // TODO: read data from SPI, send it over UDP.
-        ssize_t bytes = sendto(sock, data, sizeof(data), 0, (struct sockaddr *)client_address, sizeof(*client_address));
+        if (xQueueReceive(spi_to_udp_queue, &item, portMAX_DELAY) != pdTRUE)
+            continue;
+
+        ssize_t bytes = sendto(sock, item.data, item.length, 0, (struct sockaddr *)&target_addr, sizeof(target_addr));
         if (bytes < 0) {
             ESP_LOGE("UDP TRANSMITTER", "Error while sending data: %s (%d).", strerror(errno), errno);
-            break;
+            // break; // can technically ignore error
         }
-        ESP_LOGI("UDP TRANSMITTER", "Sent %d bytes over udp.", bytes);
-        vTaskDelay(pdMS_TO_TICKS(1000));
+        // ESP_LOGI("UDP TRANSMITTER", "Sent %d bytes over udp.", bytes);
+        // vTaskDelay(pdMS_TO_TICKS(1000));
     }
 
-clean:
     ESP_LOGE("UDP TRANSMITTER", "Closing thread.");
-    free(client_address);
+    close(sock);
     vTaskDelete(NULL);
 }

@@ -11,6 +11,7 @@
 
 static int Fripuck2_Commands_InfoMessage_verify_table(flatcc_table_verifier_descriptor_t *td);
 static int Fripuck2_Commands_DummyConfig_verify_table(flatcc_table_verifier_descriptor_t *td);
+static int Fripuck2_Commands_Command_verify_table(flatcc_table_verifier_descriptor_t *td);
 static int Fripuck2_Commands_Batch_verify_table(flatcc_table_verifier_descriptor_t *td);
 
 static int Fripuck2_Commands_Instruction_union_verifier(flatcc_union_verifier_descriptor_t *ud)
@@ -116,10 +117,58 @@ static inline int Fripuck2_Commands_DummyConfig_verify_as_root_with_type_hash_an
     return flatcc_verify_table_as_typed_root_with_size(buf, bufsiz, thash, &Fripuck2_Commands_DummyConfig_verify_table);
 }
 
+static int Fripuck2_Commands_Command_verify_table(flatcc_table_verifier_descriptor_t *td)
+{
+    int ret;
+    if ((ret = flatcc_verify_field(td, 0, 2, 2) /* timestamp */)) return ret;
+    if ((ret = flatcc_verify_union_field(td, 2, 0, &Fripuck2_Commands_Instruction_union_verifier) /* content */)) return ret;
+    return flatcc_verify_ok;
+}
+
+static inline int Fripuck2_Commands_Command_verify_as_root(const void *buf, size_t bufsiz)
+{
+    return flatcc_verify_table_as_root(buf, bufsiz, Fripuck2_Commands_Command_identifier, &Fripuck2_Commands_Command_verify_table);
+}
+
+static inline int Fripuck2_Commands_Command_verify_as_root_with_size(const void *buf, size_t bufsiz)
+{
+    return flatcc_verify_table_as_root_with_size(buf, bufsiz, Fripuck2_Commands_Command_identifier, &Fripuck2_Commands_Command_verify_table);
+}
+
+static inline int Fripuck2_Commands_Command_verify_as_typed_root(const void *buf, size_t bufsiz)
+{
+    return flatcc_verify_table_as_root(buf, bufsiz, Fripuck2_Commands_Command_type_identifier, &Fripuck2_Commands_Command_verify_table);
+}
+
+static inline int Fripuck2_Commands_Command_verify_as_typed_root_with_size(const void *buf, size_t bufsiz)
+{
+    return flatcc_verify_table_as_root_with_size(buf, bufsiz, Fripuck2_Commands_Command_type_identifier, &Fripuck2_Commands_Command_verify_table);
+}
+
+static inline int Fripuck2_Commands_Command_verify_as_root_with_identifier(const void *buf, size_t bufsiz, const char *fid)
+{
+    return flatcc_verify_table_as_root(buf, bufsiz, fid, &Fripuck2_Commands_Command_verify_table);
+}
+
+static inline int Fripuck2_Commands_Command_verify_as_root_with_identifier_and_size(const void *buf, size_t bufsiz, const char *fid)
+{
+    return flatcc_verify_table_as_root_with_size(buf, bufsiz, fid, &Fripuck2_Commands_Command_verify_table);
+}
+
+static inline int Fripuck2_Commands_Command_verify_as_root_with_type_hash(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
+{
+    return flatcc_verify_table_as_typed_root(buf, bufsiz, thash, &Fripuck2_Commands_Command_verify_table);
+}
+
+static inline int Fripuck2_Commands_Command_verify_as_root_with_type_hash_and_size(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
+{
+    return flatcc_verify_table_as_typed_root_with_size(buf, bufsiz, thash, &Fripuck2_Commands_Command_verify_table);
+}
+
 static int Fripuck2_Commands_Batch_verify_table(flatcc_table_verifier_descriptor_t *td)
 {
     int ret;
-    if ((ret = flatcc_verify_union_vector_field(td, 1, 0, &Fripuck2_Commands_Instruction_union_verifier) /* entries */)) return ret;
+    if ((ret = flatcc_verify_table_vector_field(td, 0, 0, &Fripuck2_Commands_Command_verify_table) /* entries */)) return ret;
     return flatcc_verify_ok;
 }
 

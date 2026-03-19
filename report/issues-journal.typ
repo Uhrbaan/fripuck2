@@ -1348,3 +1348,21 @@ Note however that the code is not optimal. First, we can elminiate slow function
 Simple changing the text being sent to a fixed string like the first sentence of the Lorem Ipsum already increases the throughput to \~290Kb.
 
 The next step would be to send these same packets over the network and decode them there.
+
+First I have to enable the wifi again on the ESP.
+I already implemented it a while ago so it shouldn't take long. Now, I need to create an external program that will connect to the UDP stream.
+
+== 2026.03.19
+Working on (semi) reliable UDP connection. Had an issue for a long while where the packets would go through the ESP and get corrupted.
+The issue was probably that since the esp was sending the packet in a blocking manner after recieving the data through SPI, the SPI would overwrite the buffer which would cause corruption.
+It essentially was a timing error. It was fixed by creating a fast send function that pushed the data directly onto a queue and went back to listening.
+
+Initially, the STM had to be slowed down to fix the timing issues, and we had \~80Kbps of useful data.
+Now with the improvement, we get \~220Kbps of useful data ($times 2$ improvement).
+The final goal for today is to identify the bottleneck.
+
+While I thought last time that the SPI connection wasn't the bottleneck, changing the prescaler from $32 -> 16$ nearly doubled the throughput to 400Kbps, while nearly not affecting the amount of dropped (corrupted) packets which remain at roughly 2%.
+
+Again, halving the prescaler from $16 -> 8$ increased the throughput, from 220Kbps to 660Kbps. However this time the dropped (corrupted) packets increased to 6%. The ESP chip also produces a lot of `E (164644) UDP TRANSMITTER: Error while sending data: Not enough space (12).` errors, indicating that the ESP has reached its limits.
+
+This is quite nice to see !

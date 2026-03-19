@@ -53,7 +53,7 @@ void StartDefaultTask(void *argument)
 }
 
 #include <telemetry_builder.h>
-#define BATCH_THRESHOLD 900 // Leave some "slack" for the root table and headers
+#define BATCH_THRESHOLD 1000 // Leave some "slack" for the root table and headers
 #define MAX_ENTRIES_PER_BATCH 50
 
 osThreadId_t telemetryTaskHandle;
@@ -62,6 +62,8 @@ const osThreadAttr_t telemetryTask_attributes = {
     .stack_size = 1024 * 4,
     .priority = (osPriority_t)osPriorityNormal,
 };
+
+static int message_number = 0;
 void TelemetryTask(void *argument)
 {
     static flatcc_builder_t builder;
@@ -97,7 +99,6 @@ void TelemetryTask(void *argument)
 
         if (current_size >= BATCH_THRESHOLD || entry_count >= MAX_ENTRIES_PER_BATCH)
         {
-
             // Finalize the Batch Table
             Fripuck2_Telemetry_Batch_start_as_root(&builder);
             Fripuck2_Telemetry_Batch_entries_create(&builder, entry_refs, entry_count);
@@ -119,9 +120,9 @@ void TelemetryTask(void *argument)
             // --- 4. Reset for next batch ---
             flatcc_builder_reset(&builder);
             entry_count = 0;
+            // osDelay(1); // Small delay to allow messages to accumulate
+            osThreadYield();
         }
-
-        // osDelay(50); // Small delay to allow messages to accumulate
     }
 
     flatcc_builder_clear(&builder);

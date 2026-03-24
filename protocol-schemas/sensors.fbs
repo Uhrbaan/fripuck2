@@ -1,0 +1,103 @@
+namespace FripuckProtocol.Sensors;
+
+// Proximity
+struct RingSensorData {
+    s0: uint16;
+    s1: uint16;
+    s2: uint16;
+    s3: uint16;
+    s4: uint16;
+    s5: uint16;
+    s6: uint16;
+    s7: uint16;
+}
+
+struct ProximityLightData {
+    proximity: RingSensorData;
+    ambient_light: RingSensorData;
+    timestamp_offset: uint16;
+    padding: uint16; // 4-byte aligned
+}
+
+// Time of flight
+struct TofData {
+    distance: uint16;
+    timestamp_offset: uint16;
+}
+
+// Battery
+struct BatteryData {
+    millivolts: uint16;
+    timestamp_offset: uint16;
+}
+
+// Encoders (motor steps)
+struct EncoderData {
+    left_steps: int32;
+    right_steps: int32;
+    timestamp_offset: uint16;
+    padding: uint16; // 4-byte aligned
+}
+
+// IMU
+struct Vector3D {
+    x: int16;
+    y: int16;
+    z: int16;
+}
+
+struct ImuData {
+    accelerometer: Vector3D;
+    gyroscope: Vector3D;
+    magnetometer: Vector3D;
+    timestamp_offset: uint16;
+}
+
+// Microphones
+struct VolumeData {
+    m0: uint16;
+    m1: uint16;
+    m2: uint16;
+    m3: uint16;
+    timestamp_offset: uint16;
+}
+
+// Audio and video
+// Both store a blob of uint8 with metadata attached to it
+// TODO: Currently genereated by AI, have to refine when doing implementation
+struct AudioMetadata {
+    offset: uint16;    // Start byte in the 'audio_blob' vector
+    length: uint16;    // Number of bytes for this frame
+    sample_count: uint16; // Number of PCM samples (helps the DAC timing)
+    timestamp_offset: uint16;
+}
+
+struct VideoMetadata {
+    offset: uint32;      // Start byte in the 'video_blob'
+    length: uint32;      // Length of this fragment
+    frame_id: uint16;    // Increments per FULL image
+    fragment_index: uint8; // 0, 1, 2... within the same frame_id
+    total_fragments: uint8; // Tells receiver when the image is complete
+    flags: uint16;        // e.g., 0x01 for Keyframe, 0x02 for End of Frame. Big for flags, but bettor for alignment.
+    timestamp_offset: uint16;
+}
+
+// 1.4Kb batch to send over SPI/UDP
+table Batch {
+    // Sensor readings
+    base_timestamp: uint64;
+    proximity: [ProximityLightData];
+    tof: [TofData];
+    battery: [BatteryData];
+    encoder: [EncoderData];
+    imu: [ImuData];
+
+    // Audio & video
+    audio_blob: [uint8];
+    audio_metadata: [AudioMetadata];
+    video_blob: [uint8];
+    video_metadata: [VideoMetadata];
+}
+
+root_type Batch;
+file_identifier "FRI2";

@@ -293,7 +293,7 @@ def measure_rtt():
     print(f"Payload Size: {len(PAYLOAD)} bytes")
     print(f"Minimum RTT: {min_rtt:.3f} ms")
     print(f"Maximum RTT: {max_rtt:.3f} ms")
-    print(f"Average RTT: **{avg_rtt:.3f} ms**")
+    print(f"Average RTT: *{avg_rtt:.3f} ms*")
 
 if __name__ == "__main__":
     measure_rtt()
@@ -308,7 +308,7 @@ Total successful trials: 100
 Payload Size: 12 bytes
 Minimum RTT: 6.529 ms
 Maximum RTT: 29.971 ms
-Average RTT: **12.514 ms**
+Average RTT: *12.514 ms*
 ```
 
 
@@ -483,39 +483,39 @@ Gemini suggested generated the necessary configuration code with the stm32Cube I
 
 Here are the instructions:
 ```md
-Since you are using PlatformIO, the most reliable way to get "official" files without manually scouring GitHub is to use **STM32CubeMX**. It is a visual configuration tool that generates the exact `FreeRTOSConfig.h` and clock initialization code your chip needs.
+Since you are using PlatformIO, the most reliable way to get "official" files without manually scouring GitHub is to use *STM32CubeMX*. It is a visual configuration tool that generates the exact `FreeRTOSConfig.h` and clock initialization code your chip needs.
 
 ### Step 1: Install and Launch STM32CubeMX
 
-1.  Download and install **STM32CubeMX** from the ST website (it's free).
-2.  Open it and click **"Access to MCU Selector"**.
-3.  Search for **STM32F407VG** and start a new project.
+1.  Download and install *STM32CubeMX* from the ST website (it's free).
+2.  Open it and click *"Access to MCU Selector"*.
+3.  Search for *STM32F407VG* and start a new project.
 
 ### Step 2: Configure Hardware and Middleware
 
 In the left-hand column, you need to enable two things to match your current setup:
 
-1.  **System Core -> RCC**: Set "High Speed Clock (HSE)" to **Crystal/Ceramic Resonator**. (The e-puck2/Black board has an external crystal).
-2.  **System Core -> SYS**: Set "Timebase Source" to **Timer 1** (or any timer _except_ SysTick).
+1.  *System Core -> RCC*: Set "High Speed Clock (HSE)" to *Crystal/Ceramic Resonator*. (The e-puck2/Black board has an external crystal).
+2.  *System Core -> SYS*: Set "Timebase Source" to *Timer 1* (or any timer _except_ SysTick).
 
     > _Why?_ FreeRTOS takes over SysTick. The HAL needs its own timer to handle `HAL_Delay()` and timeouts without crashing into the OS.
 
-3.  **Middleware -> FREERTOS**: Set "Interface" to **CMSIS\_V2** (this is the modern standard for STM32).
+3.  *Middleware -> FREERTOS*: Set "Interface" to *CMSIS\_V2* (this is the modern standard for STM32).
 
 ### Step 3: Set the Clock (The 168MHz Secret)
 
-Go to the **Clock Configuration** tab.
+Go to the *Clock Configuration* tab.
 
-1.  Input **8** MHz in the Input Frequency (HSE) box (standard for these boards).
-2.  In the "System Clock Mux," select **PLLCLK**.
-3.  In the "HCLK" box, type **168** and hit Enter. The tool will automatically calculate all the multipliers (PLL) for you.
+1.  Input *8* MHz in the Input Frequency (HSE) box (standard for these boards).
+2.  In the "System Clock Mux," select *PLLCLK*.
+3.  In the "HCLK" box, type *168* and hit Enter. The tool will automatically calculate all the multipliers (PLL) for you.
 
 ### Step 4: Generate the Code
 
-1.  Go to the **Project Manager** tab.
-2.  **Project Name:** Call it "TempProject".
-3.  **Toolchain/IDE:** Select **Makefile**. (This ensures the code is generated in a clean C structure that is easy to copy into PlatformIO).
-4.  Click **"Generate Code"** in the top right.
+1.  Go to the *Project Manager* tab.
+2.  *Project Name:* Call it "TempProject".
+3.  *Toolchain/IDE:* Select *Makefile*. (This ensures the code is generated in a clean C structure that is easy to copy into PlatformIO).
+4.  Click *"Generate Code"* in the top right.
 * * *
 
 ### Step 5: Porting to PlatformIO
@@ -543,7 +543,7 @@ Because you told CubeMX to use Timer 1 for the HAL, it generated a file called s
 -   \[ \] `SystemClock_Config` is updated in `main.c`.
 -   \[ \] `stm32f4xx_hal_timebase_tim.c` is in `/src`.
 -   \[ \] `lib_deps = FreeRTOS` is in `platformio.ini`.
-**Would you like me to show you how to check the e-puck2's old `mcuconf.h` to make sure the 168MHz clock settings match exactly what the robot expects?**
+*Would you like me to show you how to check the e-puck2's old `mcuconf.h` to make sure the 168MHz clock settings match exactly what the robot expects?*
 ```
 
 Here is a picture of the configuration:
@@ -1366,3 +1366,151 @@ While I thought last time that the SPI connection wasn't the bottleneck, changin
 Again, halving the prescaler from $16 -> 8$ increased the throughput, from 220Kbps to 660Kbps. However this time the dropped (corrupted) packets increased to 6%. The ESP chip also produces a lot of `E (164644) UDP TRANSMITTER: Error while sending data: Not enough space (12).` errors, indicating that the ESP has reached its limits.
 
 This is quite nice to see !
+
+Also I've been thinking about the Lua VM, especially where to put it.
+Here is a small breakdown by #emoji.sparkles AI #emoji.sparkles
+#quote(block: true, attribution: [Gemini])[
+  *Option 1: The VM on the ESP (The "Network-Centric" Approach)*
+
+  In this setup, the STM remains a "dumb" I/O provider, and the Lua VM acts as the high-level logic controller.
+
+  - *Pros:*
+    - *Connectivity:* Lua can easily handle JSON, WebSockets, or complex MQTT logic to talk to the outside world.
+    - *OTA Updates:* Updating Lua scripts over Wi-Fi is much easier on the ESP.
+  - *Cons:*
+    - *Latency:* Every sensor-to-actuator loop must travel over SPI/UART. If the ESP hangs or the bus is busy, your robot might crash into a wall before the Lua script can react.
+  - *Best for:* Tele-operated robots, IoT devices, or slow-moving platforms where "thinking" happens in response to cloud/network commands.
+
+  *Option 2: The VM on the STM (The "Edge-Centric" Approach)*
+
+  Here, the ESP is just a transparent bridge (a "radio pipe"), and the Lua VM runs directly where the sensors and motors are.
+
+  - *Pros:*
+    - *Real-time Response:* The VM can read a sensor and fire an actuator in microseconds without waiting for a serial bus.
+    - *Safety:* Even if the Wi-Fi drops or the ESP crashes, the Lua logic on the STM can execute a "fail-safe" routine.
+  - *Cons:*
+    - *Resource Constraints:* Depending on your STM model, RAM might be tighter than on an ESP32.
+    - *Complexity:* Debugging Lua over a serial bridge can be more tedious than doing it over a network terminal.
+  - *Best for:* Autonomous drones, balancing robots, or anything that needs to stay "alive" independent of a network connection.
+]
+
+I'd probably have to discuss with Julien about what he wants most out of this VM, although both are very interesting.
+
+== 2026.03.24
+Laying the foundations for the APIs.
+First, changed the namespace of the schemas to `FripuckProtocol` to be a little more clear on what it is.
+Then, moved the go generation to `internal` folder since it shouldn't be accessed by users directly.
+Similarily in python, it is generated in `_generated` since that seems to be the idiomatic way to manage generated code.
+
+Now, let's spend a bit of time thinking about how both the telemetry and command protocols are going to be designed.
+
+From what I saw online, the ways we are currently using unions is very inefficient. It is best to have a simple table with different vectors for each data type, and let it be null if we have no data, since the overhead is very minimal.
+
+For timing individual readings, we will send a `base_time` in the batch and then have an offset of size `uint16` in each reading. This allows us to have the exact time without having to rely on trickery, which would make this more resilient to loss of connection or things like that, and allows for greater time resolution.
+
+Here is what the suggested shape of the data looks like:
+```
+namespace FripuckProtocol.Sensors;
+
+// Proximity
+struct RingSensorData {
+    s0: uint16;
+    s1: uint16;
+    s2: uint16;
+    s3: uint16;
+    s4: uint16;
+    s5: uint16;
+    s6: uint16;
+    s7: uint16;
+}
+
+struct ProximityLightData {
+    proximity: RingSensorData;
+    ambient_light: RingSensorData;
+    timestamp_offset: uint16;
+    padding: uint16; // 4-byte aligned
+}
+
+// Time of flight
+struct TofData {
+    distance: uint16;
+    timestamp_offset: uint16;
+}
+
+// Battery
+struct BatteryData {
+    millivolts: uint16;
+    timestamp_offset: uint16;
+}
+
+// Encoders (motor steps)
+struct EncoderData {
+    left_steps: int32;
+    right_steps: int32;
+    timestamp_offset: uint16;
+    padding: uint16; // 4-byte aligned
+}
+
+// IMU
+struct Vector3D {
+    x: int16;
+    y: int16;
+    z: int16;
+}
+
+struct ImuData {
+    accelerometer: Vector3D;
+    gyroscope: Vector3D;
+    magnetometer: Vector3D;
+    timestamp_offset: uint16;
+}
+
+// Microphones
+struct VolumeData {
+    m0: uint16;
+    m1: uint16;
+    m2: uint16;
+    m3: uint16;
+    timestamp_offset: uint16;
+}
+
+// Audio and video
+// Both store a blob of uint8 with metadata attached to it
+// TODO: Currently genereated by AI, have to refine when doing implementation
+struct AudioMetadata {
+    offset: uint16;    // Start byte in the 'audio_blob' vector
+    length: uint16;    // Number of bytes for this frame
+    sample_count: uint16; // Number of PCM samples (helps the DAC timing)
+    timestamp_offset: uint16;
+}
+
+struct VideoMetadata {
+    offset: uint32;      // Start byte in the 'video_blob'
+    length: uint32;      // Length of this fragment
+    frame_id: uint16;    // Increments per FULL image
+    fragment_index: uint8; // 0, 1, 2... within the same frame_id
+    total_fragments: uint8; // Tells receiver when the image is complete
+    flags: uint16;        // e.g., 0x01 for Keyframe, 0x02 for End of Frame
+    timestamp_offset: uint16;
+}
+
+// 1.4Kb batch to send over SPI/UDP
+table Batch {
+    // Sensor readings
+    base_timestamp: uint64;
+    proximity: [ProximityLightData];
+    tof: [TofData];
+    battery: [BatteryData];
+    encoder: [EncoderData];
+    imu: [ImuData];
+
+    // Audio & video
+    audio_blob: [uint8];
+    audio_metadata: [AudioMetadata];
+    video_blob: [uint8];
+    video_metadata: [VideoMetadata];
+}
+
+root_type Batch;
+file_identifier "FRI2";
+```

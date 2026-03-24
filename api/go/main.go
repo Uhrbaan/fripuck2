@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"fripuck2/Fripuck2/Telemetry"
+	"fripuck2/internal/FripuckProtocol/Telemetry"
 	"net"
 	"time"
 )

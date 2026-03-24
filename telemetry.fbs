@@ -1,4 +1,4 @@
-namespace Fripuck2.Telemetry;
+namespace FripuckProtocol.Telemetry;
 
 table InfoMessage {
     text: string;

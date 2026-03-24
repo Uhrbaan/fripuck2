@@ -16,120 +16,120 @@
 #define flatbuffers_extension "bin"
 #endif
 
-typedef flatbuffers_union_ref_t Fripuck2_Telemetry_Data_union_ref_t;
-typedef flatbuffers_union_vec_ref_t Fripuck2_Telemetry_Data_union_vec_ref_t;
-static Fripuck2_Telemetry_Data_union_ref_t Fripuck2_Telemetry_Data_clone(flatbuffers_builder_t *B, Fripuck2_Telemetry_Data_union_t t);
+typedef flatbuffers_union_ref_t FripuckProtocol_Telemetry_Data_union_ref_t;
+typedef flatbuffers_union_vec_ref_t FripuckProtocol_Telemetry_Data_union_vec_ref_t;
+static FripuckProtocol_Telemetry_Data_union_ref_t FripuckProtocol_Telemetry_Data_clone(flatbuffers_builder_t *B, FripuckProtocol_Telemetry_Data_union_t t);
 
-static const flatbuffers_voffset_t __Fripuck2_Telemetry_InfoMessage_required[] = { 0 };
-typedef flatbuffers_ref_t Fripuck2_Telemetry_InfoMessage_ref_t;
-static Fripuck2_Telemetry_InfoMessage_ref_t Fripuck2_Telemetry_InfoMessage_clone(flatbuffers_builder_t *B, Fripuck2_Telemetry_InfoMessage_table_t t);
-__flatbuffers_build_table(flatbuffers_, Fripuck2_Telemetry_InfoMessage, 1)
+static const flatbuffers_voffset_t __FripuckProtocol_Telemetry_InfoMessage_required[] = { 0 };
+typedef flatbuffers_ref_t FripuckProtocol_Telemetry_InfoMessage_ref_t;
+static FripuckProtocol_Telemetry_InfoMessage_ref_t FripuckProtocol_Telemetry_InfoMessage_clone(flatbuffers_builder_t *B, FripuckProtocol_Telemetry_InfoMessage_table_t t);
+__flatbuffers_build_table(flatbuffers_, FripuckProtocol_Telemetry_InfoMessage, 1)
 
-static const flatbuffers_voffset_t __Fripuck2_Telemetry_Entry_required[] = { 0 };
-typedef flatbuffers_ref_t Fripuck2_Telemetry_Entry_ref_t;
-static Fripuck2_Telemetry_Entry_ref_t Fripuck2_Telemetry_Entry_clone(flatbuffers_builder_t *B, Fripuck2_Telemetry_Entry_table_t t);
-__flatbuffers_build_table(flatbuffers_, Fripuck2_Telemetry_Entry, 3)
+static const flatbuffers_voffset_t __FripuckProtocol_Telemetry_Entry_required[] = { 0 };
+typedef flatbuffers_ref_t FripuckProtocol_Telemetry_Entry_ref_t;
+static FripuckProtocol_Telemetry_Entry_ref_t FripuckProtocol_Telemetry_Entry_clone(flatbuffers_builder_t *B, FripuckProtocol_Telemetry_Entry_table_t t);
+__flatbuffers_build_table(flatbuffers_, FripuckProtocol_Telemetry_Entry, 3)
 
-static const flatbuffers_voffset_t __Fripuck2_Telemetry_Batch_required[] = { 0 };
-typedef flatbuffers_ref_t Fripuck2_Telemetry_Batch_ref_t;
-static Fripuck2_Telemetry_Batch_ref_t Fripuck2_Telemetry_Batch_clone(flatbuffers_builder_t *B, Fripuck2_Telemetry_Batch_table_t t);
-__flatbuffers_build_table(flatbuffers_, Fripuck2_Telemetry_Batch, 1)
+static const flatbuffers_voffset_t __FripuckProtocol_Telemetry_Batch_required[] = { 0 };
+typedef flatbuffers_ref_t FripuckProtocol_Telemetry_Batch_ref_t;
+static FripuckProtocol_Telemetry_Batch_ref_t FripuckProtocol_Telemetry_Batch_clone(flatbuffers_builder_t *B, FripuckProtocol_Telemetry_Batch_table_t t);
+__flatbuffers_build_table(flatbuffers_, FripuckProtocol_Telemetry_Batch, 1)
 
-#define __Fripuck2_Telemetry_InfoMessage_formal_args , flatbuffers_string_ref_t v0
-#define __Fripuck2_Telemetry_InfoMessage_call_args , v0
-static inline Fripuck2_Telemetry_InfoMessage_ref_t Fripuck2_Telemetry_InfoMessage_create(flatbuffers_builder_t *B __Fripuck2_Telemetry_InfoMessage_formal_args);
-__flatbuffers_build_table_prolog(flatbuffers_, Fripuck2_Telemetry_InfoMessage, Fripuck2_Telemetry_InfoMessage_file_identifier, Fripuck2_Telemetry_InfoMessage_type_identifier)
+#define __FripuckProtocol_Telemetry_InfoMessage_formal_args , flatbuffers_string_ref_t v0
+#define __FripuckProtocol_Telemetry_InfoMessage_call_args , v0
+static inline FripuckProtocol_Telemetry_InfoMessage_ref_t FripuckProtocol_Telemetry_InfoMessage_create(flatbuffers_builder_t *B __FripuckProtocol_Telemetry_InfoMessage_formal_args);
+__flatbuffers_build_table_prolog(flatbuffers_, FripuckProtocol_Telemetry_InfoMessage, FripuckProtocol_Telemetry_InfoMessage_file_identifier, FripuckProtocol_Telemetry_InfoMessage_type_identifier)
 
-#define __Fripuck2_Telemetry_Entry_formal_args , uint16_t v0, Fripuck2_Telemetry_Data_union_ref_t v2
-#define __Fripuck2_Telemetry_Entry_call_args , v0, v2
-static inline Fripuck2_Telemetry_Entry_ref_t Fripuck2_Telemetry_Entry_create(flatbuffers_builder_t *B __Fripuck2_Telemetry_Entry_formal_args);
-__flatbuffers_build_table_prolog(flatbuffers_, Fripuck2_Telemetry_Entry, Fripuck2_Telemetry_Entry_file_identifier, Fripuck2_Telemetry_Entry_type_identifier)
+#define __FripuckProtocol_Telemetry_Entry_formal_args , uint16_t v0, FripuckProtocol_Telemetry_Data_union_ref_t v2
+#define __FripuckProtocol_Telemetry_Entry_call_args , v0, v2
+static inline FripuckProtocol_Telemetry_Entry_ref_t FripuckProtocol_Telemetry_Entry_create(flatbuffers_builder_t *B __FripuckProtocol_Telemetry_Entry_formal_args);
+__flatbuffers_build_table_prolog(flatbuffers_, FripuckProtocol_Telemetry_Entry, FripuckProtocol_Telemetry_Entry_file_identifier, FripuckProtocol_Telemetry_Entry_type_identifier)
 
-#define __Fripuck2_Telemetry_Batch_formal_args , Fripuck2_Telemetry_Entry_vec_ref_t v0
-#define __Fripuck2_Telemetry_Batch_call_args , v0
-static inline Fripuck2_Telemetry_Batch_ref_t Fripuck2_Telemetry_Batch_create(flatbuffers_builder_t *B __Fripuck2_Telemetry_Batch_formal_args);
-__flatbuffers_build_table_prolog(flatbuffers_, Fripuck2_Telemetry_Batch, Fripuck2_Telemetry_Batch_file_identifier, Fripuck2_Telemetry_Batch_type_identifier)
+#define __FripuckProtocol_Telemetry_Batch_formal_args , FripuckProtocol_Telemetry_Entry_vec_ref_t v0
+#define __FripuckProtocol_Telemetry_Batch_call_args , v0
+static inline FripuckProtocol_Telemetry_Batch_ref_t FripuckProtocol_Telemetry_Batch_create(flatbuffers_builder_t *B __FripuckProtocol_Telemetry_Batch_formal_args);
+__flatbuffers_build_table_prolog(flatbuffers_, FripuckProtocol_Telemetry_Batch, FripuckProtocol_Telemetry_Batch_file_identifier, FripuckProtocol_Telemetry_Batch_type_identifier)
 
-static inline Fripuck2_Telemetry_Data_union_ref_t Fripuck2_Telemetry_Data_as_NONE(void)
-{ Fripuck2_Telemetry_Data_union_ref_t uref; uref.type = Fripuck2_Telemetry_Data_NONE; uref.value = 0; return uref; }
-static inline Fripuck2_Telemetry_Data_union_ref_t Fripuck2_Telemetry_Data_as_InfoMessage(Fripuck2_Telemetry_InfoMessage_ref_t ref)
-{ Fripuck2_Telemetry_Data_union_ref_t uref; uref.type = Fripuck2_Telemetry_Data_InfoMessage; uref.value = ref; return uref; }
-__flatbuffers_build_union_vector(flatbuffers_, Fripuck2_Telemetry_Data)
+static inline FripuckProtocol_Telemetry_Data_union_ref_t FripuckProtocol_Telemetry_Data_as_NONE(void)
+{ FripuckProtocol_Telemetry_Data_union_ref_t uref; uref.type = FripuckProtocol_Telemetry_Data_NONE; uref.value = 0; return uref; }
+static inline FripuckProtocol_Telemetry_Data_union_ref_t FripuckProtocol_Telemetry_Data_as_InfoMessage(FripuckProtocol_Telemetry_InfoMessage_ref_t ref)
+{ FripuckProtocol_Telemetry_Data_union_ref_t uref; uref.type = FripuckProtocol_Telemetry_Data_InfoMessage; uref.value = ref; return uref; }
+__flatbuffers_build_union_vector(flatbuffers_, FripuckProtocol_Telemetry_Data)
 
-static Fripuck2_Telemetry_Data_union_ref_t Fripuck2_Telemetry_Data_clone(flatbuffers_builder_t *B, Fripuck2_Telemetry_Data_union_t u)
+static FripuckProtocol_Telemetry_Data_union_ref_t FripuckProtocol_Telemetry_Data_clone(flatbuffers_builder_t *B, FripuckProtocol_Telemetry_Data_union_t u)
 {
     switch (u.type) {
-    case 1: return Fripuck2_Telemetry_Data_as_InfoMessage(Fripuck2_Telemetry_InfoMessage_clone(B, (Fripuck2_Telemetry_InfoMessage_table_t)u.value));
-    default: return Fripuck2_Telemetry_Data_as_NONE();
+    case 1: return FripuckProtocol_Telemetry_Data_as_InfoMessage(FripuckProtocol_Telemetry_InfoMessage_clone(B, (FripuckProtocol_Telemetry_InfoMessage_table_t)u.value));
+    default: return FripuckProtocol_Telemetry_Data_as_NONE();
     }
 }
 
-__flatbuffers_build_string_field(0, flatbuffers_, Fripuck2_Telemetry_InfoMessage_text, Fripuck2_Telemetry_InfoMessage)
+__flatbuffers_build_string_field(0, flatbuffers_, FripuckProtocol_Telemetry_InfoMessage_text, FripuckProtocol_Telemetry_InfoMessage)
 
-static inline Fripuck2_Telemetry_InfoMessage_ref_t Fripuck2_Telemetry_InfoMessage_create(flatbuffers_builder_t *B __Fripuck2_Telemetry_InfoMessage_formal_args)
+static inline FripuckProtocol_Telemetry_InfoMessage_ref_t FripuckProtocol_Telemetry_InfoMessage_create(flatbuffers_builder_t *B __FripuckProtocol_Telemetry_InfoMessage_formal_args)
 {
-    if (Fripuck2_Telemetry_InfoMessage_start(B)
-        || Fripuck2_Telemetry_InfoMessage_text_add(B, v0)) {
+    if (FripuckProtocol_Telemetry_InfoMessage_start(B)
+        || FripuckProtocol_Telemetry_InfoMessage_text_add(B, v0)) {
         return 0;
     }
-    return Fripuck2_Telemetry_InfoMessage_end(B);
+    return FripuckProtocol_Telemetry_InfoMessage_end(B);
 }
 
-static Fripuck2_Telemetry_InfoMessage_ref_t Fripuck2_Telemetry_InfoMessage_clone(flatbuffers_builder_t *B, Fripuck2_Telemetry_InfoMessage_table_t t)
-{
-    __flatbuffers_memoize_begin(B, t);
-    if (Fripuck2_Telemetry_InfoMessage_start(B)
-        || Fripuck2_Telemetry_InfoMessage_text_pick(B, t)) {
-        return 0;
-    }
-    __flatbuffers_memoize_end(B, t, Fripuck2_Telemetry_InfoMessage_end(B));
-}
-
-__flatbuffers_build_scalar_field(0, flatbuffers_, Fripuck2_Telemetry_Entry_timestamp, flatbuffers_uint16, uint16_t, 2, 2, UINT16_C(0), Fripuck2_Telemetry_Entry)
-__flatbuffers_build_union_field(2, flatbuffers_, Fripuck2_Telemetry_Entry_content, Fripuck2_Telemetry_Data, Fripuck2_Telemetry_Entry)
-__flatbuffers_build_union_table_value_field(flatbuffers_, Fripuck2_Telemetry_Entry_content, Fripuck2_Telemetry_Data, InfoMessage, Fripuck2_Telemetry_InfoMessage)
-
-static inline Fripuck2_Telemetry_Entry_ref_t Fripuck2_Telemetry_Entry_create(flatbuffers_builder_t *B __Fripuck2_Telemetry_Entry_formal_args)
-{
-    if (Fripuck2_Telemetry_Entry_start(B)
-        || Fripuck2_Telemetry_Entry_content_add_value(B, v2)
-        || Fripuck2_Telemetry_Entry_timestamp_add(B, v0)
-        || Fripuck2_Telemetry_Entry_content_add_type(B, v2.type)) {
-        return 0;
-    }
-    return Fripuck2_Telemetry_Entry_end(B);
-}
-
-static Fripuck2_Telemetry_Entry_ref_t Fripuck2_Telemetry_Entry_clone(flatbuffers_builder_t *B, Fripuck2_Telemetry_Entry_table_t t)
+static FripuckProtocol_Telemetry_InfoMessage_ref_t FripuckProtocol_Telemetry_InfoMessage_clone(flatbuffers_builder_t *B, FripuckProtocol_Telemetry_InfoMessage_table_t t)
 {
     __flatbuffers_memoize_begin(B, t);
-    if (Fripuck2_Telemetry_Entry_start(B)
-        || Fripuck2_Telemetry_Entry_content_pick(B, t)
-        || Fripuck2_Telemetry_Entry_timestamp_pick(B, t)) {
+    if (FripuckProtocol_Telemetry_InfoMessage_start(B)
+        || FripuckProtocol_Telemetry_InfoMessage_text_pick(B, t)) {
         return 0;
     }
-    __flatbuffers_memoize_end(B, t, Fripuck2_Telemetry_Entry_end(B));
+    __flatbuffers_memoize_end(B, t, FripuckProtocol_Telemetry_InfoMessage_end(B));
 }
 
-__flatbuffers_build_table_vector_field(0, flatbuffers_, Fripuck2_Telemetry_Batch_entries, Fripuck2_Telemetry_Entry, Fripuck2_Telemetry_Batch)
+__flatbuffers_build_scalar_field(0, flatbuffers_, FripuckProtocol_Telemetry_Entry_timestamp, flatbuffers_uint16, uint16_t, 2, 2, UINT16_C(0), FripuckProtocol_Telemetry_Entry)
+__flatbuffers_build_union_field(2, flatbuffers_, FripuckProtocol_Telemetry_Entry_content, FripuckProtocol_Telemetry_Data, FripuckProtocol_Telemetry_Entry)
+__flatbuffers_build_union_table_value_field(flatbuffers_, FripuckProtocol_Telemetry_Entry_content, FripuckProtocol_Telemetry_Data, InfoMessage, FripuckProtocol_Telemetry_InfoMessage)
 
-static inline Fripuck2_Telemetry_Batch_ref_t Fripuck2_Telemetry_Batch_create(flatbuffers_builder_t *B __Fripuck2_Telemetry_Batch_formal_args)
+static inline FripuckProtocol_Telemetry_Entry_ref_t FripuckProtocol_Telemetry_Entry_create(flatbuffers_builder_t *B __FripuckProtocol_Telemetry_Entry_formal_args)
 {
-    if (Fripuck2_Telemetry_Batch_start(B)
-        || Fripuck2_Telemetry_Batch_entries_add(B, v0)) {
+    if (FripuckProtocol_Telemetry_Entry_start(B)
+        || FripuckProtocol_Telemetry_Entry_content_add_value(B, v2)
+        || FripuckProtocol_Telemetry_Entry_timestamp_add(B, v0)
+        || FripuckProtocol_Telemetry_Entry_content_add_type(B, v2.type)) {
         return 0;
     }
-    return Fripuck2_Telemetry_Batch_end(B);
+    return FripuckProtocol_Telemetry_Entry_end(B);
 }
 
-static Fripuck2_Telemetry_Batch_ref_t Fripuck2_Telemetry_Batch_clone(flatbuffers_builder_t *B, Fripuck2_Telemetry_Batch_table_t t)
+static FripuckProtocol_Telemetry_Entry_ref_t FripuckProtocol_Telemetry_Entry_clone(flatbuffers_builder_t *B, FripuckProtocol_Telemetry_Entry_table_t t)
 {
     __flatbuffers_memoize_begin(B, t);
-    if (Fripuck2_Telemetry_Batch_start(B)
-        || Fripuck2_Telemetry_Batch_entries_pick(B, t)) {
+    if (FripuckProtocol_Telemetry_Entry_start(B)
+        || FripuckProtocol_Telemetry_Entry_content_pick(B, t)
+        || FripuckProtocol_Telemetry_Entry_timestamp_pick(B, t)) {
         return 0;
     }
-    __flatbuffers_memoize_end(B, t, Fripuck2_Telemetry_Batch_end(B));
+    __flatbuffers_memoize_end(B, t, FripuckProtocol_Telemetry_Entry_end(B));
+}
+
+__flatbuffers_build_table_vector_field(0, flatbuffers_, FripuckProtocol_Telemetry_Batch_entries, FripuckProtocol_Telemetry_Entry, FripuckProtocol_Telemetry_Batch)
+
+static inline FripuckProtocol_Telemetry_Batch_ref_t FripuckProtocol_Telemetry_Batch_create(flatbuffers_builder_t *B __FripuckProtocol_Telemetry_Batch_formal_args)
+{
+    if (FripuckProtocol_Telemetry_Batch_start(B)
+        || FripuckProtocol_Telemetry_Batch_entries_add(B, v0)) {
+        return 0;
+    }
+    return FripuckProtocol_Telemetry_Batch_end(B);
+}
+
+static FripuckProtocol_Telemetry_Batch_ref_t FripuckProtocol_Telemetry_Batch_clone(flatbuffers_builder_t *B, FripuckProtocol_Telemetry_Batch_table_t t)
+{
+    __flatbuffers_memoize_begin(B, t);
+    if (FripuckProtocol_Telemetry_Batch_start(B)
+        || FripuckProtocol_Telemetry_Batch_entries_pick(B, t)) {
+        return 0;
+    }
+    __flatbuffers_memoize_end(B, t, FripuckProtocol_Telemetry_Batch_end(B));
 }
 
 #include "flatcc/flatcc_epilogue.h"

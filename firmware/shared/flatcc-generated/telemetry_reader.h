@@ -18,111 +18,111 @@
 #endif
 
 
-typedef const struct Fripuck2_Telemetry_InfoMessage_table *Fripuck2_Telemetry_InfoMessage_table_t;
-typedef struct Fripuck2_Telemetry_InfoMessage_table *Fripuck2_Telemetry_InfoMessage_mutable_table_t;
-typedef const flatbuffers_uoffset_t *Fripuck2_Telemetry_InfoMessage_vec_t;
-typedef flatbuffers_uoffset_t *Fripuck2_Telemetry_InfoMessage_mutable_vec_t;
-typedef const struct Fripuck2_Telemetry_Entry_table *Fripuck2_Telemetry_Entry_table_t;
-typedef struct Fripuck2_Telemetry_Entry_table *Fripuck2_Telemetry_Entry_mutable_table_t;
-typedef const flatbuffers_uoffset_t *Fripuck2_Telemetry_Entry_vec_t;
-typedef flatbuffers_uoffset_t *Fripuck2_Telemetry_Entry_mutable_vec_t;
-typedef const struct Fripuck2_Telemetry_Batch_table *Fripuck2_Telemetry_Batch_table_t;
-typedef struct Fripuck2_Telemetry_Batch_table *Fripuck2_Telemetry_Batch_mutable_table_t;
-typedef const flatbuffers_uoffset_t *Fripuck2_Telemetry_Batch_vec_t;
-typedef flatbuffers_uoffset_t *Fripuck2_Telemetry_Batch_mutable_vec_t;
-#ifndef Fripuck2_Telemetry_InfoMessage_file_identifier
-#define Fripuck2_Telemetry_InfoMessage_file_identifier "FRI2"
+typedef const struct FripuckProtocol_Telemetry_InfoMessage_table *FripuckProtocol_Telemetry_InfoMessage_table_t;
+typedef struct FripuckProtocol_Telemetry_InfoMessage_table *FripuckProtocol_Telemetry_InfoMessage_mutable_table_t;
+typedef const flatbuffers_uoffset_t *FripuckProtocol_Telemetry_InfoMessage_vec_t;
+typedef flatbuffers_uoffset_t *FripuckProtocol_Telemetry_InfoMessage_mutable_vec_t;
+typedef const struct FripuckProtocol_Telemetry_Entry_table *FripuckProtocol_Telemetry_Entry_table_t;
+typedef struct FripuckProtocol_Telemetry_Entry_table *FripuckProtocol_Telemetry_Entry_mutable_table_t;
+typedef const flatbuffers_uoffset_t *FripuckProtocol_Telemetry_Entry_vec_t;
+typedef flatbuffers_uoffset_t *FripuckProtocol_Telemetry_Entry_mutable_vec_t;
+typedef const struct FripuckProtocol_Telemetry_Batch_table *FripuckProtocol_Telemetry_Batch_table_t;
+typedef struct FripuckProtocol_Telemetry_Batch_table *FripuckProtocol_Telemetry_Batch_mutable_table_t;
+typedef const flatbuffers_uoffset_t *FripuckProtocol_Telemetry_Batch_vec_t;
+typedef flatbuffers_uoffset_t *FripuckProtocol_Telemetry_Batch_mutable_vec_t;
+#ifndef FripuckProtocol_Telemetry_InfoMessage_file_identifier
+#define FripuckProtocol_Telemetry_InfoMessage_file_identifier "FRI2"
 #endif
-/* deprecated, use Fripuck2_Telemetry_InfoMessage_file_identifier */
-#ifndef Fripuck2_Telemetry_InfoMessage_identifier
-#define Fripuck2_Telemetry_InfoMessage_identifier "FRI2"
+/* deprecated, use FripuckProtocol_Telemetry_InfoMessage_file_identifier */
+#ifndef FripuckProtocol_Telemetry_InfoMessage_identifier
+#define FripuckProtocol_Telemetry_InfoMessage_identifier "FRI2"
 #endif
-#define Fripuck2_Telemetry_InfoMessage_type_hash ((flatbuffers_thash_t)0xd5632fa5)
-#define Fripuck2_Telemetry_InfoMessage_type_identifier "\xa5\x2f\x63\xd5"
-#ifndef Fripuck2_Telemetry_InfoMessage_file_extension
-#define Fripuck2_Telemetry_InfoMessage_file_extension "bin"
+#define FripuckProtocol_Telemetry_InfoMessage_type_hash ((flatbuffers_thash_t)0x46ec2825)
+#define FripuckProtocol_Telemetry_InfoMessage_type_identifier "\x25\x28\xec\x46"
+#ifndef FripuckProtocol_Telemetry_InfoMessage_file_extension
+#define FripuckProtocol_Telemetry_InfoMessage_file_extension "bin"
 #endif
-#ifndef Fripuck2_Telemetry_Entry_file_identifier
-#define Fripuck2_Telemetry_Entry_file_identifier "FRI2"
+#ifndef FripuckProtocol_Telemetry_Entry_file_identifier
+#define FripuckProtocol_Telemetry_Entry_file_identifier "FRI2"
 #endif
-/* deprecated, use Fripuck2_Telemetry_Entry_file_identifier */
-#ifndef Fripuck2_Telemetry_Entry_identifier
-#define Fripuck2_Telemetry_Entry_identifier "FRI2"
+/* deprecated, use FripuckProtocol_Telemetry_Entry_file_identifier */
+#ifndef FripuckProtocol_Telemetry_Entry_identifier
+#define FripuckProtocol_Telemetry_Entry_identifier "FRI2"
 #endif
-#define Fripuck2_Telemetry_Entry_type_hash ((flatbuffers_thash_t)0x33b890e)
-#define Fripuck2_Telemetry_Entry_type_identifier "\x0e\x89\x3b\x03"
-#ifndef Fripuck2_Telemetry_Entry_file_extension
-#define Fripuck2_Telemetry_Entry_file_extension "bin"
+#define FripuckProtocol_Telemetry_Entry_type_hash ((flatbuffers_thash_t)0x9f07658e)
+#define FripuckProtocol_Telemetry_Entry_type_identifier "\x8e\x65\x07\x9f"
+#ifndef FripuckProtocol_Telemetry_Entry_file_extension
+#define FripuckProtocol_Telemetry_Entry_file_extension "bin"
 #endif
-#ifndef Fripuck2_Telemetry_Batch_file_identifier
-#define Fripuck2_Telemetry_Batch_file_identifier "FRI2"
+#ifndef FripuckProtocol_Telemetry_Batch_file_identifier
+#define FripuckProtocol_Telemetry_Batch_file_identifier "FRI2"
 #endif
-/* deprecated, use Fripuck2_Telemetry_Batch_file_identifier */
-#ifndef Fripuck2_Telemetry_Batch_identifier
-#define Fripuck2_Telemetry_Batch_identifier "FRI2"
+/* deprecated, use FripuckProtocol_Telemetry_Batch_file_identifier */
+#ifndef FripuckProtocol_Telemetry_Batch_identifier
+#define FripuckProtocol_Telemetry_Batch_identifier "FRI2"
 #endif
-#define Fripuck2_Telemetry_Batch_type_hash ((flatbuffers_thash_t)0x325cb9e2)
-#define Fripuck2_Telemetry_Batch_type_identifier "\xe2\xb9\x5c\x32"
-#ifndef Fripuck2_Telemetry_Batch_file_extension
-#define Fripuck2_Telemetry_Batch_file_extension "bin"
+#define FripuckProtocol_Telemetry_Batch_type_hash ((flatbuffers_thash_t)0xce289662)
+#define FripuckProtocol_Telemetry_Batch_type_identifier "\x62\x96\x28\xce"
+#ifndef FripuckProtocol_Telemetry_Batch_file_extension
+#define FripuckProtocol_Telemetry_Batch_file_extension "bin"
 #endif
 
 
 
-struct Fripuck2_Telemetry_InfoMessage_table { uint8_t unused__; };
+struct FripuckProtocol_Telemetry_InfoMessage_table { uint8_t unused__; };
 
-static inline size_t Fripuck2_Telemetry_InfoMessage_vec_len(Fripuck2_Telemetry_InfoMessage_vec_t vec)
+static inline size_t FripuckProtocol_Telemetry_InfoMessage_vec_len(FripuckProtocol_Telemetry_InfoMessage_vec_t vec)
 __flatbuffers_vec_len(vec)
-static inline Fripuck2_Telemetry_InfoMessage_table_t Fripuck2_Telemetry_InfoMessage_vec_at(Fripuck2_Telemetry_InfoMessage_vec_t vec, size_t i)
-__flatbuffers_offset_vec_at(Fripuck2_Telemetry_InfoMessage_table_t, vec, i, 0)
-__flatbuffers_table_as_root(Fripuck2_Telemetry_InfoMessage)
+static inline FripuckProtocol_Telemetry_InfoMessage_table_t FripuckProtocol_Telemetry_InfoMessage_vec_at(FripuckProtocol_Telemetry_InfoMessage_vec_t vec, size_t i)
+__flatbuffers_offset_vec_at(FripuckProtocol_Telemetry_InfoMessage_table_t, vec, i, 0)
+__flatbuffers_table_as_root(FripuckProtocol_Telemetry_InfoMessage)
 
-__flatbuffers_define_string_field(0, Fripuck2_Telemetry_InfoMessage, text, 0)
-typedef uint8_t Fripuck2_Telemetry_Data_union_type_t;
-__flatbuffers_define_integer_type(Fripuck2_Telemetry_Data, Fripuck2_Telemetry_Data_union_type_t, 8)
-__flatbuffers_define_union(flatbuffers_, Fripuck2_Telemetry_Data)
-#define Fripuck2_Telemetry_Data_NONE ((Fripuck2_Telemetry_Data_union_type_t)UINT8_C(0))
-#define Fripuck2_Telemetry_Data_InfoMessage ((Fripuck2_Telemetry_Data_union_type_t)UINT8_C(1))
+__flatbuffers_define_string_field(0, FripuckProtocol_Telemetry_InfoMessage, text, 0)
+typedef uint8_t FripuckProtocol_Telemetry_Data_union_type_t;
+__flatbuffers_define_integer_type(FripuckProtocol_Telemetry_Data, FripuckProtocol_Telemetry_Data_union_type_t, 8)
+__flatbuffers_define_union(flatbuffers_, FripuckProtocol_Telemetry_Data)
+#define FripuckProtocol_Telemetry_Data_NONE ((FripuckProtocol_Telemetry_Data_union_type_t)UINT8_C(0))
+#define FripuckProtocol_Telemetry_Data_InfoMessage ((FripuckProtocol_Telemetry_Data_union_type_t)UINT8_C(1))
 
-static inline const char *Fripuck2_Telemetry_Data_type_name(Fripuck2_Telemetry_Data_union_type_t type)
+static inline const char *FripuckProtocol_Telemetry_Data_type_name(FripuckProtocol_Telemetry_Data_union_type_t type)
 {
     switch (type) {
-    case Fripuck2_Telemetry_Data_NONE: return "NONE";
-    case Fripuck2_Telemetry_Data_InfoMessage: return "InfoMessage";
+    case FripuckProtocol_Telemetry_Data_NONE: return "NONE";
+    case FripuckProtocol_Telemetry_Data_InfoMessage: return "InfoMessage";
     default: return "";
     }
 }
 
-static inline int Fripuck2_Telemetry_Data_is_known_type(Fripuck2_Telemetry_Data_union_type_t type)
+static inline int FripuckProtocol_Telemetry_Data_is_known_type(FripuckProtocol_Telemetry_Data_union_type_t type)
 {
     switch (type) {
-    case Fripuck2_Telemetry_Data_NONE: return 1;
-    case Fripuck2_Telemetry_Data_InfoMessage: return 1;
+    case FripuckProtocol_Telemetry_Data_NONE: return 1;
+    case FripuckProtocol_Telemetry_Data_InfoMessage: return 1;
     default: return 0;
     }
 }
 
 
-struct Fripuck2_Telemetry_Entry_table { uint8_t unused__; };
+struct FripuckProtocol_Telemetry_Entry_table { uint8_t unused__; };
 
-static inline size_t Fripuck2_Telemetry_Entry_vec_len(Fripuck2_Telemetry_Entry_vec_t vec)
+static inline size_t FripuckProtocol_Telemetry_Entry_vec_len(FripuckProtocol_Telemetry_Entry_vec_t vec)
 __flatbuffers_vec_len(vec)
-static inline Fripuck2_Telemetry_Entry_table_t Fripuck2_Telemetry_Entry_vec_at(Fripuck2_Telemetry_Entry_vec_t vec, size_t i)
-__flatbuffers_offset_vec_at(Fripuck2_Telemetry_Entry_table_t, vec, i, 0)
-__flatbuffers_table_as_root(Fripuck2_Telemetry_Entry)
+static inline FripuckProtocol_Telemetry_Entry_table_t FripuckProtocol_Telemetry_Entry_vec_at(FripuckProtocol_Telemetry_Entry_vec_t vec, size_t i)
+__flatbuffers_offset_vec_at(FripuckProtocol_Telemetry_Entry_table_t, vec, i, 0)
+__flatbuffers_table_as_root(FripuckProtocol_Telemetry_Entry)
 
-__flatbuffers_define_scalar_field(0, Fripuck2_Telemetry_Entry, timestamp, flatbuffers_uint16, uint16_t, UINT16_C(0))
-__flatbuffers_define_union_field(flatbuffers_, 2, Fripuck2_Telemetry_Entry, content, Fripuck2_Telemetry_Data, 0)
+__flatbuffers_define_scalar_field(0, FripuckProtocol_Telemetry_Entry, timestamp, flatbuffers_uint16, uint16_t, UINT16_C(0))
+__flatbuffers_define_union_field(flatbuffers_, 2, FripuckProtocol_Telemetry_Entry, content, FripuckProtocol_Telemetry_Data, 0)
 
-struct Fripuck2_Telemetry_Batch_table { uint8_t unused__; };
+struct FripuckProtocol_Telemetry_Batch_table { uint8_t unused__; };
 
-static inline size_t Fripuck2_Telemetry_Batch_vec_len(Fripuck2_Telemetry_Batch_vec_t vec)
+static inline size_t FripuckProtocol_Telemetry_Batch_vec_len(FripuckProtocol_Telemetry_Batch_vec_t vec)
 __flatbuffers_vec_len(vec)
-static inline Fripuck2_Telemetry_Batch_table_t Fripuck2_Telemetry_Batch_vec_at(Fripuck2_Telemetry_Batch_vec_t vec, size_t i)
-__flatbuffers_offset_vec_at(Fripuck2_Telemetry_Batch_table_t, vec, i, 0)
-__flatbuffers_table_as_root(Fripuck2_Telemetry_Batch)
+static inline FripuckProtocol_Telemetry_Batch_table_t FripuckProtocol_Telemetry_Batch_vec_at(FripuckProtocol_Telemetry_Batch_vec_t vec, size_t i)
+__flatbuffers_offset_vec_at(FripuckProtocol_Telemetry_Batch_table_t, vec, i, 0)
+__flatbuffers_table_as_root(FripuckProtocol_Telemetry_Batch)
 
-__flatbuffers_define_vector_field(0, Fripuck2_Telemetry_Batch, entries, Fripuck2_Telemetry_Entry_vec_t, 0)
+__flatbuffers_define_vector_field(0, FripuckProtocol_Telemetry_Batch, entries, FripuckProtocol_Telemetry_Entry_vec_t, 0)
 
 
 #include "flatcc/flatcc_epilogue.h"

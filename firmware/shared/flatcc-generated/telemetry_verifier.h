@@ -9,158 +9,158 @@
 #include "flatcc/flatcc_verifier.h"
 #include "flatcc/flatcc_prologue.h"
 
-static int Fripuck2_Telemetry_InfoMessage_verify_table(flatcc_table_verifier_descriptor_t *td);
-static int Fripuck2_Telemetry_Entry_verify_table(flatcc_table_verifier_descriptor_t *td);
-static int Fripuck2_Telemetry_Batch_verify_table(flatcc_table_verifier_descriptor_t *td);
+static int FripuckProtocol_Telemetry_InfoMessage_verify_table(flatcc_table_verifier_descriptor_t *td);
+static int FripuckProtocol_Telemetry_Entry_verify_table(flatcc_table_verifier_descriptor_t *td);
+static int FripuckProtocol_Telemetry_Batch_verify_table(flatcc_table_verifier_descriptor_t *td);
 
-static int Fripuck2_Telemetry_Data_union_verifier(flatcc_union_verifier_descriptor_t *ud)
+static int FripuckProtocol_Telemetry_Data_union_verifier(flatcc_union_verifier_descriptor_t *ud)
 {
     switch (ud->type) {
-    case 1: return flatcc_verify_union_table(ud, Fripuck2_Telemetry_InfoMessage_verify_table); /* InfoMessage */
+    case 1: return flatcc_verify_union_table(ud, FripuckProtocol_Telemetry_InfoMessage_verify_table); /* InfoMessage */
     default: return flatcc_verify_ok;
     }
 }
 
-static int Fripuck2_Telemetry_InfoMessage_verify_table(flatcc_table_verifier_descriptor_t *td)
+static int FripuckProtocol_Telemetry_InfoMessage_verify_table(flatcc_table_verifier_descriptor_t *td)
 {
     int ret;
     if ((ret = flatcc_verify_string_field(td, 0, 0) /* text */)) return ret;
     return flatcc_verify_ok;
 }
 
-static inline int Fripuck2_Telemetry_InfoMessage_verify_as_root(const void *buf, size_t bufsiz)
+static inline int FripuckProtocol_Telemetry_InfoMessage_verify_as_root(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_table_as_root(buf, bufsiz, Fripuck2_Telemetry_InfoMessage_identifier, &Fripuck2_Telemetry_InfoMessage_verify_table);
+    return flatcc_verify_table_as_root(buf, bufsiz, FripuckProtocol_Telemetry_InfoMessage_identifier, &FripuckProtocol_Telemetry_InfoMessage_verify_table);
 }
 
-static inline int Fripuck2_Telemetry_InfoMessage_verify_as_root_with_size(const void *buf, size_t bufsiz)
+static inline int FripuckProtocol_Telemetry_InfoMessage_verify_as_root_with_size(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_table_as_root_with_size(buf, bufsiz, Fripuck2_Telemetry_InfoMessage_identifier, &Fripuck2_Telemetry_InfoMessage_verify_table);
+    return flatcc_verify_table_as_root_with_size(buf, bufsiz, FripuckProtocol_Telemetry_InfoMessage_identifier, &FripuckProtocol_Telemetry_InfoMessage_verify_table);
 }
 
-static inline int Fripuck2_Telemetry_InfoMessage_verify_as_typed_root(const void *buf, size_t bufsiz)
+static inline int FripuckProtocol_Telemetry_InfoMessage_verify_as_typed_root(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_table_as_root(buf, bufsiz, Fripuck2_Telemetry_InfoMessage_type_identifier, &Fripuck2_Telemetry_InfoMessage_verify_table);
+    return flatcc_verify_table_as_root(buf, bufsiz, FripuckProtocol_Telemetry_InfoMessage_type_identifier, &FripuckProtocol_Telemetry_InfoMessage_verify_table);
 }
 
-static inline int Fripuck2_Telemetry_InfoMessage_verify_as_typed_root_with_size(const void *buf, size_t bufsiz)
+static inline int FripuckProtocol_Telemetry_InfoMessage_verify_as_typed_root_with_size(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_table_as_root_with_size(buf, bufsiz, Fripuck2_Telemetry_InfoMessage_type_identifier, &Fripuck2_Telemetry_InfoMessage_verify_table);
+    return flatcc_verify_table_as_root_with_size(buf, bufsiz, FripuckProtocol_Telemetry_InfoMessage_type_identifier, &FripuckProtocol_Telemetry_InfoMessage_verify_table);
 }
 
-static inline int Fripuck2_Telemetry_InfoMessage_verify_as_root_with_identifier(const void *buf, size_t bufsiz, const char *fid)
+static inline int FripuckProtocol_Telemetry_InfoMessage_verify_as_root_with_identifier(const void *buf, size_t bufsiz, const char *fid)
 {
-    return flatcc_verify_table_as_root(buf, bufsiz, fid, &Fripuck2_Telemetry_InfoMessage_verify_table);
+    return flatcc_verify_table_as_root(buf, bufsiz, fid, &FripuckProtocol_Telemetry_InfoMessage_verify_table);
 }
 
-static inline int Fripuck2_Telemetry_InfoMessage_verify_as_root_with_identifier_and_size(const void *buf, size_t bufsiz, const char *fid)
+static inline int FripuckProtocol_Telemetry_InfoMessage_verify_as_root_with_identifier_and_size(const void *buf, size_t bufsiz, const char *fid)
 {
-    return flatcc_verify_table_as_root_with_size(buf, bufsiz, fid, &Fripuck2_Telemetry_InfoMessage_verify_table);
+    return flatcc_verify_table_as_root_with_size(buf, bufsiz, fid, &FripuckProtocol_Telemetry_InfoMessage_verify_table);
 }
 
-static inline int Fripuck2_Telemetry_InfoMessage_verify_as_root_with_type_hash(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
+static inline int FripuckProtocol_Telemetry_InfoMessage_verify_as_root_with_type_hash(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
 {
-    return flatcc_verify_table_as_typed_root(buf, bufsiz, thash, &Fripuck2_Telemetry_InfoMessage_verify_table);
+    return flatcc_verify_table_as_typed_root(buf, bufsiz, thash, &FripuckProtocol_Telemetry_InfoMessage_verify_table);
 }
 
-static inline int Fripuck2_Telemetry_InfoMessage_verify_as_root_with_type_hash_and_size(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
+static inline int FripuckProtocol_Telemetry_InfoMessage_verify_as_root_with_type_hash_and_size(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
 {
-    return flatcc_verify_table_as_typed_root_with_size(buf, bufsiz, thash, &Fripuck2_Telemetry_InfoMessage_verify_table);
+    return flatcc_verify_table_as_typed_root_with_size(buf, bufsiz, thash, &FripuckProtocol_Telemetry_InfoMessage_verify_table);
 }
 
-static int Fripuck2_Telemetry_Entry_verify_table(flatcc_table_verifier_descriptor_t *td)
+static int FripuckProtocol_Telemetry_Entry_verify_table(flatcc_table_verifier_descriptor_t *td)
 {
     int ret;
     if ((ret = flatcc_verify_field(td, 0, 2, 2) /* timestamp */)) return ret;
-    if ((ret = flatcc_verify_union_field(td, 2, 0, &Fripuck2_Telemetry_Data_union_verifier) /* content */)) return ret;
+    if ((ret = flatcc_verify_union_field(td, 2, 0, &FripuckProtocol_Telemetry_Data_union_verifier) /* content */)) return ret;
     return flatcc_verify_ok;
 }
 
-static inline int Fripuck2_Telemetry_Entry_verify_as_root(const void *buf, size_t bufsiz)
+static inline int FripuckProtocol_Telemetry_Entry_verify_as_root(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_table_as_root(buf, bufsiz, Fripuck2_Telemetry_Entry_identifier, &Fripuck2_Telemetry_Entry_verify_table);
+    return flatcc_verify_table_as_root(buf, bufsiz, FripuckProtocol_Telemetry_Entry_identifier, &FripuckProtocol_Telemetry_Entry_verify_table);
 }
 
-static inline int Fripuck2_Telemetry_Entry_verify_as_root_with_size(const void *buf, size_t bufsiz)
+static inline int FripuckProtocol_Telemetry_Entry_verify_as_root_with_size(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_table_as_root_with_size(buf, bufsiz, Fripuck2_Telemetry_Entry_identifier, &Fripuck2_Telemetry_Entry_verify_table);
+    return flatcc_verify_table_as_root_with_size(buf, bufsiz, FripuckProtocol_Telemetry_Entry_identifier, &FripuckProtocol_Telemetry_Entry_verify_table);
 }
 
-static inline int Fripuck2_Telemetry_Entry_verify_as_typed_root(const void *buf, size_t bufsiz)
+static inline int FripuckProtocol_Telemetry_Entry_verify_as_typed_root(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_table_as_root(buf, bufsiz, Fripuck2_Telemetry_Entry_type_identifier, &Fripuck2_Telemetry_Entry_verify_table);
+    return flatcc_verify_table_as_root(buf, bufsiz, FripuckProtocol_Telemetry_Entry_type_identifier, &FripuckProtocol_Telemetry_Entry_verify_table);
 }
 
-static inline int Fripuck2_Telemetry_Entry_verify_as_typed_root_with_size(const void *buf, size_t bufsiz)
+static inline int FripuckProtocol_Telemetry_Entry_verify_as_typed_root_with_size(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_table_as_root_with_size(buf, bufsiz, Fripuck2_Telemetry_Entry_type_identifier, &Fripuck2_Telemetry_Entry_verify_table);
+    return flatcc_verify_table_as_root_with_size(buf, bufsiz, FripuckProtocol_Telemetry_Entry_type_identifier, &FripuckProtocol_Telemetry_Entry_verify_table);
 }
 
-static inline int Fripuck2_Telemetry_Entry_verify_as_root_with_identifier(const void *buf, size_t bufsiz, const char *fid)
+static inline int FripuckProtocol_Telemetry_Entry_verify_as_root_with_identifier(const void *buf, size_t bufsiz, const char *fid)
 {
-    return flatcc_verify_table_as_root(buf, bufsiz, fid, &Fripuck2_Telemetry_Entry_verify_table);
+    return flatcc_verify_table_as_root(buf, bufsiz, fid, &FripuckProtocol_Telemetry_Entry_verify_table);
 }
 
-static inline int Fripuck2_Telemetry_Entry_verify_as_root_with_identifier_and_size(const void *buf, size_t bufsiz, const char *fid)
+static inline int FripuckProtocol_Telemetry_Entry_verify_as_root_with_identifier_and_size(const void *buf, size_t bufsiz, const char *fid)
 {
-    return flatcc_verify_table_as_root_with_size(buf, bufsiz, fid, &Fripuck2_Telemetry_Entry_verify_table);
+    return flatcc_verify_table_as_root_with_size(buf, bufsiz, fid, &FripuckProtocol_Telemetry_Entry_verify_table);
 }
 
-static inline int Fripuck2_Telemetry_Entry_verify_as_root_with_type_hash(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
+static inline int FripuckProtocol_Telemetry_Entry_verify_as_root_with_type_hash(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
 {
-    return flatcc_verify_table_as_typed_root(buf, bufsiz, thash, &Fripuck2_Telemetry_Entry_verify_table);
+    return flatcc_verify_table_as_typed_root(buf, bufsiz, thash, &FripuckProtocol_Telemetry_Entry_verify_table);
 }
 
-static inline int Fripuck2_Telemetry_Entry_verify_as_root_with_type_hash_and_size(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
+static inline int FripuckProtocol_Telemetry_Entry_verify_as_root_with_type_hash_and_size(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
 {
-    return flatcc_verify_table_as_typed_root_with_size(buf, bufsiz, thash, &Fripuck2_Telemetry_Entry_verify_table);
+    return flatcc_verify_table_as_typed_root_with_size(buf, bufsiz, thash, &FripuckProtocol_Telemetry_Entry_verify_table);
 }
 
-static int Fripuck2_Telemetry_Batch_verify_table(flatcc_table_verifier_descriptor_t *td)
+static int FripuckProtocol_Telemetry_Batch_verify_table(flatcc_table_verifier_descriptor_t *td)
 {
     int ret;
-    if ((ret = flatcc_verify_table_vector_field(td, 0, 0, &Fripuck2_Telemetry_Entry_verify_table) /* entries */)) return ret;
+    if ((ret = flatcc_verify_table_vector_field(td, 0, 0, &FripuckProtocol_Telemetry_Entry_verify_table) /* entries */)) return ret;
     return flatcc_verify_ok;
 }
 
-static inline int Fripuck2_Telemetry_Batch_verify_as_root(const void *buf, size_t bufsiz)
+static inline int FripuckProtocol_Telemetry_Batch_verify_as_root(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_table_as_root(buf, bufsiz, Fripuck2_Telemetry_Batch_identifier, &Fripuck2_Telemetry_Batch_verify_table);
+    return flatcc_verify_table_as_root(buf, bufsiz, FripuckProtocol_Telemetry_Batch_identifier, &FripuckProtocol_Telemetry_Batch_verify_table);
 }
 
-static inline int Fripuck2_Telemetry_Batch_verify_as_root_with_size(const void *buf, size_t bufsiz)
+static inline int FripuckProtocol_Telemetry_Batch_verify_as_root_with_size(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_table_as_root_with_size(buf, bufsiz, Fripuck2_Telemetry_Batch_identifier, &Fripuck2_Telemetry_Batch_verify_table);
+    return flatcc_verify_table_as_root_with_size(buf, bufsiz, FripuckProtocol_Telemetry_Batch_identifier, &FripuckProtocol_Telemetry_Batch_verify_table);
 }
 
-static inline int Fripuck2_Telemetry_Batch_verify_as_typed_root(const void *buf, size_t bufsiz)
+static inline int FripuckProtocol_Telemetry_Batch_verify_as_typed_root(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_table_as_root(buf, bufsiz, Fripuck2_Telemetry_Batch_type_identifier, &Fripuck2_Telemetry_Batch_verify_table);
+    return flatcc_verify_table_as_root(buf, bufsiz, FripuckProtocol_Telemetry_Batch_type_identifier, &FripuckProtocol_Telemetry_Batch_verify_table);
 }
 
-static inline int Fripuck2_Telemetry_Batch_verify_as_typed_root_with_size(const void *buf, size_t bufsiz)
+static inline int FripuckProtocol_Telemetry_Batch_verify_as_typed_root_with_size(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_table_as_root_with_size(buf, bufsiz, Fripuck2_Telemetry_Batch_type_identifier, &Fripuck2_Telemetry_Batch_verify_table);
+    return flatcc_verify_table_as_root_with_size(buf, bufsiz, FripuckProtocol_Telemetry_Batch_type_identifier, &FripuckProtocol_Telemetry_Batch_verify_table);
 }
 
-static inline int Fripuck2_Telemetry_Batch_verify_as_root_with_identifier(const void *buf, size_t bufsiz, const char *fid)
+static inline int FripuckProtocol_Telemetry_Batch_verify_as_root_with_identifier(const void *buf, size_t bufsiz, const char *fid)
 {
-    return flatcc_verify_table_as_root(buf, bufsiz, fid, &Fripuck2_Telemetry_Batch_verify_table);
+    return flatcc_verify_table_as_root(buf, bufsiz, fid, &FripuckProtocol_Telemetry_Batch_verify_table);
 }
 
-static inline int Fripuck2_Telemetry_Batch_verify_as_root_with_identifier_and_size(const void *buf, size_t bufsiz, const char *fid)
+static inline int FripuckProtocol_Telemetry_Batch_verify_as_root_with_identifier_and_size(const void *buf, size_t bufsiz, const char *fid)
 {
-    return flatcc_verify_table_as_root_with_size(buf, bufsiz, fid, &Fripuck2_Telemetry_Batch_verify_table);
+    return flatcc_verify_table_as_root_with_size(buf, bufsiz, fid, &FripuckProtocol_Telemetry_Batch_verify_table);
 }
 
-static inline int Fripuck2_Telemetry_Batch_verify_as_root_with_type_hash(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
+static inline int FripuckProtocol_Telemetry_Batch_verify_as_root_with_type_hash(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
 {
-    return flatcc_verify_table_as_typed_root(buf, bufsiz, thash, &Fripuck2_Telemetry_Batch_verify_table);
+    return flatcc_verify_table_as_typed_root(buf, bufsiz, thash, &FripuckProtocol_Telemetry_Batch_verify_table);
 }
 
-static inline int Fripuck2_Telemetry_Batch_verify_as_root_with_type_hash_and_size(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
+static inline int FripuckProtocol_Telemetry_Batch_verify_as_root_with_type_hash_and_size(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
 {
-    return flatcc_verify_table_as_typed_root_with_size(buf, bufsiz, thash, &Fripuck2_Telemetry_Batch_verify_table);
+    return flatcc_verify_table_as_typed_root_with_size(buf, bufsiz, thash, &FripuckProtocol_Telemetry_Batch_verify_table);
 }
 
 #include "flatcc/flatcc_epilogue.h"

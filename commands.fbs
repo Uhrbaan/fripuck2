@@ -1,4 +1,4 @@
-namespace Fripuck2.Commands;
+namespace FripuckProtocol.Commands;
 
 table InfoMessage {
     text: string;

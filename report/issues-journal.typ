@@ -1514,3 +1514,38 @@ table Batch {
 root_type Batch;
 file_identifier "FRI2";
 ```
+
+== 2026.03.26
+Thinking about how to design the API for the commands.
+One thing that I want is an option for "fire and forget" commands, which would work great in a real-time environment, but I would also like to add a new option, to apply some sequential commands.
+
+For sequential instructions I am thinking of something inspired by how networks are built in `pytorch`:
+```py
+from fripuck2 import commands, robot
+
+# real time, similar to now
+robot.set_speed()
+robot.enable_led()
+
+# sequence
+with robot.sequence() as seq:
+    seq.move(10, 20)
+    seq.wait(2)
+    seq.notify()
+```
+
+I built a mockup schema for the sending.
+Nothin special, except the sequence, which simply contains an ID and loop field, alongside a vector of unions containg all the different instruction types.
+
+Now I am trying to build the basics of the API. Here is the architecture:
+
++ We have a central `ConnectionManager` class that manages all thing network related.
++ When we instanciate robots with an ip, we `register()` with the IP address, and also pass a callback as a parameter.
+  - This callback should point to a function that is supposed to manage arrived data (deconstruct the flatbuffer essentially).
+  - _Quirk: since the callback is executed by the ConnectionManager thread, it has to be fast of it will stall it. It also has to be thread-safe_.
+  - The `register()` function should also return a function (`send`) that the robot can call to send a piece of data
++ The robot is then tasked to change the data (which are flatbuffers) into their own datastructures and then provide an API for it
+
+This way, we can have the code nicely separated, and we don't have the issue that every robot has to manage a udp connection (which is sent to all addresses), and will only recieve packets that belong to them.
+
+It has also been decided that the API for getting the sensors will be `robot.sensor.[get|get_all]()`, where `get()` is used to get the latest value (or a `np.array` or object if it holds multiple data points) and `get_all` returns an array of elements with their timestamps that were stored automagically.

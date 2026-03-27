@@ -10,9 +10,8 @@
 #include "flatbuffers_common_builder.h"
 #endif
 #include "flatcc/flatcc_prologue.h"
-#ifndef flatbuffers_identifier
-#define flatbuffers_identifier 0
-#endif
+#undef flatbuffers_identifier
+#define flatbuffers_identifier "CMND"
 #ifndef flatbuffers_extension
 #define flatbuffers_extension "bin"
 #endif
@@ -21,116 +20,193 @@ typedef flatbuffers_union_ref_t FripuckProtocol_Commands_Instruction_union_ref_t
 typedef flatbuffers_union_vec_ref_t FripuckProtocol_Commands_Instruction_union_vec_ref_t;
 static FripuckProtocol_Commands_Instruction_union_ref_t FripuckProtocol_Commands_Instruction_clone(flatbuffers_builder_t *B, FripuckProtocol_Commands_Instruction_union_t t);
 
-static const flatbuffers_voffset_t __FripuckProtocol_Commands_InfoMessage_required[] = { 0 };
-typedef flatbuffers_ref_t FripuckProtocol_Commands_InfoMessage_ref_t;
-static FripuckProtocol_Commands_InfoMessage_ref_t FripuckProtocol_Commands_InfoMessage_clone(flatbuffers_builder_t *B, FripuckProtocol_Commands_InfoMessage_table_t t);
-__flatbuffers_build_table(flatbuffers_, FripuckProtocol_Commands_InfoMessage, 1)
+static const flatbuffers_voffset_t __FripuckProtocol_Commands_Notify_required[] = { 0 };
+typedef flatbuffers_ref_t FripuckProtocol_Commands_Notify_ref_t;
+static FripuckProtocol_Commands_Notify_ref_t FripuckProtocol_Commands_Notify_clone(flatbuffers_builder_t *B, FripuckProtocol_Commands_Notify_table_t t);
+__flatbuffers_build_table(flatbuffers_, FripuckProtocol_Commands_Notify, 1)
 
-static const flatbuffers_voffset_t __FripuckProtocol_Commands_DummyConfig_required[] = { 0 };
-typedef flatbuffers_ref_t FripuckProtocol_Commands_DummyConfig_ref_t;
-static FripuckProtocol_Commands_DummyConfig_ref_t FripuckProtocol_Commands_DummyConfig_clone(flatbuffers_builder_t *B, FripuckProtocol_Commands_DummyConfig_table_t t);
-__flatbuffers_build_table(flatbuffers_, FripuckProtocol_Commands_DummyConfig, 1)
+static const flatbuffers_voffset_t __FripuckProtocol_Commands_SetLed_required[] = { 0 };
+typedef flatbuffers_ref_t FripuckProtocol_Commands_SetLed_ref_t;
+static FripuckProtocol_Commands_SetLed_ref_t FripuckProtocol_Commands_SetLed_clone(flatbuffers_builder_t *B, FripuckProtocol_Commands_SetLed_table_t t);
+__flatbuffers_build_table(flatbuffers_, FripuckProtocol_Commands_SetLed, 2)
+
+static const flatbuffers_voffset_t __FripuckProtocol_Commands_Sequence_required[] = { 0 };
+typedef flatbuffers_ref_t FripuckProtocol_Commands_Sequence_ref_t;
+static FripuckProtocol_Commands_Sequence_ref_t FripuckProtocol_Commands_Sequence_clone(flatbuffers_builder_t *B, FripuckProtocol_Commands_Sequence_table_t t);
+__flatbuffers_build_table(flatbuffers_, FripuckProtocol_Commands_Sequence, 3)
+
+static const flatbuffers_voffset_t __FripuckProtocol_Commands_AbortSequence_required[] = { 0 };
+typedef flatbuffers_ref_t FripuckProtocol_Commands_AbortSequence_ref_t;
+static FripuckProtocol_Commands_AbortSequence_ref_t FripuckProtocol_Commands_AbortSequence_clone(flatbuffers_builder_t *B, FripuckProtocol_Commands_AbortSequence_table_t t);
+__flatbuffers_build_table(flatbuffers_, FripuckProtocol_Commands_AbortSequence, 1)
 
 static const flatbuffers_voffset_t __FripuckProtocol_Commands_Command_required[] = { 0 };
 typedef flatbuffers_ref_t FripuckProtocol_Commands_Command_ref_t;
 static FripuckProtocol_Commands_Command_ref_t FripuckProtocol_Commands_Command_clone(flatbuffers_builder_t *B, FripuckProtocol_Commands_Command_table_t t);
-__flatbuffers_build_table(flatbuffers_, FripuckProtocol_Commands_Command, 3)
+__flatbuffers_build_table(flatbuffers_, FripuckProtocol_Commands_Command, 2)
 
-static const flatbuffers_voffset_t __FripuckProtocol_Commands_Batch_required[] = { 0 };
-typedef flatbuffers_ref_t FripuckProtocol_Commands_Batch_ref_t;
-static FripuckProtocol_Commands_Batch_ref_t FripuckProtocol_Commands_Batch_clone(flatbuffers_builder_t *B, FripuckProtocol_Commands_Batch_table_t t);
-__flatbuffers_build_table(flatbuffers_, FripuckProtocol_Commands_Batch, 1)
+static const flatbuffers_voffset_t __FripuckProtocol_Commands_CommandBatch_required[] = { 0 };
+typedef flatbuffers_ref_t FripuckProtocol_Commands_CommandBatch_ref_t;
+static FripuckProtocol_Commands_CommandBatch_ref_t FripuckProtocol_Commands_CommandBatch_clone(flatbuffers_builder_t *B, FripuckProtocol_Commands_CommandBatch_table_t t);
+__flatbuffers_build_table(flatbuffers_, FripuckProtocol_Commands_CommandBatch, 4)
 
-#define __FripuckProtocol_Commands_InfoMessage_formal_args , flatbuffers_string_ref_t v0
-#define __FripuckProtocol_Commands_InfoMessage_call_args , v0
-static inline FripuckProtocol_Commands_InfoMessage_ref_t FripuckProtocol_Commands_InfoMessage_create(flatbuffers_builder_t *B __FripuckProtocol_Commands_InfoMessage_formal_args);
-__flatbuffers_build_table_prolog(flatbuffers_, FripuckProtocol_Commands_InfoMessage, FripuckProtocol_Commands_InfoMessage_file_identifier, FripuckProtocol_Commands_InfoMessage_type_identifier)
+#define __FripuckProtocol_Commands_Notify_formal_args , flatbuffers_string_ref_t v0
+#define __FripuckProtocol_Commands_Notify_call_args , v0
+static inline FripuckProtocol_Commands_Notify_ref_t FripuckProtocol_Commands_Notify_create(flatbuffers_builder_t *B __FripuckProtocol_Commands_Notify_formal_args);
+__flatbuffers_build_table_prolog(flatbuffers_, FripuckProtocol_Commands_Notify, FripuckProtocol_Commands_Notify_file_identifier, FripuckProtocol_Commands_Notify_type_identifier)
 
-#define __FripuckProtocol_Commands_DummyConfig_formal_args , uint32_t v0
-#define __FripuckProtocol_Commands_DummyConfig_call_args , v0
-static inline FripuckProtocol_Commands_DummyConfig_ref_t FripuckProtocol_Commands_DummyConfig_create(flatbuffers_builder_t *B __FripuckProtocol_Commands_DummyConfig_formal_args);
-__flatbuffers_build_table_prolog(flatbuffers_, FripuckProtocol_Commands_DummyConfig, FripuckProtocol_Commands_DummyConfig_file_identifier, FripuckProtocol_Commands_DummyConfig_type_identifier)
+#define __FripuckProtocol_Commands_SetLed_formal_args , uint32_t v0, uint32_t v1
+#define __FripuckProtocol_Commands_SetLed_call_args , v0, v1
+static inline FripuckProtocol_Commands_SetLed_ref_t FripuckProtocol_Commands_SetLed_create(flatbuffers_builder_t *B __FripuckProtocol_Commands_SetLed_formal_args);
+__flatbuffers_build_table_prolog(flatbuffers_, FripuckProtocol_Commands_SetLed, FripuckProtocol_Commands_SetLed_file_identifier, FripuckProtocol_Commands_SetLed_type_identifier)
 
-#define __FripuckProtocol_Commands_Command_formal_args , uint16_t v0, FripuckProtocol_Commands_Instruction_union_ref_t v2
-#define __FripuckProtocol_Commands_Command_call_args , v0, v2
+#define __FripuckProtocol_Commands_Sequence_formal_args , uint32_t v0, flatbuffers_bool_t v1, FripuckProtocol_Commands_Command_vec_ref_t v2
+#define __FripuckProtocol_Commands_Sequence_call_args , v0, v1, v2
+static inline FripuckProtocol_Commands_Sequence_ref_t FripuckProtocol_Commands_Sequence_create(flatbuffers_builder_t *B __FripuckProtocol_Commands_Sequence_formal_args);
+__flatbuffers_build_table_prolog(flatbuffers_, FripuckProtocol_Commands_Sequence, FripuckProtocol_Commands_Sequence_file_identifier, FripuckProtocol_Commands_Sequence_type_identifier)
+
+#define __FripuckProtocol_Commands_AbortSequence_formal_args , uint32_t v0
+#define __FripuckProtocol_Commands_AbortSequence_call_args , v0
+static inline FripuckProtocol_Commands_AbortSequence_ref_t FripuckProtocol_Commands_AbortSequence_create(flatbuffers_builder_t *B __FripuckProtocol_Commands_AbortSequence_formal_args);
+__flatbuffers_build_table_prolog(flatbuffers_, FripuckProtocol_Commands_AbortSequence, FripuckProtocol_Commands_AbortSequence_file_identifier, FripuckProtocol_Commands_AbortSequence_type_identifier)
+
+#define __FripuckProtocol_Commands_Command_formal_args , FripuckProtocol_Commands_Instruction_union_ref_t v1
+#define __FripuckProtocol_Commands_Command_call_args , v1
 static inline FripuckProtocol_Commands_Command_ref_t FripuckProtocol_Commands_Command_create(flatbuffers_builder_t *B __FripuckProtocol_Commands_Command_formal_args);
 __flatbuffers_build_table_prolog(flatbuffers_, FripuckProtocol_Commands_Command, FripuckProtocol_Commands_Command_file_identifier, FripuckProtocol_Commands_Command_type_identifier)
 
-#define __FripuckProtocol_Commands_Batch_formal_args , FripuckProtocol_Commands_Command_vec_ref_t v0
-#define __FripuckProtocol_Commands_Batch_call_args , v0
-static inline FripuckProtocol_Commands_Batch_ref_t FripuckProtocol_Commands_Batch_create(flatbuffers_builder_t *B __FripuckProtocol_Commands_Batch_formal_args);
-__flatbuffers_build_table_prolog(flatbuffers_, FripuckProtocol_Commands_Batch, FripuckProtocol_Commands_Batch_file_identifier, FripuckProtocol_Commands_Batch_type_identifier)
+#define __FripuckProtocol_Commands_CommandBatch_formal_args , uint64_t v0, FripuckProtocol_Commands_Command_vec_ref_t v1, FripuckProtocol_Commands_Sequence_vec_ref_t v2, flatbuffers_bool_t v3
+#define __FripuckProtocol_Commands_CommandBatch_call_args , v0, v1, v2, v3
+static inline FripuckProtocol_Commands_CommandBatch_ref_t FripuckProtocol_Commands_CommandBatch_create(flatbuffers_builder_t *B __FripuckProtocol_Commands_CommandBatch_formal_args);
+__flatbuffers_build_table_prolog(flatbuffers_, FripuckProtocol_Commands_CommandBatch, FripuckProtocol_Commands_CommandBatch_file_identifier, FripuckProtocol_Commands_CommandBatch_type_identifier)
 
 static inline FripuckProtocol_Commands_Instruction_union_ref_t FripuckProtocol_Commands_Instruction_as_NONE(void)
 { FripuckProtocol_Commands_Instruction_union_ref_t uref; uref.type = FripuckProtocol_Commands_Instruction_NONE; uref.value = 0; return uref; }
-static inline FripuckProtocol_Commands_Instruction_union_ref_t FripuckProtocol_Commands_Instruction_as_DummyConfig(FripuckProtocol_Commands_DummyConfig_ref_t ref)
-{ FripuckProtocol_Commands_Instruction_union_ref_t uref; uref.type = FripuckProtocol_Commands_Instruction_DummyConfig; uref.value = ref; return uref; }
-static inline FripuckProtocol_Commands_Instruction_union_ref_t FripuckProtocol_Commands_Instruction_as_InfoMessage(FripuckProtocol_Commands_InfoMessage_ref_t ref)
-{ FripuckProtocol_Commands_Instruction_union_ref_t uref; uref.type = FripuckProtocol_Commands_Instruction_InfoMessage; uref.value = ref; return uref; }
+static inline FripuckProtocol_Commands_Instruction_union_ref_t FripuckProtocol_Commands_Instruction_as_Notify(FripuckProtocol_Commands_Notify_ref_t ref)
+{ FripuckProtocol_Commands_Instruction_union_ref_t uref; uref.type = FripuckProtocol_Commands_Instruction_Notify; uref.value = ref; return uref; }
+static inline FripuckProtocol_Commands_Instruction_union_ref_t FripuckProtocol_Commands_Instruction_as_SetLed(FripuckProtocol_Commands_SetLed_ref_t ref)
+{ FripuckProtocol_Commands_Instruction_union_ref_t uref; uref.type = FripuckProtocol_Commands_Instruction_SetLed; uref.value = ref; return uref; }
+static inline FripuckProtocol_Commands_Instruction_union_ref_t FripuckProtocol_Commands_Instruction_as_Sequence(FripuckProtocol_Commands_Sequence_ref_t ref)
+{ FripuckProtocol_Commands_Instruction_union_ref_t uref; uref.type = FripuckProtocol_Commands_Instruction_Sequence; uref.value = ref; return uref; }
+static inline FripuckProtocol_Commands_Instruction_union_ref_t FripuckProtocol_Commands_Instruction_as_AbortSequence(FripuckProtocol_Commands_AbortSequence_ref_t ref)
+{ FripuckProtocol_Commands_Instruction_union_ref_t uref; uref.type = FripuckProtocol_Commands_Instruction_AbortSequence; uref.value = ref; return uref; }
 __flatbuffers_build_union_vector(flatbuffers_, FripuckProtocol_Commands_Instruction)
 
 static FripuckProtocol_Commands_Instruction_union_ref_t FripuckProtocol_Commands_Instruction_clone(flatbuffers_builder_t *B, FripuckProtocol_Commands_Instruction_union_t u)
 {
     switch (u.type) {
-    case 1: return FripuckProtocol_Commands_Instruction_as_DummyConfig(FripuckProtocol_Commands_DummyConfig_clone(B, (FripuckProtocol_Commands_DummyConfig_table_t)u.value));
-    case 2: return FripuckProtocol_Commands_Instruction_as_InfoMessage(FripuckProtocol_Commands_InfoMessage_clone(B, (FripuckProtocol_Commands_InfoMessage_table_t)u.value));
+    case 1: return FripuckProtocol_Commands_Instruction_as_Notify(FripuckProtocol_Commands_Notify_clone(B, (FripuckProtocol_Commands_Notify_table_t)u.value));
+    case 2: return FripuckProtocol_Commands_Instruction_as_SetLed(FripuckProtocol_Commands_SetLed_clone(B, (FripuckProtocol_Commands_SetLed_table_t)u.value));
+    case 3: return FripuckProtocol_Commands_Instruction_as_Sequence(FripuckProtocol_Commands_Sequence_clone(B, (FripuckProtocol_Commands_Sequence_table_t)u.value));
+    case 4: return FripuckProtocol_Commands_Instruction_as_AbortSequence(FripuckProtocol_Commands_AbortSequence_clone(B, (FripuckProtocol_Commands_AbortSequence_table_t)u.value));
     default: return FripuckProtocol_Commands_Instruction_as_NONE();
     }
 }
 
-__flatbuffers_build_string_field(0, flatbuffers_, FripuckProtocol_Commands_InfoMessage_text, FripuckProtocol_Commands_InfoMessage)
+__flatbuffers_build_string_field(0, flatbuffers_, FripuckProtocol_Commands_Notify_message, FripuckProtocol_Commands_Notify)
 
-static inline FripuckProtocol_Commands_InfoMessage_ref_t FripuckProtocol_Commands_InfoMessage_create(flatbuffers_builder_t *B __FripuckProtocol_Commands_InfoMessage_formal_args)
+static inline FripuckProtocol_Commands_Notify_ref_t FripuckProtocol_Commands_Notify_create(flatbuffers_builder_t *B __FripuckProtocol_Commands_Notify_formal_args)
 {
-    if (FripuckProtocol_Commands_InfoMessage_start(B)
-        || FripuckProtocol_Commands_InfoMessage_text_add(B, v0)) {
+    if (FripuckProtocol_Commands_Notify_start(B)
+        || FripuckProtocol_Commands_Notify_message_add(B, v0)) {
         return 0;
     }
-    return FripuckProtocol_Commands_InfoMessage_end(B);
+    return FripuckProtocol_Commands_Notify_end(B);
 }
 
-static FripuckProtocol_Commands_InfoMessage_ref_t FripuckProtocol_Commands_InfoMessage_clone(flatbuffers_builder_t *B, FripuckProtocol_Commands_InfoMessage_table_t t)
-{
-    __flatbuffers_memoize_begin(B, t);
-    if (FripuckProtocol_Commands_InfoMessage_start(B)
-        || FripuckProtocol_Commands_InfoMessage_text_pick(B, t)) {
-        return 0;
-    }
-    __flatbuffers_memoize_end(B, t, FripuckProtocol_Commands_InfoMessage_end(B));
-}
-
-__flatbuffers_build_scalar_field(0, flatbuffers_, FripuckProtocol_Commands_DummyConfig_value, flatbuffers_uint32, uint32_t, 4, 4, UINT32_C(0), FripuckProtocol_Commands_DummyConfig)
-
-static inline FripuckProtocol_Commands_DummyConfig_ref_t FripuckProtocol_Commands_DummyConfig_create(flatbuffers_builder_t *B __FripuckProtocol_Commands_DummyConfig_formal_args)
-{
-    if (FripuckProtocol_Commands_DummyConfig_start(B)
-        || FripuckProtocol_Commands_DummyConfig_value_add(B, v0)) {
-        return 0;
-    }
-    return FripuckProtocol_Commands_DummyConfig_end(B);
-}
-
-static FripuckProtocol_Commands_DummyConfig_ref_t FripuckProtocol_Commands_DummyConfig_clone(flatbuffers_builder_t *B, FripuckProtocol_Commands_DummyConfig_table_t t)
+static FripuckProtocol_Commands_Notify_ref_t FripuckProtocol_Commands_Notify_clone(flatbuffers_builder_t *B, FripuckProtocol_Commands_Notify_table_t t)
 {
     __flatbuffers_memoize_begin(B, t);
-    if (FripuckProtocol_Commands_DummyConfig_start(B)
-        || FripuckProtocol_Commands_DummyConfig_value_pick(B, t)) {
+    if (FripuckProtocol_Commands_Notify_start(B)
+        || FripuckProtocol_Commands_Notify_message_pick(B, t)) {
         return 0;
     }
-    __flatbuffers_memoize_end(B, t, FripuckProtocol_Commands_DummyConfig_end(B));
+    __flatbuffers_memoize_end(B, t, FripuckProtocol_Commands_Notify_end(B));
 }
 
-__flatbuffers_build_scalar_field(0, flatbuffers_, FripuckProtocol_Commands_Command_timestamp, flatbuffers_uint16, uint16_t, 2, 2, UINT16_C(0), FripuckProtocol_Commands_Command)
-__flatbuffers_build_union_field(2, flatbuffers_, FripuckProtocol_Commands_Command_content, FripuckProtocol_Commands_Instruction, FripuckProtocol_Commands_Command)
-__flatbuffers_build_union_table_value_field(flatbuffers_, FripuckProtocol_Commands_Command_content, FripuckProtocol_Commands_Instruction, DummyConfig, FripuckProtocol_Commands_DummyConfig)
-__flatbuffers_build_union_table_value_field(flatbuffers_, FripuckProtocol_Commands_Command_content, FripuckProtocol_Commands_Instruction, InfoMessage, FripuckProtocol_Commands_InfoMessage)
+__flatbuffers_build_scalar_field(0, flatbuffers_, FripuckProtocol_Commands_SetLed_color, flatbuffers_uint32, uint32_t, 4, 4, UINT32_C(0), FripuckProtocol_Commands_SetLed)
+__flatbuffers_build_scalar_field(1, flatbuffers_, FripuckProtocol_Commands_SetLed_mask, flatbuffers_uint32, uint32_t, 4, 4, UINT32_C(0), FripuckProtocol_Commands_SetLed)
+
+static inline FripuckProtocol_Commands_SetLed_ref_t FripuckProtocol_Commands_SetLed_create(flatbuffers_builder_t *B __FripuckProtocol_Commands_SetLed_formal_args)
+{
+    if (FripuckProtocol_Commands_SetLed_start(B)
+        || FripuckProtocol_Commands_SetLed_color_add(B, v0)
+        || FripuckProtocol_Commands_SetLed_mask_add(B, v1)) {
+        return 0;
+    }
+    return FripuckProtocol_Commands_SetLed_end(B);
+}
+
+static FripuckProtocol_Commands_SetLed_ref_t FripuckProtocol_Commands_SetLed_clone(flatbuffers_builder_t *B, FripuckProtocol_Commands_SetLed_table_t t)
+{
+    __flatbuffers_memoize_begin(B, t);
+    if (FripuckProtocol_Commands_SetLed_start(B)
+        || FripuckProtocol_Commands_SetLed_color_pick(B, t)
+        || FripuckProtocol_Commands_SetLed_mask_pick(B, t)) {
+        return 0;
+    }
+    __flatbuffers_memoize_end(B, t, FripuckProtocol_Commands_SetLed_end(B));
+}
+
+__flatbuffers_build_scalar_field(0, flatbuffers_, FripuckProtocol_Commands_Sequence_id, flatbuffers_uint32, uint32_t, 4, 4, UINT32_C(0), FripuckProtocol_Commands_Sequence)
+__flatbuffers_build_scalar_field(1, flatbuffers_, FripuckProtocol_Commands_Sequence_loop, flatbuffers_bool, flatbuffers_bool_t, 1, 1, UINT8_C(0), FripuckProtocol_Commands_Sequence)
+__flatbuffers_build_table_vector_field(2, flatbuffers_, FripuckProtocol_Commands_Sequence_commands, FripuckProtocol_Commands_Command, FripuckProtocol_Commands_Sequence)
+
+static inline FripuckProtocol_Commands_Sequence_ref_t FripuckProtocol_Commands_Sequence_create(flatbuffers_builder_t *B __FripuckProtocol_Commands_Sequence_formal_args)
+{
+    if (FripuckProtocol_Commands_Sequence_start(B)
+        || FripuckProtocol_Commands_Sequence_id_add(B, v0)
+        || FripuckProtocol_Commands_Sequence_commands_add(B, v2)
+        || FripuckProtocol_Commands_Sequence_loop_add(B, v1)) {
+        return 0;
+    }
+    return FripuckProtocol_Commands_Sequence_end(B);
+}
+
+static FripuckProtocol_Commands_Sequence_ref_t FripuckProtocol_Commands_Sequence_clone(flatbuffers_builder_t *B, FripuckProtocol_Commands_Sequence_table_t t)
+{
+    __flatbuffers_memoize_begin(B, t);
+    if (FripuckProtocol_Commands_Sequence_start(B)
+        || FripuckProtocol_Commands_Sequence_id_pick(B, t)
+        || FripuckProtocol_Commands_Sequence_commands_pick(B, t)
+        || FripuckProtocol_Commands_Sequence_loop_pick(B, t)) {
+        return 0;
+    }
+    __flatbuffers_memoize_end(B, t, FripuckProtocol_Commands_Sequence_end(B));
+}
+
+__flatbuffers_build_scalar_field(0, flatbuffers_, FripuckProtocol_Commands_AbortSequence_id, flatbuffers_uint32, uint32_t, 4, 4, UINT32_C(0), FripuckProtocol_Commands_AbortSequence)
+
+static inline FripuckProtocol_Commands_AbortSequence_ref_t FripuckProtocol_Commands_AbortSequence_create(flatbuffers_builder_t *B __FripuckProtocol_Commands_AbortSequence_formal_args)
+{
+    if (FripuckProtocol_Commands_AbortSequence_start(B)
+        || FripuckProtocol_Commands_AbortSequence_id_add(B, v0)) {
+        return 0;
+    }
+    return FripuckProtocol_Commands_AbortSequence_end(B);
+}
+
+static FripuckProtocol_Commands_AbortSequence_ref_t FripuckProtocol_Commands_AbortSequence_clone(flatbuffers_builder_t *B, FripuckProtocol_Commands_AbortSequence_table_t t)
+{
+    __flatbuffers_memoize_begin(B, t);
+    if (FripuckProtocol_Commands_AbortSequence_start(B)
+        || FripuckProtocol_Commands_AbortSequence_id_pick(B, t)) {
+        return 0;
+    }
+    __flatbuffers_memoize_end(B, t, FripuckProtocol_Commands_AbortSequence_end(B));
+}
+
+__flatbuffers_build_union_field(1, flatbuffers_, FripuckProtocol_Commands_Command_command, FripuckProtocol_Commands_Instruction, FripuckProtocol_Commands_Command)
+__flatbuffers_build_union_table_value_field(flatbuffers_, FripuckProtocol_Commands_Command_command, FripuckProtocol_Commands_Instruction, Notify, FripuckProtocol_Commands_Notify)
+__flatbuffers_build_union_table_value_field(flatbuffers_, FripuckProtocol_Commands_Command_command, FripuckProtocol_Commands_Instruction, SetLed, FripuckProtocol_Commands_SetLed)
+__flatbuffers_build_union_table_value_field(flatbuffers_, FripuckProtocol_Commands_Command_command, FripuckProtocol_Commands_Instruction, Sequence, FripuckProtocol_Commands_Sequence)
+__flatbuffers_build_union_table_value_field(flatbuffers_, FripuckProtocol_Commands_Command_command, FripuckProtocol_Commands_Instruction, AbortSequence, FripuckProtocol_Commands_AbortSequence)
 
 static inline FripuckProtocol_Commands_Command_ref_t FripuckProtocol_Commands_Command_create(flatbuffers_builder_t *B __FripuckProtocol_Commands_Command_formal_args)
 {
     if (FripuckProtocol_Commands_Command_start(B)
-        || FripuckProtocol_Commands_Command_content_add_value(B, v2)
-        || FripuckProtocol_Commands_Command_timestamp_add(B, v0)
-        || FripuckProtocol_Commands_Command_content_add_type(B, v2.type)) {
+        || FripuckProtocol_Commands_Command_command_add_value(B, v1)
+        || FripuckProtocol_Commands_Command_command_add_type(B, v1.type)) {
         return 0;
     }
     return FripuckProtocol_Commands_Command_end(B);
@@ -140,32 +216,40 @@ static FripuckProtocol_Commands_Command_ref_t FripuckProtocol_Commands_Command_c
 {
     __flatbuffers_memoize_begin(B, t);
     if (FripuckProtocol_Commands_Command_start(B)
-        || FripuckProtocol_Commands_Command_content_pick(B, t)
-        || FripuckProtocol_Commands_Command_timestamp_pick(B, t)) {
+        || FripuckProtocol_Commands_Command_command_pick(B, t)) {
         return 0;
     }
     __flatbuffers_memoize_end(B, t, FripuckProtocol_Commands_Command_end(B));
 }
 
-__flatbuffers_build_table_vector_field(0, flatbuffers_, FripuckProtocol_Commands_Batch_entries, FripuckProtocol_Commands_Command, FripuckProtocol_Commands_Batch)
+__flatbuffers_build_scalar_field(0, flatbuffers_, FripuckProtocol_Commands_CommandBatch_timestamp, flatbuffers_uint64, uint64_t, 8, 8, UINT64_C(0), FripuckProtocol_Commands_CommandBatch)
+__flatbuffers_build_table_vector_field(1, flatbuffers_, FripuckProtocol_Commands_CommandBatch_immediate_commands, FripuckProtocol_Commands_Command, FripuckProtocol_Commands_CommandBatch)
+__flatbuffers_build_table_vector_field(2, flatbuffers_, FripuckProtocol_Commands_CommandBatch_sequences, FripuckProtocol_Commands_Sequence, FripuckProtocol_Commands_CommandBatch)
+__flatbuffers_build_scalar_field(3, flatbuffers_, FripuckProtocol_Commands_CommandBatch_abort_all, flatbuffers_bool, flatbuffers_bool_t, 1, 1, UINT8_C(0), FripuckProtocol_Commands_CommandBatch)
 
-static inline FripuckProtocol_Commands_Batch_ref_t FripuckProtocol_Commands_Batch_create(flatbuffers_builder_t *B __FripuckProtocol_Commands_Batch_formal_args)
+static inline FripuckProtocol_Commands_CommandBatch_ref_t FripuckProtocol_Commands_CommandBatch_create(flatbuffers_builder_t *B __FripuckProtocol_Commands_CommandBatch_formal_args)
 {
-    if (FripuckProtocol_Commands_Batch_start(B)
-        || FripuckProtocol_Commands_Batch_entries_add(B, v0)) {
+    if (FripuckProtocol_Commands_CommandBatch_start(B)
+        || FripuckProtocol_Commands_CommandBatch_timestamp_add(B, v0)
+        || FripuckProtocol_Commands_CommandBatch_immediate_commands_add(B, v1)
+        || FripuckProtocol_Commands_CommandBatch_sequences_add(B, v2)
+        || FripuckProtocol_Commands_CommandBatch_abort_all_add(B, v3)) {
         return 0;
     }
-    return FripuckProtocol_Commands_Batch_end(B);
+    return FripuckProtocol_Commands_CommandBatch_end(B);
 }
 
-static FripuckProtocol_Commands_Batch_ref_t FripuckProtocol_Commands_Batch_clone(flatbuffers_builder_t *B, FripuckProtocol_Commands_Batch_table_t t)
+static FripuckProtocol_Commands_CommandBatch_ref_t FripuckProtocol_Commands_CommandBatch_clone(flatbuffers_builder_t *B, FripuckProtocol_Commands_CommandBatch_table_t t)
 {
     __flatbuffers_memoize_begin(B, t);
-    if (FripuckProtocol_Commands_Batch_start(B)
-        || FripuckProtocol_Commands_Batch_entries_pick(B, t)) {
+    if (FripuckProtocol_Commands_CommandBatch_start(B)
+        || FripuckProtocol_Commands_CommandBatch_timestamp_pick(B, t)
+        || FripuckProtocol_Commands_CommandBatch_immediate_commands_pick(B, t)
+        || FripuckProtocol_Commands_CommandBatch_sequences_pick(B, t)
+        || FripuckProtocol_Commands_CommandBatch_abort_all_pick(B, t)) {
         return 0;
     }
-    __flatbuffers_memoize_end(B, t, FripuckProtocol_Commands_Batch_end(B));
+    __flatbuffers_memoize_end(B, t, FripuckProtocol_Commands_CommandBatch_end(B));
 }
 
 #include "flatcc/flatcc_epilogue.h"

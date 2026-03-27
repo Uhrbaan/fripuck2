@@ -7,30 +7,27 @@ import (
 )
 
 type CommandT struct {
-	Timestamp uint16 `json:"timestamp"`
-	Content *InstructionT `json:"content"`
+	Command *InstructionT `json:"command"`
 }
 
 func (t *CommandT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 	if t == nil {
 		return 0
 	}
-	contentOffset := t.Content.Pack(builder)
+	commandOffset := t.Command.Pack(builder)
 
 	CommandStart(builder)
-	CommandAddTimestamp(builder, t.Timestamp)
-	if t.Content != nil {
-		CommandAddContentType(builder, t.Content.Type)
+	if t.Command != nil {
+		CommandAddCommandType(builder, t.Command.Type)
 	}
-	CommandAddContent(builder, contentOffset)
+	CommandAddCommand(builder, commandOffset)
 	return CommandEnd(builder)
 }
 
 func (rcv *Command) UnPackTo(t *CommandT) {
-	t.Timestamp = rcv.Timestamp()
-	contentTable := flatbuffers.Table{}
-	if rcv.Content(&contentTable) {
-		t.Content = rcv.ContentType().UnPack(contentTable)
+	commandTable := flatbuffers.Table{}
+	if rcv.Command(&commandTable) {
+		t.Command = rcv.CommandType().UnPack(commandTable)
 	}
 }
 
@@ -78,32 +75,20 @@ func (rcv *Command) Table() flatbuffers.Table {
 	return rcv._tab
 }
 
-func (rcv *Command) Timestamp() uint16 {
+func (rcv *Command) CommandType() Instruction {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(4))
-	if o != 0 {
-		return rcv._tab.GetUint16(o + rcv._tab.Pos)
-	}
-	return 0
-}
-
-func (rcv *Command) MutateTimestamp(n uint16) bool {
-	return rcv._tab.MutateUint16Slot(4, n)
-}
-
-func (rcv *Command) ContentType() Instruction {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(6))
 	if o != 0 {
 		return Instruction(rcv._tab.GetByte(o + rcv._tab.Pos))
 	}
 	return 0
 }
 
-func (rcv *Command) MutateContentType(n Instruction) bool {
-	return rcv._tab.MutateByteSlot(6, byte(n))
+func (rcv *Command) MutateCommandType(n Instruction) bool {
+	return rcv._tab.MutateByteSlot(4, byte(n))
 }
 
-func (rcv *Command) Content(obj *flatbuffers.Table) bool {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(8))
+func (rcv *Command) Command(obj *flatbuffers.Table) bool {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(6))
 	if o != 0 {
 		rcv._tab.Union(obj, o)
 		return true
@@ -112,16 +97,13 @@ func (rcv *Command) Content(obj *flatbuffers.Table) bool {
 }
 
 func CommandStart(builder *flatbuffers.Builder) {
-	builder.StartObject(3)
+	builder.StartObject(2)
 }
-func CommandAddTimestamp(builder *flatbuffers.Builder, timestamp uint16) {
-	builder.PrependUint16Slot(0, timestamp, 0)
+func CommandAddCommandType(builder *flatbuffers.Builder, commandType Instruction) {
+	builder.PrependByteSlot(0, byte(commandType), 0)
 }
-func CommandAddContentType(builder *flatbuffers.Builder, contentType Instruction) {
-	builder.PrependByteSlot(1, byte(contentType), 0)
-}
-func CommandAddContent(builder *flatbuffers.Builder, content flatbuffers.UOffsetT) {
-	builder.PrependUOffsetTSlot(2, flatbuffers.UOffsetT(content), 0)
+func CommandAddCommand(builder *flatbuffers.Builder, command flatbuffers.UOffsetT) {
+	builder.PrependUOffsetTSlot(1, flatbuffers.UOffsetT(command), 0)
 }
 func CommandEnd(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 	return builder.EndObject()

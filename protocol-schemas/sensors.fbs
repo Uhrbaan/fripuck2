@@ -83,7 +83,7 @@ struct VideoMetadata {
 }
 
 // 1.4Kb batch to send over SPI/UDP
-table Batch {
+table SensorBatch {
     // Sensor readings
     base_timestamp: uint64;
     proximity: [ProximityLightData];
@@ -99,5 +99,5 @@ table Batch {
     video_metadata: [VideoMetadata];
 }
 
-root_type Batch;
-file_identifier "FRI2";
+root_type SensorBatch;
+file_identifier "SENS";

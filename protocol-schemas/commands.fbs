@@ -1,0 +1,46 @@
+namespace FripuckProtocol.Commands;
+
+// Notify simply sends back the same message through a notify struct. 
+// Can be used in a sequence to notify the client when a sequence is finished.
+table Notify{
+    message: string;
+}
+
+table SetLed {
+    color: uint32; // only applies for RGB LEDs
+    mask: uint32; // TODO: document the how the mask is interpreted
+}
+
+table Sequence {
+    id: uint32;
+    loop: bool = false; 
+    commands: [Command];
+}
+
+table AbortSequence {
+    id: uint32;
+}
+
+union Instruction {
+    Notify,
+    SetLed,
+    Sequence, 
+    AbortSequence,
+}
+
+// Needed since flatbuffers doesn't support vectors of unions.
+table Command {
+    command: Instruction;
+}
+
+table CommandBatch {
+    timestamp: uint64;
+
+    immediate_commands: [Command];
+    sequences: [Sequence];
+
+    abort_all: bool = false;
+}
+
+root_type CommandBatch;
+file_identifier "CMND";

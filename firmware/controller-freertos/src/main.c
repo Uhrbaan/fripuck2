@@ -43,6 +43,7 @@ const osThreadAttr_t defaultTask_attributes = {
     .stack_size = 1024 * 4,
     .priority = (osPriority_t)osPriorityNormal,
 };
+
 void StartDefaultTask(void *argument)
 {
     spi_bus_init(&hspi1);
@@ -52,7 +53,6 @@ void StartDefaultTask(void *argument)
     }
 }
 
-#include <telemetry_builder.h>
 #define BATCH_THRESHOLD 1000 // Leave some "slack" for the root table and headers
 #define MAX_ENTRIES_PER_BATCH 50
 
@@ -63,51 +63,36 @@ const osThreadAttr_t telemetryTask_attributes = {
     .priority = (osPriority_t)osPriorityNormal,
 };
 
-static int message_number = 0;
+#include "flatcc/flatcc.h"
+#include "sensors_builder.h"
+
 void TelemetryTask(void *argument)
 {
     static flatcc_builder_t builder;
     flatcc_builder_init(&builder);
 
     // Array to store references until we are ready to finish the batch
-    flatbuffers_ref_t entry_refs[MAX_ENTRIES_PER_BATCH];
+    static FripuckProtocol_Sensors_TofData_t tof_entries[MAX_ENTRIES_PER_BATCH];
     size_t entry_count = 0;
 
     while (1)
     {
         // --- 1. Create your Message ---
         // We create the table but don't add it to a batch yet
-        char msg_text[] = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
+        tof_entries[entry_count].distance = entry_count;
+        tof_entries[entry_count].timestamp_offset = (uint16_t)HAL_GetTick();
+        entry_count++;
 
-        // Create the string and the InfoMessage table
-        flatbuffers_string_ref_t f_str = flatbuffers_string_create(&builder, msg_text, strlen(msg_text));
-        Fripuck2_Telemetry_InfoMessage_start(&builder);
-        Fripuck2_Telemetry_InfoMessage_text_add(&builder, f_str);
-        flatbuffers_ref_t msg_ref = Fripuck2_Telemetry_InfoMessage_end(&builder);
-
-        // Create the Entry wrapper
-        Fripuck2_Telemetry_Entry_start(&builder);
-        Fripuck2_Telemetry_Entry_timestamp_add(&builder, (uint16_t)HAL_GetTick());
-        Fripuck2_Telemetry_Entry_content_add(&builder, Fripuck2_Telemetry_Data_as_InfoMessage(msg_ref));
-        flatbuffers_ref_t current_entry = Fripuck2_Telemetry_Entry_end(&builder);
-
-        // --- 2. Store the Entry ---
-        entry_refs[entry_count++] = current_entry;
-
-        // --- 3. Check Size and Send if needed ---
-        size_t current_size = flatcc_builder_get_buffer_size(&builder);
-
-        if (current_size >= BATCH_THRESHOLD || entry_count >= MAX_ENTRIES_PER_BATCH)
+        if (entry_count > 30)
         {
-            // Finalize the Batch Table
-            Fripuck2_Telemetry_Batch_start_as_root(&builder);
-            Fripuck2_Telemetry_Batch_entries_create(&builder, entry_refs, entry_count);
-            Fripuck2_Telemetry_Batch_end_as_root(&builder);
+            FripuckProtocol_Sensors_SensorBatch_start_as_root(&builder);
+            FripuckProtocol_Sensors_SensorBatch_base_timestamp_add(&builder, 0);
+            FripuckProtocol_Sensors_SensorBatch_tof_create(&builder, tof_entries, entry_count);
+            FripuckProtocol_Sensors_SensorBatch_end_as_root(&builder);
 
             // Get the final buffer
             size_t final_size;
             void *buf = flatcc_builder_get_direct_buffer(&builder, &final_size);
-
             if (buf && final_size <= RADIO_MAX_PACKET_SIZE)
             {
                 spi_radio_send((uint8_t *)buf, (uint16_t)final_size);
@@ -121,8 +106,9 @@ void TelemetryTask(void *argument)
             flatcc_builder_reset(&builder);
             entry_count = 0;
             // osDelay(1); // Small delay to allow messages to accumulate
-            osThreadYield();
+            osDelay(pdMS_TO_TICKS(1000));
         }
+        osDelay(pdMS_TO_TICKS(10));
     }
 
     flatcc_builder_clear(&builder);

@@ -23,19 +23,19 @@
 // Keep track of total bytes received
 volatile uint32_t total_bytes_received = 0;
 
+#include "sensors_builder.h"
+#include "sensors_verifier.h"
 #include <sys/socket.h>
-#include <telemetry_reader.h>
-#include <telemetry_verifier.h>
 
 extern QueueHandle_t spi_to_udp_queue;
 void spi_recieve_cb(uint8_t *data, uint16_t length) {
     static const char TAG[] = "SPI RX CB";
     static telemetry_packet_t packet = {0};
     // Process your data here...
-    // if (Fripuck2_Telemetry_Batch_verify_as_root(data, length) != 0) {
-    //     ESP_LOGW(TAG, "Failed to verify the data coming in.");
-    //     return;
-    // }
+    if (FripuckProtocol_Sensors_SensorBatch_verify_as_root(data, length) != 0) {
+        ESP_LOGW(TAG, "Failed to verify the data coming in.");
+        return;
+    }
 
     if (spi_to_udp_queue) {
         packet.length = length;

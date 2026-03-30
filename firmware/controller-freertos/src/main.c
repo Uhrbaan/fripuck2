@@ -8,6 +8,7 @@
 #include "core/usart.h"
 #include "core/dma.h"
 #include "core/spi.h"
+#include "core/i2c.h"
 
 #include "cmsis_os.h"
 #include "stm32f4xx_hal_tim.h"
@@ -17,9 +18,13 @@
 #include "motors.h"
 #include "uart.h"
 #include "spi.h"
+#include "time_of_flight.h"
+#include "i2c.h"
 #include <spi_conf.h>
 #include <strings.h>
 #include <stdio.h>
+
+#include "tof/tof.h"
 
 int init_hardware(void)
 {
@@ -33,24 +38,10 @@ int init_hardware(void)
     MX_USART3_UART_Init();
     MX_SPI1_Init();
     MX_DMA_Init();
+    MX_CAN1_Init();
+    MX_I2C1_Init();
 
     return 0;
-}
-
-osThreadId_t defaultTaskHandle;
-const osThreadAttr_t defaultTask_attributes = {
-    .name = "defaultTask",
-    .stack_size = 1024 * 4,
-    .priority = (osPriority_t)osPriorityNormal,
-};
-
-void StartDefaultTask(void *argument)
-{
-    spi_bus_init(&hspi1);
-    while (1)
-    {
-        osDelay(100);
-    }
 }
 
 #define BATCH_THRESHOLD 1000 // Leave some "slack" for the root table and headers
@@ -59,7 +50,7 @@ void StartDefaultTask(void *argument)
 osThreadId_t telemetryTaskHandle;
 const osThreadAttr_t telemetryTask_attributes = {
     .name = "telemetryTask",
-    .stack_size = 1024 * 4,
+    .stack_size = 1024 * 1,
     .priority = (osPriority_t)osPriorityNormal,
 };
 
@@ -71,47 +62,55 @@ void TelemetryTask(void *argument)
     static flatcc_builder_t builder;
     flatcc_builder_init(&builder);
 
-    // Array to store references until we are ready to finish the batch
-    static FripuckProtocol_Sensors_TofData_t tof_entries[MAX_ENTRIES_PER_BATCH];
-    size_t entry_count = 0;
-
-    while (1)
+    for (;;)
     {
-        // --- 1. Create your Message ---
-        // We create the table but don't add it to a batch yet
-        tof_entries[entry_count].distance = entry_count;
-        tof_entries[entry_count].timestamp_offset = (uint16_t)HAL_GetTick();
-        entry_count++;
+        FripuckProtocol_Sensors_SensorBatch_start_as_root(&builder);
+        FripuckProtocol_Sensors_SensorBatch_base_timestamp_add(&builder, 0);
 
-        if (entry_count > 30)
+        pack_tof_to_vector(&builder);
+
+        FripuckProtocol_Sensors_SensorBatch_end_as_root(&builder);
+
+        // Get the final buffer
+        size_t final_size;
+        void *buf = flatcc_builder_get_direct_buffer(&builder, &final_size);
+        if (buf && final_size <= RADIO_MAX_PACKET_SIZE)
         {
-            FripuckProtocol_Sensors_SensorBatch_start_as_root(&builder);
-            FripuckProtocol_Sensors_SensorBatch_base_timestamp_add(&builder, 0);
-            FripuckProtocol_Sensors_SensorBatch_tof_create(&builder, tof_entries, entry_count);
-            FripuckProtocol_Sensors_SensorBatch_end_as_root(&builder);
-
-            // Get the final buffer
-            size_t final_size;
-            void *buf = flatcc_builder_get_direct_buffer(&builder, &final_size);
-            if (buf && final_size <= RADIO_MAX_PACKET_SIZE)
-            {
-                spi_radio_send((uint8_t *)buf, (uint16_t)final_size);
-            }
-            else if (final_size > RADIO_MAX_PACKET_SIZE)
-            {
-                // Error: Even with threshold, we went over 1KB (likely a very long string)
-            }
-
-            // --- 4. Reset for next batch ---
-            flatcc_builder_reset(&builder);
-            entry_count = 0;
-            // osDelay(1); // Small delay to allow messages to accumulate
-            osDelay(pdMS_TO_TICKS(1000));
+            spi_radio_send((uint8_t *)buf, (uint16_t)final_size);
         }
-        osDelay(pdMS_TO_TICKS(10));
+        else if (final_size > RADIO_MAX_PACKET_SIZE)
+        {
+            // Error: Even with threshold, we went over 1KB (likely a very long string)
+        }
+
+        flatcc_builder_reset(&builder);
+        osDelay(pdMS_TO_TICKS(33)); // 30fps
     }
 
     flatcc_builder_clear(&builder);
+}
+
+osThreadId_t defaultTaskHandle;
+const osThreadAttr_t defaultTask_attributes = {
+    .name = "defaultTask",
+    .stack_size = 1024 * 1,
+    .priority = (osPriority_t)osPriorityNormal,
+};
+
+void StartDefaultTask(void *argument)
+{
+    spi_bus_init(&hspi1);
+    i2c_init(&hi2c1);
+    tof_init(&hi2c1, TOF_HIGH_SPEED);
+
+    tofTask_attributes.stack_size = 1024;
+    tofTaskHandle = osThreadNew(tof_task, (void *)TOF_HIGH_SPEED, &tofTask_attributes);
+    telemetryTaskHandle = osThreadNew(TelemetryTask, NULL, &telemetryTask_attributes);
+
+    while (1)
+    {
+        osDelay(100);
+    }
 }
 
 int main(void)
@@ -121,7 +120,6 @@ int main(void)
     /* Init scheduler */
     osKernelInitialize(); /* Call init function for freertos objects (in cmsis_os2.c) */
     defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
-    telemetryTaskHandle = osThreadNew(TelemetryTask, NULL, &telemetryTask_attributes);
     osKernelStart();
     while (1)
     {

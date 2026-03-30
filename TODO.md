@@ -8,7 +8,7 @@
     - Analog
         - [ ] Proximity 
     - I2C
-        - [ ] Distance sensor (TOF) 
+        - [X] Distance sensor (TOF) 
         - [ ] IMU 
         - [ ] Ground sensors 
         - [ ] Camera (setup)
@@ -23,13 +23,20 @@
 ## Communication
 - [ ] UART
     - [X] RX
-        - [ ] Not perfect. If sender sends two packets exactly one after the other the idle line detection might not work. Might implement some logic to fire the user callback multiple times if multiple packets are recieved at once, or add mandatory delay in the sender.
+        - Not perfect. If sender sends two packets exactly one after the other the idle line detection might not work. Might implement some logic to fire the user callback multiple times if multiple packets are recieved at once, or add mandatory delay in the sender.
         - This problem could also possibly be handled by the user, who has more context on the data.
     - [ ] TX
 - [X] SPI (dummy) STM -> ESP
 - [ ] SPI (dummy) ESP -> STM (hard)
 - [X] data over UDP  (dummy)
 - [ ] data over TCP (commands, dummy) -> UART: ESP -> STM
+
+----
+
+- [X] Sending sensor data to the user over SPI & UDP 
+- [ ] Sending notifications to the user over UART & TCP 
+- [ ] Receiving instructions over TCP & UART
+- [ ] Receiving data over UDP/TCP & SPI
 
 ## VM 
 - [ ] Get Lua running 
@@ -44,3 +51,10 @@
 ## Testing
 I want to add tests using platformIO's testing framework.
 It should test for breakage and throughput mostly.
+
+## Documentation 
+- [ ] Add rate per second difference in readme
+- [ ] Document all public function 
+    - [ ] Hardware (controller)
+    - [ ] Hardware (radio)
+    - [ ] API (python)

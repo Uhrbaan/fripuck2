@@ -14,3 +14,7 @@ clean:
 	rm -rf api/go/internal/FripuckProtocol
 	rm -rf api/python/src/fripuck2/_generated/FripuckProtocol
 	rm -rf firmware/shared/flatcc-generated/*.h
+
+flash: 
+	pio run -t upload --project-dir firmware/controller-freertos
+	pio run -t upload --project-dir firmware/radio

@@ -1549,3 +1549,15 @@ Now I am trying to build the basics of the API. Here is the architecture:
 This way, we can have the code nicely separated, and we don't have the issue that every robot has to manage a udp connection (which is sent to all addresses), and will only recieve packets that belong to them.
 
 It has also been decided that the API for getting the sensors will be `robot.sensor.[get|get_all]()`, where `get()` is used to get the latest value (or a `np.array` or object if it holds multiple data points) and `get_all` returns an array of elements with their timestamps that were stored automagically.
+
+== 2026.03.27
+Thinking about conversion to SI units. The conversion should probably be done in the API if it can, since that way the frimware doesn't have ot ba changed much.
+
+To implement the sensors, I will go backwards.
+I will first create the `.fbs` schema, create the API for it, and then read it on the hardware, and then finaly implement the control of that hardware.
+
+== 2026.03.30
+Created a blog post about what I am doing at https://writefreely.ch/fripuck-devlog/devlog-ndeg1-fripuck-march-update.
+Currently I am working on adding a task to take care of getting the ToF. However I am having issues with the stack: I cannot create another task because pfMalloc fails.
+I fixed it but I don't know how, I believe I just reduced a few heaps to 1K instead of 4K.
+

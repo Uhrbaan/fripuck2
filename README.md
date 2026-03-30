@@ -28,9 +28,9 @@ Reaching full feature parity is probably an impossible task since I am alone for
 || Accelerometers | ✅ 
 || Gyroscope | ✅
 || Magnetometer | Available in firmware
-|| Time of flight | ✅
+|| Time of flight | ✅ | ✅
 | **Vision** | Color video feedback | ✅
-|| Basic image processing | ✅
+|| Basic image processing | ✅ 
 || Yolo (AI) image processing | ✅
 | **Audio** | Microphones volume | ✅
 || Microphones audio stream | ❌
@@ -48,7 +48,9 @@ Reaching full feature parity is probably an impossible task since I am alone for
 || Command sequencing | ❌
 | **Data handling** | Real-time Streaming | ✅
 || High-frequency data aggregation | ❌ 
-| **Miscelaneous** | 
+| **Miscelaneous** | Conversion to SI units | ❌
+|| Graphical intercace | ✅
+|| ROS support | ✅
 
 ## Building
 > Note: For now, building has only been tested on Linux. 
@@ -60,11 +62,9 @@ usermod -aG dialout $USER
 
 Then, to build the firmware you need [PlatformIO](https://platformio.org/). You can install the [VScode extension](https://marketplace.visualstudio.com/items?itemName=platformio.platformio-ide), or you can install the [PlatformIO Core CLI](https://docs.platformio.org/en/latest/core/installation/methods/installer-script.html).
 
-If you chose the latter, you can also use the makefile at the root of the project for convenience.
+If you chose the latter (or both), you can also use the makefile at the root of the project for convenience.
 
 ```sh 
-make flash # flashes the chips with pio
 make generate # generates flatbuffers code if schemas were changed
+make flash # flashes the chips with pio
 ```
-
-## Examples

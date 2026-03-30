@@ -67,3 +67,6 @@ Would you like me to help you verify if the Black Magic Probe is correctly detec
 Done by looking at board.chcfg (`ChibiOS_ext/os/hal/boards/epuck2/cfg/board.chcfg`). 
 According to the spreadsheet: https://www.hangpersonal.com/wp-content/uploads/2024/10/STM32F407-Alternate-Function-Mapping.pdf, showing the alternate mappings for the STM407, one can set the alternate mappings corretly from the numbers.
 Code is then generated through STM32CubeMX.
+
+# Data sheets
+- Time of flight (vl53l0x): <https://www.st.com/resource/en/datasheet/vl53l0x.pdf>

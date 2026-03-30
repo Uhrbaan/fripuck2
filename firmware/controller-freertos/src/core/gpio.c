@@ -56,8 +56,6 @@
      PB5   ------> I2S3_SD
      PB6   ------> DCMI_D5
      PB7   ------> DCMI_VSYNC
-     PB8   ------> I2C1_SCL
-     PB9   ------> I2C1_SDA
      PE0   ------> DCMI_D2
      PE1   ------> DCMI_D3
 */
@@ -318,14 +316,6 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
   GPIO_InitStruct.Alternate = GPIO_AF13_DCMI;
   HAL_GPIO_Init(CAM_VSYNC_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : SCL_Pin SDA_Pin */
-  GPIO_InitStruct.Pin = SCL_Pin|SDA_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-  GPIO_InitStruct.Alternate = GPIO_AF4_I2C1;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
 }
 

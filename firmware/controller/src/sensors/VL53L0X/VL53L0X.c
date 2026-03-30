@@ -7,12 +7,6 @@
 
 #include "VL53L0X.h"
 #include "Api/core/inc/vl53l0x_api.h"
-#include "ch.h"
-#include "chprintf.h"
-#include "hal.h"
-#include "i2c_bus.h"
-#include "shell.h"
-#include "usbcfg.h"
 
 static uint16_t dist_mm = 0;
 static thread_t *distThd;
@@ -116,19 +110,16 @@ VL53L0X_Error VL53L0X_configAccuracy(VL53L0X_Dev_t *device, VL53L0X_AccuracyMode
         }
 
         if (status == VL53L0X_ERROR_NONE) {
-            status = VL53L0X_SetLimitCheckValue(device, VL53L0X_CHECKENABLE_RANGE_IGNORE_THRESHOLD,
-                                                (FixPoint1616_t)(1.5 * 0.023 * 65536));
+            status = VL53L0X_SetLimitCheckValue(device, VL53L0X_CHECKENABLE_RANGE_IGNORE_THRESHOLD, (FixPoint1616_t)(1.5 * 0.023 * 65536));
         }
         break;
 
     case VL53L0X_HIGH_ACCURACY:
         if (status == VL53L0X_ERROR_NONE) {
-            status = VL53L0X_SetLimitCheckValue(device, VL53L0X_CHECKENABLE_SIGNAL_RATE_FINAL_RANGE,
-                                                (FixPoint1616_t)(0.25 * 65536));
+            status = VL53L0X_SetLimitCheckValue(device, VL53L0X_CHECKENABLE_SIGNAL_RATE_FINAL_RANGE, (FixPoint1616_t)(0.25 * 65536));
         }
         if (status == VL53L0X_ERROR_NONE) {
-            status =
-                VL53L0X_SetLimitCheckValue(device, VL53L0X_CHECKENABLE_SIGMA_FINAL_RANGE, (FixPoint1616_t)(18 * 65536));
+            status = VL53L0X_SetLimitCheckValue(device, VL53L0X_CHECKENABLE_SIGMA_FINAL_RANGE, (FixPoint1616_t)(18 * 65536));
         }
         if (status == VL53L0X_ERROR_NONE) {
             status = VL53L0X_SetMeasurementTimingBudgetMicroSeconds(device, 200000);
@@ -137,12 +128,10 @@ VL53L0X_Error VL53L0X_configAccuracy(VL53L0X_Dev_t *device, VL53L0X_AccuracyMode
 
     case VL53L0X_LONG_RANGE:
         if (status == VL53L0X_ERROR_NONE) {
-            status = VL53L0X_SetLimitCheckValue(device, VL53L0X_CHECKENABLE_SIGNAL_RATE_FINAL_RANGE,
-                                                (FixPoint1616_t)(0.1 * 65536));
+            status = VL53L0X_SetLimitCheckValue(device, VL53L0X_CHECKENABLE_SIGNAL_RATE_FINAL_RANGE, (FixPoint1616_t)(0.1 * 65536));
         }
         if (status == VL53L0X_ERROR_NONE) {
-            status =
-                VL53L0X_SetLimitCheckValue(device, VL53L0X_CHECKENABLE_SIGMA_FINAL_RANGE, (FixPoint1616_t)(60 * 65536));
+            status = VL53L0X_SetLimitCheckValue(device, VL53L0X_CHECKENABLE_SIGMA_FINAL_RANGE, (FixPoint1616_t)(60 * 65536));
         }
         if (status == VL53L0X_ERROR_NONE) {
             status = VL53L0X_SetMeasurementTimingBudgetMicroSeconds(device, 33000);
@@ -157,12 +146,10 @@ VL53L0X_Error VL53L0X_configAccuracy(VL53L0X_Dev_t *device, VL53L0X_AccuracyMode
 
     case VL53L0X_HIGH_SPEED:
         if (status == VL53L0X_ERROR_NONE) {
-            status = VL53L0X_SetLimitCheckValue(device, VL53L0X_CHECKENABLE_SIGNAL_RATE_FINAL_RANGE,
-                                                (FixPoint1616_t)(0.25 * 65536));
+            status = VL53L0X_SetLimitCheckValue(device, VL53L0X_CHECKENABLE_SIGNAL_RATE_FINAL_RANGE, (FixPoint1616_t)(0.25 * 65536));
         }
         if (status == VL53L0X_ERROR_NONE) {
-            status =
-                VL53L0X_SetLimitCheckValue(device, VL53L0X_CHECKENABLE_SIGMA_FINAL_RANGE, (FixPoint1616_t)(32 * 65536));
+            status = VL53L0X_SetLimitCheckValue(device, VL53L0X_CHECKENABLE_SIGMA_FINAL_RANGE, (FixPoint1616_t)(32 * 65536));
         }
         if (status == VL53L0X_ERROR_NONE) {
             status = VL53L0X_SetMeasurementTimingBudgetMicroSeconds(device, 30000);
@@ -189,9 +176,7 @@ VL53L0X_Error VL53L0X_startMeasure(VL53L0X_Dev_t *device, VL53L0X_DeviceModes mo
     return status;
 }
 
-VL53L0X_Error VL53L0X_getLastMeasure(VL53L0X_Dev_t *device) {
-    return VL53L0X_GetRangingMeasurementData(device, &(device->Data.LastRangeMeasure));
-}
+VL53L0X_Error VL53L0X_getLastMeasure(VL53L0X_Dev_t *device) { return VL53L0X_GetRangingMeasurementData(device, &(device->Data.LastRangeMeasure)); }
 
 VL53L0X_Error VL53L0X_stopMeasure(VL53L0X_Dev_t *device) { return VL53L0X_StopMeasurement(device); }
 

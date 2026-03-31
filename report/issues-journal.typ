@@ -1561,3 +1561,8 @@ Created a blog post about what I am doing at https://writefreely.ch/fripuck-devl
 Currently I am working on adding a task to take care of getting the ToF. However I am having issues with the stack: I cannot create another task because pfMalloc fails.
 I fixed it but I don't know how, I believe I just reduced a few heaps to 1K instead of 4K.
 
+== 2026.03.31
+So yesterday I finished the ToF, and this morning I tested wether there was any improvement.
+Sadly, but as expected, there isn't. This is probably due to the fact that the sensor itself is limited to at most 50 Hz, since both apis (mine and the original) are limited to approximately 48-50 readings per second.
+
+Now, I will work on the network manager: if the client disconnects from the robot, the robot should automatically stop its TCP communication and restart it.

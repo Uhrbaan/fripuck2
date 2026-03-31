@@ -18,8 +18,11 @@ void udp_init_(void) { spi_to_udp_queue = xQueueCreate(10, sizeof(telemetry_pack
 void udp_transmitter(void *pvParameters) {
     ESP_LOGI("UDP TRANSMITTER", "Starting the SPI -> UDP service.");
 
-    struct sockaddr_in target_addr = *(struct sockaddr_in *)pvParameters;
-    target_addr.sin_port = htons(udp_port); // On s'assure du port UDP
+    struct sockaddr_in client_addr = *(struct sockaddr_in *)pvParameters;
+    struct sockaddr_in target_addr = {0};
+    target_addr.sin_addr.s_addr = client_addr.sin_addr.s_addr;
+    target_addr.sin_family = AF_INET;
+    target_addr.sin_port = htons(udp_port);
 
     int sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     if (sock < 0) {

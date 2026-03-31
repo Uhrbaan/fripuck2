@@ -108,21 +108,8 @@ void app_main(void) {
     ESP_LOGI(TAG, "Finished SPI1 HW initialization");
     udp_init_();
 
-    // Wait for a connection to be established
-    struct sockaddr_in client_addr;
-    int tcp_socket;
-    ESP_LOGI(TAG, "Waiting for client to connect.");
-    ESP_ERROR_CHECK(wait_for_tcp_client(&client_addr, &tcp_socket));
-    ESP_LOGI(TAG, "Client connected.");
-
     // Start TCP tasks
-    // Currently not used
-
-    // Start UDP sending task
-    xTaskCreate(udp_transmitter, "udp_transmitter", 1024 * 4, (void *)&client_addr, 1, NULL);
-
-    // xTaskCreate(throughput_monitor_task, "throughput_monitor", 2048, NULL, 1, NULL);
-    // ESP_LOGI(TAG, "Started throughput monitor.");
+    xTaskCreate(tcp_connection_manager, "tcp connection manager", 1024 * 4, NULL, 1, NULL);
 
     while (1) {
         vTaskDelay(pdMS_TO_TICKS(5000));

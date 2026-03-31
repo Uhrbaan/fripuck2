@@ -9,6 +9,7 @@
 
 TaskHandle_t xTCPTransmitterHandle = NULL;
 TaskHandle_t xTCPRecieverHandle = NULL;
+TaskHandle_t xTCPConnectionManagerHandle = NULL;
 TaskHandle_t xUDPTransmitterHandle = NULL;
 
 QueueHandle_t tcp_transmit_queue;
@@ -22,34 +23,29 @@ void tcp_receiver(void *pvParameters) {
     const int socket = (int)pvParameters;
     int length;
     int offset = 0;
-    request_queue_item item;
+    static request_queue_item item;
+    static const char TAG[] = "TCP RECEIVER";
 
     ESP_LOGI("TCP RECEIVER", "Starting tcp_transmitter.");
     do {
         length = recv(socket, &item.buffer[offset], sizeof(item), 0);
         offset += length;
-        if (length < 0) {
-            ESP_LOGE("TCP RECEIVER", "Error occured during `recv`: errno %d", errno);
-            break;
-        } else if (length == 0) {
-            ESP_LOGE("TCP RECEIVER", "Connection lost.");
-            break;
+        if (length <= 0) {
+            // Error. Send notification and wait to be deleted by manager.
+            ESP_LOGE(TAG, "Error: %d", length);
+            xTaskNotify(xTCPConnectionManagerHandle, (uint32_t)length, eSetValueWithOverwrite);
+            vTaskDelay(portMAX_DELAY);
         }
         item.size = length;
         // xQueueSendToBack(uart_request_queue, &item, portMAX_DELAY);
         ESP_LOGI("TCP RECEIVER", "Received %zu bytes over tcp: %.20s...", length, item.buffer);
     } while (length > 0);
-
-    ESP_LOGI("TCP RECEIVER", "Closing the thread.");
-    shutdown(socket, 0);
-    close(socket);
-
-    vTaskDelete(NULL);
 }
 
 void tcp_transmitter(void *pvParameters) {
     const int socket = (int)pvParameters;
-    request_queue_item item;
+    static request_queue_item item;
+    static const char TAG[] = "TCP TRANSMITTER";
 
     while (1) {
         if (xQueueReceive(tcp_transmit_queue, &item, portMAX_DELAY) != pdTRUE) {
@@ -59,12 +55,11 @@ void tcp_transmitter(void *pvParameters) {
         size_t bytes_to_send = item.size;
         int bytes_sent = send(socket, item.buffer, bytes_to_send, 0);
 
-        if (bytes_sent < 0) {
-            ESP_LOGE("TCP TRANSMITTER", "Error sending data: %d", errno);
-            break;
-        } else if (bytes_sent == 0) {
-            ESP_LOGI("TCP TRANSMITTER", "Peer closed connection.");
-            break;
+        if (bytes_sent <= 0) {
+            // Error. Send notification and wait to be deleted.
+            ESP_LOGE(TAG, "Error: %d", bytes_sent);
+            xTaskNotify(xTCPConnectionManagerHandle, (uint32_t)bytes_sent << 16, eSetValueWithOverwrite);
+            vTaskDelay(portMAX_DELAY);
         } else if ((size_t)bytes_sent < bytes_to_send) {
             ESP_LOGW("TCP TRANSMITTER", "Partial send: sent %d of %zu bytes. Remaining data dropped.", bytes_sent,
                      bytes_to_send);
@@ -74,115 +69,18 @@ void tcp_transmitter(void *pvParameters) {
 
         ESP_LOGI("TCP TRANSMITTER", "Transmitting %zu bytes from uart over TCP: %.20s...", bytes_sent, item.buffer);
     }
-
-    ESP_LOGI("TCP TRANSMITTER", "Shutting down task.");
-    shutdown(socket, 0);
-    close(socket);
-
-    vTaskDelete(NULL);
 }
 
 int tcp_init_(void) {
     tcp_transmit_queue = xQueueCreate(5, sizeof(request_queue_item));
+
     return ESP_OK;
 }
 
-/**
- * @brief Create a TCP server task
- *
- * This function should be run in a FreeRTOS task.
- * Currently, only IPv4 is supported, so give AF_INET as a parameter in your task.
- *
- * @param pvParameters
- */
-// void tcp_server(void *pvParameters) {
-//     static const char TAG[] = "TCP SERVER";
-//     // Initialization
-//     // TODO: move initialization to a tcp_init function.
-//     static char addr_str[128];
-//     int addr_family = (int)pvParameters;
-
-//     struct sockaddr_storage server_addr;
-//     struct sockaddr_in *server_addr_ip4 = (struct sockaddr_in *)&server_addr;
-//     server_addr_ip4->sin_addr.s_addr = htonl(INADDR_ANY);
-//     server_addr_ip4->sin_family = AF_INET;
-//     server_addr_ip4->sin_port = htons(tcp_port);
-
-//     if (addr_family != AF_INET) {
-//         ESP_LOGE(TAG, "Currently, only IPv4 is supported.");
-//         return;
-//     }
-//     ESP_LOGI(TAG, "sockaddr initialized correctly.");
-
-//     // Create listening socket
-//     int listen_sock = socket(addr_family, SOCK_STREAM, IPPROTO_IP);
-//     if (listen_sock < 0) {
-//         ESP_LOGE(TAG, "Unable to create socket: errno %d", errno);
-//         vTaskDelete(NULL);
-//         return;
-//     }
-
-//     // Prevent address reused error
-//     int opt = 1;
-//     setsockopt(listen_sock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
-
-//     ESP_LOGI(TAG, "Created listening tcp socket.");
-
-//     int err = bind(listen_sock, (struct sockaddr *)&server_addr, sizeof(server_addr));
-//     if (err != 0) {
-//         ESP_LOGE(TAG, "Socket unable to bind: errno %d", errno);
-//         ESP_LOGE(TAG, "IPPROTO: %d", addr_family);
-//         close(listen_sock);
-//         vTaskDelete(NULL);
-//     }
-//     ESP_LOGI(TAG, "Socket bound on port %d", tcp_port);
-
-//     err = listen(listen_sock, 1);
-//     if (err != 0) {
-//         ESP_LOGE(TAG, "Error occurred during listen: errno %d", errno);
-//         close(listen_sock);
-//         vTaskDelete(NULL);
-//     }
-//     ESP_LOGI(TAG, "Got an incoming TCP connection!");
-
-//     while (1) {
-//         // Block until there is a new connection.
-//         socklen_t addr_len = sizeof(client_address);
-//         int sock = accept(listen_sock, (struct sockaddr *)&client_address, &addr_len);
-//         if (sock < 0) {
-//             ESP_LOGE(TAG, "Unable to accept connection: errno %d", errno);
-//             break;
-//         }
-
-//         // If there is a new connection, close previous tasks and start anew.
-//         vTaskDelete(xTCPTransmitterHandle);
-//         vTaskDelete(xTCPRecieverHandle);
-//         vTaskDelete(xUDPTransmitterHandle);
-
-//         if (client_address.ss_family == PF_INET) {
-//             inet_ntoa_r(((struct sockaddr_in *)&client_address)->sin_addr, addr_str, sizeof(addr_str) - 1);
-//         }
-
-//         ESP_LOGI(TAG, "Socket accepted ip address: %s", addr_str);
-
-//         xTaskCreate(tcp_receiver, "tcp_receiver", 4096, (void *)sock, 5, &xTCPRecieverHandle);
-//         xTaskCreate(tcp_transmitter, "tcp_transmitter", 4096, (void *)sock, 5, &xTCPTransmitterHandle);
-//         ESP_LOGI(TAG, "Started `tcp_receiver` and `tcp_transmitter` tasks.");
-
-//         static struct sockaddr_storage client_address_copy = {0};
-//         memcpy(&client_address_copy, &client_address, sizeof(struct sockaddr_storage));
-//         // ownership of the heap allocated copy is given to the task
-//         xTaskCreate(udp_transmitter, "udp_transmitter", 4096, (void *)&client_address_copy, 5,
-//         &xUDPTransmitterHandle);
-//     }
-
-//     close(listen_sock);
-
-//     vTaskDelete(NULL);
-// }
-
 // Cette fonction bloque jusqu'à ce qu'un client se connecte
 esp_err_t wait_for_tcp_client(struct sockaddr_in *out_client_addr, int *out_socket) {
+    static const char *TAG = "WAIT TCP CLIENT";
+
     struct sockaddr_in server_addr = {
         .sin_addr.s_addr = htonl(INADDR_ANY), .sin_family = AF_INET, .sin_port = htons(tcp_port)};
 
@@ -191,15 +89,22 @@ esp_err_t wait_for_tcp_client(struct sockaddr_in *out_client_addr, int *out_sock
     setsockopt(listen_sock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
     if (bind(listen_sock, (struct sockaddr *)&server_addr, sizeof(server_addr)) != 0) {
+        ESP_LOGE(TAG, "Unable to bind listen_sock: %s:%s", __FILE__, __LINE__);
         close(listen_sock);
         return ESP_FAIL;
     }
+    ESP_LOGI(TAG, "Bound listening slocket.");
 
-    listen(listen_sock, 1);
+    if (listen(listen_sock, 5) != 0) {
+        ESP_LOGE(TAG, "Unable to listen to listen_socl: %s:%s", __FILE__, __LINE__);
+        close(listen_sock);
+        return ESP_FAIL;
+    }
+    ESP_LOGI(TAG, "Listning to listen_sock.");
+
     socklen_t addr_len = sizeof(struct sockaddr_in);
-
-    // Bloque ici
-    int sock = accept(listen_sock, (struct sockaddr *)out_client_addr, &addr_len);
+    int sock = accept(listen_sock, (struct sockaddr *)out_client_addr, &addr_len); // Bloque ici
+    ESP_LOGI("TCP CLIENT ACCEPT", "Incoming client connection accepted.");
 
     // On n'a plus besoin du socket d'écoute une fois le client accepté
     close(listen_sock);
@@ -209,4 +114,46 @@ esp_err_t wait_for_tcp_client(struct sockaddr_in *out_client_addr, int *out_sock
 
     *out_socket = sock;
     return ESP_OK;
+}
+
+void tcp_connection_manager(void *pvParameters) {
+    static struct sockaddr_in client_addr = {0};
+    static int client_socket_fd = 0;
+    static const char TAG[] = "TCP MANAGER";
+
+    xTCPConnectionManagerHandle = xTaskGetCurrentTaskHandle();
+
+retry:
+    ESP_LOGI(TAG, "Waiting for a client to connect.");
+    wait_for_tcp_client(&client_addr, &client_socket_fd); // Waiting for incoming connection (blocking)
+
+    xTaskCreate(tcp_transmitter, "tcp_transmitter", 1024 * 2, (void *)client_socket_fd, 1, &xTCPTransmitterHandle);
+    xTaskCreate(tcp_receiver, "tcp_receiver", 1024 * 2, (void *)client_socket_fd, 1, &xTCPRecieverHandle);
+    xTaskCreate(udp_transmitter, "udp_transmitter", 1024 * 4, (void *)&client_addr, 1,
+                &xUDPTransmitterHandle); // also close the UDP connection if we lose connection.
+
+    ESP_LOGI(TAG, "Client connected, started TCP services.");
+
+    uint32_t error_value = 0;
+    for (;;) {
+        if (xTaskNotifyWait(0, ULONG_MAX, &error_value, portMAX_DELAY) == pdTRUE) {
+            ESP_LOGE(TAG, "Client disconnected or error occured. Retrying.");
+
+            // TODO: print and manage these errors
+            // int transmitter_error = error_value >> 16;
+            // int receiver_error = 0xFF;
+
+            // Delete tasks waiting for deletion
+            vTaskDelete(xTCPTransmitterHandle);
+            vTaskDelete(xTCPRecieverHandle);
+            vTaskDelete(xUDPTransmitterHandle);
+            xTCPTransmitterHandle = NULL;
+            xTCPRecieverHandle = NULL;
+            xUDPTransmitterHandle = NULL;
+
+            close(client_socket_fd);
+
+            goto retry;
+        }
+    }
 }

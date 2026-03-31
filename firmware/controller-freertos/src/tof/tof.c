@@ -10,6 +10,7 @@
 #include <cmsis_os.h>
 #include <vl53l0x_api.h>
 #include <stdio.h>
+#include <FreeRTOS.h>
 
 typedef struct
 {
@@ -34,7 +35,7 @@ void tof_task(void *argument)
     for (;;)
     {
         osMutexAcquire(tof_data_mutex, osWaitForever);
-        tof_buffer[write_pointer % MAX_TOF_SAMPLES].timestamp_offset = (uint16_t)HAL_GetTick();
+        tof_buffer[write_pointer % MAX_TOF_SAMPLES].timestamp_offset = (uint16_t)pdTICKS_TO_MS(HAL_GetTick());
         tof_buffer[write_pointer % MAX_TOF_SAMPLES].distance = tof_get_last_distance();
         write_pointer++;
         osMutexRelease(tof_data_mutex);

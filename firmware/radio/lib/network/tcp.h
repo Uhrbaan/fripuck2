@@ -14,7 +14,7 @@ typedef struct request_queue_item {
 } request_queue_item;
 
 esp_err_t wait_for_tcp_client(struct sockaddr_in *out_client_addr, int *out_socket);
-void tcp_server(void *pvParameters);
+void tcp_connection_manager(void *pvParameters);
 int tcp_init_(void);
 
 #endif

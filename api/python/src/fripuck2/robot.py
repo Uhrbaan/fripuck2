@@ -1,17 +1,21 @@
 from ._generated import sensors_generated as sensors
 from ._generated import commands_generated as commands
 import numpy
+import time
 
 class TofHisory:
     def __init__(self, size=100):
-        self.size = size 
+        self._size = size 
         # columns: [timestamp, distance]
-        self.data = numpy.zeros((size, 2))
-        self.ptr = 0
+        self._data = numpy.zeros((size, 2))
+        self._ptr = 0
+        self._count = 0
 
     def _add(self, timestamp, distance):
-        self.data[self.ptr] = [timestamp, distance]
-        self.ptr = (self.ptr+1) % self.size
+        self._data[self._ptr] = [timestamp, distance]
+        self._ptr = (self._ptr+1) % self._size
+        if self._count < self._size:
+            self._count += 1
 
     def _parse(self, base_timestamp, batch: sensors.SensorBatch):
         if not batch.TofIsNone(): 
@@ -24,12 +28,25 @@ class TofHisory:
 
         :return: Latest time of flight reading.
         """
-        return self.data[self.ptr-1][1]
+        return self._data[self._ptr-1][1]
     
     def get_all(self): 
-        """Get """
-        return numpy.roll(self.data, -self.ptr, axis=0)
+        """Get all the last elements stored and clear the queue.
+        
+        :return: a numpy array of size (0, 2) containing the latest sensor readings. Note that it is not guranteed that the elements are in order !
+        """
+        if self._count < self._size:
+            result = self._data[:self._ptr] # Copy so 'clear' doesn't affect it
+        else:
+            result = numpy.roll(self._data, -self._ptr, axis=0)
 
+        self._ptr = 0
+        self._count = 0
+
+        return result
+    
+    def __len__(self):
+        return self._count
 
 class Robot:
     def __init__(self, ip: str, history_size=100): 

@@ -11,82 +11,82 @@
 
 static int FripuckProtocol_Sensors_SensorBatch_verify_table(flatcc_table_verifier_descriptor_t *td);
 
-static inline int FripuckProtocol_Sensors_RingSensorData_verify_as_root(const void *buf, size_t bufsiz)
+static inline int FripuckProtocol_Sensors_Uint16Array8_verify_as_root(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_struct_as_root(buf, bufsiz, FripuckProtocol_Sensors_RingSensorData_identifier, 16, 2);
+    return flatcc_verify_struct_as_root(buf, bufsiz, FripuckProtocol_Sensors_Uint16Array8_identifier, 16, 2);
 }
 
-static inline int FripuckProtocol_Sensors_RingSensorData_verify_as_root_with_size(const void *buf, size_t bufsiz)
+static inline int FripuckProtocol_Sensors_Uint16Array8_verify_as_root_with_size(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_struct_as_root_with_size(buf, bufsiz, FripuckProtocol_Sensors_RingSensorData_identifier, 16, 2);
+    return flatcc_verify_struct_as_root_with_size(buf, bufsiz, FripuckProtocol_Sensors_Uint16Array8_identifier, 16, 2);
 }
 
-static inline int FripuckProtocol_Sensors_RingSensorData_verify_as_typed_root(const void *buf, size_t bufsiz)
+static inline int FripuckProtocol_Sensors_Uint16Array8_verify_as_typed_root(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_struct_as_typed_root(buf, bufsiz, FripuckProtocol_Sensors_RingSensorData_type_hash, 16, 2);
+    return flatcc_verify_struct_as_typed_root(buf, bufsiz, FripuckProtocol_Sensors_Uint16Array8_type_hash, 16, 2);
 }
 
-static inline int FripuckProtocol_Sensors_RingSensorData_verify_as_typed_root_with_size(const void *buf, size_t bufsiz)
+static inline int FripuckProtocol_Sensors_Uint16Array8_verify_as_typed_root_with_size(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_struct_as_typed_root_with_size(buf, bufsiz, FripuckProtocol_Sensors_RingSensorData_type_hash, 16, 2);
+    return flatcc_verify_struct_as_typed_root_with_size(buf, bufsiz, FripuckProtocol_Sensors_Uint16Array8_type_hash, 16, 2);
 }
 
-static inline int FripuckProtocol_Sensors_RingSensorData_verify_as_root_with_type_hash(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
+static inline int FripuckProtocol_Sensors_Uint16Array8_verify_as_root_with_type_hash(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
 {
     return flatcc_verify_struct_as_typed_root(buf, bufsiz, thash, 16, 2);
 }
 
-static inline int FripuckProtocol_Sensors_RingSensorData_verify_as_root_with_type_hash_and_size(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
+static inline int FripuckProtocol_Sensors_Uint16Array8_verify_as_root_with_type_hash_and_size(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
 {
     return flatcc_verify_struct_as_typed_root_with_size(buf, bufsiz, thash, 16, 2);
 }
 
-static inline int FripuckProtocol_Sensors_RingSensorData_verify_as_root_with_identifier(const void *buf, size_t bufsiz, const char *fid)
+static inline int FripuckProtocol_Sensors_Uint16Array8_verify_as_root_with_identifier(const void *buf, size_t bufsiz, const char *fid)
 {
     return flatcc_verify_struct_as_root(buf, bufsiz, fid, 16, 2);
 }
 
-static inline int FripuckProtocol_Sensors_RingSensorData_verify_as_root_with_identifier_and_size(const void *buf, size_t bufsiz, const char *fid)
+static inline int FripuckProtocol_Sensors_Uint16Array8_verify_as_root_with_identifier_and_size(const void *buf, size_t bufsiz, const char *fid)
 {
     return flatcc_verify_struct_as_root_with_size(buf, bufsiz, fid, 16, 2);
 }
 
-static inline int FripuckProtocol_Sensors_ProximityLightData_verify_as_root(const void *buf, size_t bufsiz)
+static inline int FripuckProtocol_Sensors_ProximityData_verify_as_root(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_struct_as_root(buf, bufsiz, FripuckProtocol_Sensors_ProximityLightData_identifier, 36, 2);
+    return flatcc_verify_struct_as_root(buf, bufsiz, FripuckProtocol_Sensors_ProximityData_identifier, 36, 2);
 }
 
-static inline int FripuckProtocol_Sensors_ProximityLightData_verify_as_root_with_size(const void *buf, size_t bufsiz)
+static inline int FripuckProtocol_Sensors_ProximityData_verify_as_root_with_size(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_struct_as_root_with_size(buf, bufsiz, FripuckProtocol_Sensors_ProximityLightData_identifier, 36, 2);
+    return flatcc_verify_struct_as_root_with_size(buf, bufsiz, FripuckProtocol_Sensors_ProximityData_identifier, 36, 2);
 }
 
-static inline int FripuckProtocol_Sensors_ProximityLightData_verify_as_typed_root(const void *buf, size_t bufsiz)
+static inline int FripuckProtocol_Sensors_ProximityData_verify_as_typed_root(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_struct_as_typed_root(buf, bufsiz, FripuckProtocol_Sensors_ProximityLightData_type_hash, 36, 2);
+    return flatcc_verify_struct_as_typed_root(buf, bufsiz, FripuckProtocol_Sensors_ProximityData_type_hash, 36, 2);
 }
 
-static inline int FripuckProtocol_Sensors_ProximityLightData_verify_as_typed_root_with_size(const void *buf, size_t bufsiz)
+static inline int FripuckProtocol_Sensors_ProximityData_verify_as_typed_root_with_size(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_struct_as_typed_root_with_size(buf, bufsiz, FripuckProtocol_Sensors_ProximityLightData_type_hash, 36, 2);
+    return flatcc_verify_struct_as_typed_root_with_size(buf, bufsiz, FripuckProtocol_Sensors_ProximityData_type_hash, 36, 2);
 }
 
-static inline int FripuckProtocol_Sensors_ProximityLightData_verify_as_root_with_type_hash(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
+static inline int FripuckProtocol_Sensors_ProximityData_verify_as_root_with_type_hash(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
 {
     return flatcc_verify_struct_as_typed_root(buf, bufsiz, thash, 36, 2);
 }
 
-static inline int FripuckProtocol_Sensors_ProximityLightData_verify_as_root_with_type_hash_and_size(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
+static inline int FripuckProtocol_Sensors_ProximityData_verify_as_root_with_type_hash_and_size(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
 {
     return flatcc_verify_struct_as_typed_root_with_size(buf, bufsiz, thash, 36, 2);
 }
 
-static inline int FripuckProtocol_Sensors_ProximityLightData_verify_as_root_with_identifier(const void *buf, size_t bufsiz, const char *fid)
+static inline int FripuckProtocol_Sensors_ProximityData_verify_as_root_with_identifier(const void *buf, size_t bufsiz, const char *fid)
 {
     return flatcc_verify_struct_as_root(buf, bufsiz, fid, 36, 2);
 }
 
-static inline int FripuckProtocol_Sensors_ProximityLightData_verify_as_root_with_identifier_and_size(const void *buf, size_t bufsiz, const char *fid)
+static inline int FripuckProtocol_Sensors_ProximityData_verify_as_root_with_identifier_and_size(const void *buf, size_t bufsiz, const char *fid)
 {
     return flatcc_verify_struct_as_root_with_size(buf, bufsiz, fid, 36, 2);
 }

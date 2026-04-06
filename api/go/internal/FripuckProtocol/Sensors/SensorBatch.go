@@ -8,7 +8,7 @@ import (
 
 type SensorBatchT struct {
 	BaseTimestamp uint64 `json:"base_timestamp"`
-	Proximity []*ProximityLightDataT `json:"proximity"`
+	Proximity []*ProximityDataT `json:"proximity"`
 	Tof []*TofDataT `json:"tof"`
 	Battery []*BatteryDataT `json:"battery"`
 	Encoder []*EncoderDataT `json:"encoder"`
@@ -111,9 +111,9 @@ func (t *SensorBatchT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 func (rcv *SensorBatch) UnPackTo(t *SensorBatchT) {
 	t.BaseTimestamp = rcv.BaseTimestamp()
 	proximityLength := rcv.ProximityLength()
-	t.Proximity = make([]*ProximityLightDataT, proximityLength)
+	t.Proximity = make([]*ProximityDataT, proximityLength)
 	for j := 0; j < proximityLength; j++ {
-		x := ProximityLightData{}
+		x := ProximityData{}
 		rcv.Proximity(&x, j)
 		t.Proximity[j] = x.UnPack()
 	}
@@ -231,7 +231,7 @@ func (rcv *SensorBatch) MutateBaseTimestamp(n uint64) bool {
 	return rcv._tab.MutateUint64Slot(4, n)
 }
 
-func (rcv *SensorBatch) Proximity(obj *ProximityLightData, j int) bool {
+func (rcv *SensorBatch) Proximity(obj *ProximityData, j int) bool {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(6))
 	if o != 0 {
 		x := rcv._tab.Vector(o)

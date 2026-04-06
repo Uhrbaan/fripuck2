@@ -55,5 +55,5 @@
         "lualib.h": "c"
     },
     "idf.pythonInstallPath": "/usr/bin/python3",
-    "workbench.colorTheme": "Catppuccin Mocha"
+    "workbench.colorTheme": "Catppuccin Latte"
 }

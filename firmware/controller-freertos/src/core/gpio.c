@@ -41,6 +41,7 @@
      PA3   ------> S_TIM5_CH4
      PA4   ------> DCMI_HSYNC
      PA6   ------> DCMI_PIXCLK
+     PB0   ------> SharedAnalog_PB0
      PB13   ------> SPI2_SCK
      PB15   ------> I2S2_SD
      PC6   ------> DCMI_D0
@@ -157,6 +158,12 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
   GPIO_InitStruct.Alternate = GPIO_AF13_DCMI;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : IR5_AN_Pin */
+  GPIO_InitStruct.Pin = IR5_AN_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(IR5_AN_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : LED_BODY_Pin SPI1_CS_ENC_L_Pin PULSE_0_Pin PULSE_1_Pin */
   GPIO_InitStruct.Pin = LED_BODY_Pin|SPI1_CS_ENC_L_Pin|PULSE_0_Pin|PULSE_1_Pin;

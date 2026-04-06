@@ -9,6 +9,7 @@
 #include "core/dma.h"
 #include "core/spi.h"
 #include "core/i2c.h"
+#include "core/adc.h"
 
 #include "cmsis_os.h"
 #include "stm32f4xx_hal_tim.h"
@@ -20,11 +21,13 @@
 #include "spi.h"
 #include "time_of_flight.h"
 #include "i2c.h"
+#include "proximity.h"
 #include <spi_conf.h>
 #include <strings.h>
 #include <stdio.h>
 
 #include "tof/tof.h"
+#include "prox/prox.h"
 
 int init_hardware(void)
 {
@@ -32,14 +35,15 @@ int init_hardware(void)
     SystemClock_Config();
     MX_GPIO_Init();
 
+    MX_DMA_Init();
     MX_CAN1_Init();
     MX_TIM3_Init();
     MX_TIM4_Init();
     MX_USART3_UART_Init();
     MX_SPI1_Init();
-    MX_DMA_Init();
     MX_CAN1_Init();
     MX_I2C1_Init();
+    MX_ADC1_Init();
 
     return 0;
 }
@@ -68,6 +72,7 @@ void TelemetryTask(void *argument)
         FripuckProtocol_Sensors_SensorBatch_base_timestamp_add(&builder, 0);
 
         pack_tof_to_vector(&builder);
+        pack_prox_to_vector(&builder);
 
         FripuckProtocol_Sensors_SensorBatch_end_as_root(&builder);
 
@@ -102,10 +107,13 @@ void StartDefaultTask(void *argument)
     spi_bus_init(&hspi1);
     i2c_init(&hi2c1);
     tof_init(&hi2c1, TOF_HIGH_SPEED);
+    proximity_init(&hadc1, prox_insert_callback);
+    prox_initialize_lock();
 
     tofTask_attributes.stack_size = 1024;
     tofTaskHandle = osThreadNew(tof_task, (void *)TOF_HIGH_SPEED, &tofTask_attributes);
     telemetryTaskHandle = osThreadNew(TelemetryTask, NULL, &telemetryTask_attributes);
+    proximity_start();
 
     while (1)
     {

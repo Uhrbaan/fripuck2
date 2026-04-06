@@ -6,75 +6,75 @@ import flatbuffers
 from flatbuffers.compat import import_numpy
 np = import_numpy()
 
-class RingSensorData(object):
+class Uint16Array8(object):
     __slots__ = ['_tab']
 
     @classmethod
     def SizeOf(cls):
         return 16
 
-    # RingSensorData
+    # Uint16Array8
     def Init(self, buf, pos):
         self._tab = flatbuffers.table.Table(buf, pos)
 
-    # RingSensorData
-    def S0(self): return self._tab.Get(flatbuffers.number_types.Uint16Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(0))
-    # RingSensorData
-    def S1(self): return self._tab.Get(flatbuffers.number_types.Uint16Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(2))
-    # RingSensorData
-    def S2(self): return self._tab.Get(flatbuffers.number_types.Uint16Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(4))
-    # RingSensorData
-    def S3(self): return self._tab.Get(flatbuffers.number_types.Uint16Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(6))
-    # RingSensorData
-    def S4(self): return self._tab.Get(flatbuffers.number_types.Uint16Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(8))
-    # RingSensorData
-    def S5(self): return self._tab.Get(flatbuffers.number_types.Uint16Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(10))
-    # RingSensorData
-    def S6(self): return self._tab.Get(flatbuffers.number_types.Uint16Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(12))
-    # RingSensorData
-    def S7(self): return self._tab.Get(flatbuffers.number_types.Uint16Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(14))
+    # Uint16Array8
+    def A0(self): return self._tab.Get(flatbuffers.number_types.Uint16Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(0))
+    # Uint16Array8
+    def A1(self): return self._tab.Get(flatbuffers.number_types.Uint16Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(2))
+    # Uint16Array8
+    def A2(self): return self._tab.Get(flatbuffers.number_types.Uint16Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(4))
+    # Uint16Array8
+    def A3(self): return self._tab.Get(flatbuffers.number_types.Uint16Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(6))
+    # Uint16Array8
+    def A4(self): return self._tab.Get(flatbuffers.number_types.Uint16Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(8))
+    # Uint16Array8
+    def A5(self): return self._tab.Get(flatbuffers.number_types.Uint16Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(10))
+    # Uint16Array8
+    def A6(self): return self._tab.Get(flatbuffers.number_types.Uint16Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(12))
+    # Uint16Array8
+    def A7(self): return self._tab.Get(flatbuffers.number_types.Uint16Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(14))
 
-def CreateRingSensorData(builder, s0, s1, s2, s3, s4, s5, s6, s7):
+def CreateUint16Array8(builder, a0, a1, a2, a3, a4, a5, a6, a7):
     builder.Prep(2, 16)
-    builder.PrependUint16(s7)
-    builder.PrependUint16(s6)
-    builder.PrependUint16(s5)
-    builder.PrependUint16(s4)
-    builder.PrependUint16(s3)
-    builder.PrependUint16(s2)
-    builder.PrependUint16(s1)
-    builder.PrependUint16(s0)
+    builder.PrependUint16(a7)
+    builder.PrependUint16(a6)
+    builder.PrependUint16(a5)
+    builder.PrependUint16(a4)
+    builder.PrependUint16(a3)
+    builder.PrependUint16(a2)
+    builder.PrependUint16(a1)
+    builder.PrependUint16(a0)
     return builder.Offset()
 
 
-class RingSensorDataT(object):
+class Uint16Array8T(object):
 
-    # RingSensorDataT
+    # Uint16Array8T
     def __init__(
         self,
-        s0 = 0,
-        s1 = 0,
-        s2 = 0,
-        s3 = 0,
-        s4 = 0,
-        s5 = 0,
-        s6 = 0,
-        s7 = 0,
+        a0 = 0,
+        a1 = 0,
+        a2 = 0,
+        a3 = 0,
+        a4 = 0,
+        a5 = 0,
+        a6 = 0,
+        a7 = 0,
     ):
-        self.s0 = s0  # type: int
-        self.s1 = s1  # type: int
-        self.s2 = s2  # type: int
-        self.s3 = s3  # type: int
-        self.s4 = s4  # type: int
-        self.s5 = s5  # type: int
-        self.s6 = s6  # type: int
-        self.s7 = s7  # type: int
+        self.a0 = a0  # type: int
+        self.a1 = a1  # type: int
+        self.a2 = a2  # type: int
+        self.a3 = a3  # type: int
+        self.a4 = a4  # type: int
+        self.a5 = a5  # type: int
+        self.a6 = a6  # type: int
+        self.a7 = a7  # type: int
 
     @classmethod
     def InitFromBuf(cls, buf, pos):
-        ringSensorData = RingSensorData()
-        ringSensorData.Init(buf, pos)
-        return cls.InitFromObj(ringSensorData)
+        uint16Array8 = Uint16Array8()
+        uint16Array8.Init(buf, pos)
+        return cls.InitFromObj(uint16Array8)
 
     @classmethod
     def InitFromPackedBuf(cls, buf, pos=0):
@@ -82,77 +82,77 @@ class RingSensorDataT(object):
         return cls.InitFromBuf(buf, pos+n)
 
     @classmethod
-    def InitFromObj(cls, ringSensorData):
-        x = RingSensorDataT()
-        x._UnPack(ringSensorData)
+    def InitFromObj(cls, uint16Array8):
+        x = Uint16Array8T()
+        x._UnPack(uint16Array8)
         return x
 
-    # RingSensorDataT
-    def _UnPack(self, ringSensorData):
-        if ringSensorData is None:
+    # Uint16Array8T
+    def _UnPack(self, uint16Array8):
+        if uint16Array8 is None:
             return
-        self.s0 = ringSensorData.S0()
-        self.s1 = ringSensorData.S1()
-        self.s2 = ringSensorData.S2()
-        self.s3 = ringSensorData.S3()
-        self.s4 = ringSensorData.S4()
-        self.s5 = ringSensorData.S5()
-        self.s6 = ringSensorData.S6()
-        self.s7 = ringSensorData.S7()
+        self.a0 = uint16Array8.A0()
+        self.a1 = uint16Array8.A1()
+        self.a2 = uint16Array8.A2()
+        self.a3 = uint16Array8.A3()
+        self.a4 = uint16Array8.A4()
+        self.a5 = uint16Array8.A5()
+        self.a6 = uint16Array8.A6()
+        self.a7 = uint16Array8.A7()
 
-    # RingSensorDataT
+    # Uint16Array8T
     def Pack(self, builder):
-        return CreateRingSensorData(builder, self.s0, self.s1, self.s2, self.s3, self.s4, self.s5, self.s6, self.s7)
+        return CreateUint16Array8(builder, self.a0, self.a1, self.a2, self.a3, self.a4, self.a5, self.a6, self.a7)
 
 
-class ProximityLightData(object):
+class ProximityData(object):
     __slots__ = ['_tab']
 
     @classmethod
     def SizeOf(cls):
         return 36
 
-    # ProximityLightData
+    # ProximityData
     def Init(self, buf, pos):
         self._tab = flatbuffers.table.Table(buf, pos)
 
-    # ProximityLightData
+    # ProximityData
     def Proximity(self, obj):
         obj.Init(self._tab.Bytes, self._tab.Pos + 0)
         return obj
 
-    # ProximityLightData
+    # ProximityData
     def AmbientLight(self, obj):
         obj.Init(self._tab.Bytes, self._tab.Pos + 16)
         return obj
 
-    # ProximityLightData
+    # ProximityData
     def TimestampOffset(self): return self._tab.Get(flatbuffers.number_types.Uint16Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(32))
-    # ProximityLightData
+    # ProximityData
     def Padding(self): return self._tab.Get(flatbuffers.number_types.Uint16Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(34))
 
-def CreateProximityLightData(builder, proximity_s0, proximity_s1, proximity_s2, proximity_s3, proximity_s4, proximity_s5, proximity_s6, proximity_s7, ambientLight_s0, ambientLight_s1, ambientLight_s2, ambientLight_s3, ambientLight_s4, ambientLight_s5, ambientLight_s6, ambientLight_s7, timestampOffset, padding):
+def CreateProximityData(builder, proximity_a0, proximity_a1, proximity_a2, proximity_a3, proximity_a4, proximity_a5, proximity_a6, proximity_a7, ambientLight_a0, ambientLight_a1, ambientLight_a2, ambientLight_a3, ambientLight_a4, ambientLight_a5, ambientLight_a6, ambientLight_a7, timestampOffset, padding):
     builder.Prep(2, 36)
     builder.PrependUint16(padding)
     builder.PrependUint16(timestampOffset)
     builder.Prep(2, 16)
-    builder.PrependUint16(ambientLight_s7)
-    builder.PrependUint16(ambientLight_s6)
-    builder.PrependUint16(ambientLight_s5)
-    builder.PrependUint16(ambientLight_s4)
-    builder.PrependUint16(ambientLight_s3)
-    builder.PrependUint16(ambientLight_s2)
-    builder.PrependUint16(ambientLight_s1)
-    builder.PrependUint16(ambientLight_s0)
+    builder.PrependUint16(ambientLight_a7)
+    builder.PrependUint16(ambientLight_a6)
+    builder.PrependUint16(ambientLight_a5)
+    builder.PrependUint16(ambientLight_a4)
+    builder.PrependUint16(ambientLight_a3)
+    builder.PrependUint16(ambientLight_a2)
+    builder.PrependUint16(ambientLight_a1)
+    builder.PrependUint16(ambientLight_a0)
     builder.Prep(2, 16)
-    builder.PrependUint16(proximity_s7)
-    builder.PrependUint16(proximity_s6)
-    builder.PrependUint16(proximity_s5)
-    builder.PrependUint16(proximity_s4)
-    builder.PrependUint16(proximity_s3)
-    builder.PrependUint16(proximity_s2)
-    builder.PrependUint16(proximity_s1)
-    builder.PrependUint16(proximity_s0)
+    builder.PrependUint16(proximity_a7)
+    builder.PrependUint16(proximity_a6)
+    builder.PrependUint16(proximity_a5)
+    builder.PrependUint16(proximity_a4)
+    builder.PrependUint16(proximity_a3)
+    builder.PrependUint16(proximity_a2)
+    builder.PrependUint16(proximity_a1)
+    builder.PrependUint16(proximity_a0)
     return builder.Offset()
 
 try:
@@ -160,9 +160,9 @@ try:
 except:
     pass
 
-class ProximityLightDataT(object):
+class ProximityDataT(object):
 
-    # ProximityLightDataT
+    # ProximityDataT
     def __init__(
         self,
         proximity = None,
@@ -170,16 +170,16 @@ class ProximityLightDataT(object):
         timestampOffset = 0,
         padding = 0,
     ):
-        self.proximity = proximity  # type: Optional[RingSensorDataT]
-        self.ambientLight = ambientLight  # type: Optional[RingSensorDataT]
+        self.proximity = proximity  # type: Optional[Uint16Array8T]
+        self.ambientLight = ambientLight  # type: Optional[Uint16Array8T]
         self.timestampOffset = timestampOffset  # type: int
         self.padding = padding  # type: int
 
     @classmethod
     def InitFromBuf(cls, buf, pos):
-        proximityLightData = ProximityLightData()
-        proximityLightData.Init(buf, pos)
-        return cls.InitFromObj(proximityLightData)
+        proximityData = ProximityData()
+        proximityData.Init(buf, pos)
+        return cls.InitFromObj(proximityData)
 
     @classmethod
     def InitFromPackedBuf(cls, buf, pos=0):
@@ -187,25 +187,25 @@ class ProximityLightDataT(object):
         return cls.InitFromBuf(buf, pos+n)
 
     @classmethod
-    def InitFromObj(cls, proximityLightData):
-        x = ProximityLightDataT()
-        x._UnPack(proximityLightData)
+    def InitFromObj(cls, proximityData):
+        x = ProximityDataT()
+        x._UnPack(proximityData)
         return x
 
-    # ProximityLightDataT
-    def _UnPack(self, proximityLightData):
-        if proximityLightData is None:
+    # ProximityDataT
+    def _UnPack(self, proximityData):
+        if proximityData is None:
             return
-        if proximityLightData.Proximity(RingSensorData()) is not None:
-            self.proximity = RingSensorDataT.InitFromObj(proximityLightData.Proximity(RingSensorData()))
-        if proximityLightData.AmbientLight(RingSensorData()) is not None:
-            self.ambientLight = RingSensorDataT.InitFromObj(proximityLightData.AmbientLight(RingSensorData()))
-        self.timestampOffset = proximityLightData.TimestampOffset()
-        self.padding = proximityLightData.Padding()
+        if proximityData.Proximity(Uint16Array8()) is not None:
+            self.proximity = Uint16Array8T.InitFromObj(proximityData.Proximity(Uint16Array8()))
+        if proximityData.AmbientLight(Uint16Array8()) is not None:
+            self.ambientLight = Uint16Array8T.InitFromObj(proximityData.AmbientLight(Uint16Array8()))
+        self.timestampOffset = proximityData.TimestampOffset()
+        self.padding = proximityData.Padding()
 
-    # ProximityLightDataT
+    # ProximityDataT
     def Pack(self, builder):
-        return CreateProximityLightData(builder, self.proximity.s0, self.proximity.s1, self.proximity.s2, self.proximity.s3, self.proximity.s4, self.proximity.s5, self.proximity.s6, self.proximity.s7, self.ambientLight.s0, self.ambientLight.s1, self.ambientLight.s2, self.ambientLight.s3, self.ambientLight.s4, self.ambientLight.s5, self.ambientLight.s6, self.ambientLight.s7, self.timestampOffset, self.padding)
+        return CreateProximityData(builder, self.proximity.a0, self.proximity.a1, self.proximity.a2, self.proximity.a3, self.proximity.a4, self.proximity.a5, self.proximity.a6, self.proximity.a7, self.ambientLight.a0, self.ambientLight.a1, self.ambientLight.a2, self.ambientLight.a3, self.ambientLight.a4, self.ambientLight.a5, self.ambientLight.a6, self.ambientLight.a7, self.timestampOffset, self.padding)
 
 
 class TofData(object):
@@ -862,7 +862,7 @@ class SensorBatch(object):
         if o != 0:
             x = self._tab.Vector(o)
             x += flatbuffers.number_types.UOffsetTFlags.py_type(j) * 36
-            obj = ProximityLightData()
+            obj = ProximityData()
             obj.Init(self._tab.Bytes, x)
             return obj
         return None
@@ -1220,7 +1220,7 @@ class SensorBatchT(object):
         videoMetadata = None,
     ):
         self.baseTimestamp = baseTimestamp  # type: int
-        self.proximity = proximity  # type: Optional[List[ProximityLightDataT]]
+        self.proximity = proximity  # type: Optional[List[ProximityDataT]]
         self.tof = tof  # type: Optional[List[TofDataT]]
         self.battery = battery  # type: Optional[List[BatteryDataT]]
         self.encoder = encoder  # type: Optional[List[EncoderDataT]]
@@ -1258,8 +1258,8 @@ class SensorBatchT(object):
                 if sensorBatch.Proximity(i) is None:
                     self.proximity.append(None)
                 else:
-                    proximityLightData_ = ProximityLightDataT.InitFromObj(sensorBatch.Proximity(i))
-                    self.proximity.append(proximityLightData_)
+                    proximityData_ = ProximityDataT.InitFromObj(sensorBatch.Proximity(i))
+                    self.proximity.append(proximityData_)
         if not sensorBatch.TofIsNone():
             self.tof = []
             for i in range(sensorBatch.TofLength()):

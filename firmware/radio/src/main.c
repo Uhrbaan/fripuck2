@@ -38,7 +38,7 @@ void spi_recieve_cb(uint8_t *data, uint16_t length) {
         return;
     }
 
-    // // Log the first TOF element for logging purposes
+    // Log the first TOF element for logging purposes
     // FripuckProtocol_Sensors_SensorBatch_table_t batch = FripuckProtocol_Sensors_SensorBatch_as_root(data);
     // FripuckProtocol_Sensors_TofData_vec_t tof_vec = FripuckProtocol_Sensors_SensorBatch_tof(batch);
 
@@ -56,6 +56,20 @@ void spi_recieve_cb(uint8_t *data, uint16_t length) {
     // uint16_t dist = FripuckProtocol_Sensors_TofData_distance(first_tof);
     // uint16_t timestamp = FripuckProtocol_Sensors_TofData_timestamp_offset(first_tof);
     // ESP_LOGI(TAG, "[%u] First TOF Distance: %u mm", timestamp, dist);
+
+    // Log proximity
+    FripuckProtocol_Sensors_SensorBatch_table_t batch = FripuckProtocol_Sensors_SensorBatch_as_root(data);
+    FripuckProtocol_Sensors_ProximityData_vec_t prox_vec = FripuckProtocol_Sensors_SensorBatch_proximity(batch);
+    size_t prox_count = FripuckProtocol_Sensors_ProximityData_vec_len(prox_vec);
+    if (prox_vec == NULL || prox_count == 0) {
+        ESP_LOGE(TAG, "Proximity vector is empty...");
+    } else {
+        FripuckProtocol_Sensors_ProximityData_struct_t prox_data =
+            FripuckProtocol_Sensors_ProximityData_vec_at(prox_vec, 0);
+        FripuckProtocol_Sensors_Uint16Array8_t proximities = prox_data->proximity;
+        ESP_LOGI(TAG, "Proximities: %d, %d, %d, %d, %d, %d, %d, %d", proximities.a0, proximities.a1, proximities.a2,
+                 proximities.a3, proximities.a4, proximities.a5, proximities.a6, proximities.a7);
+    }
 
     if (spi_to_udp_queue) {
         packet.length = length;

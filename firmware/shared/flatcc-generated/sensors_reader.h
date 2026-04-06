@@ -17,16 +17,16 @@
 #define flatbuffers_extension "bin"
 #endif
 
-typedef struct FripuckProtocol_Sensors_RingSensorData FripuckProtocol_Sensors_RingSensorData_t;
-typedef const FripuckProtocol_Sensors_RingSensorData_t *FripuckProtocol_Sensors_RingSensorData_struct_t;
-typedef FripuckProtocol_Sensors_RingSensorData_t *FripuckProtocol_Sensors_RingSensorData_mutable_struct_t;
-typedef const FripuckProtocol_Sensors_RingSensorData_t *FripuckProtocol_Sensors_RingSensorData_vec_t;
-typedef FripuckProtocol_Sensors_RingSensorData_t *FripuckProtocol_Sensors_RingSensorData_mutable_vec_t;
-typedef struct FripuckProtocol_Sensors_ProximityLightData FripuckProtocol_Sensors_ProximityLightData_t;
-typedef const FripuckProtocol_Sensors_ProximityLightData_t *FripuckProtocol_Sensors_ProximityLightData_struct_t;
-typedef FripuckProtocol_Sensors_ProximityLightData_t *FripuckProtocol_Sensors_ProximityLightData_mutable_struct_t;
-typedef const FripuckProtocol_Sensors_ProximityLightData_t *FripuckProtocol_Sensors_ProximityLightData_vec_t;
-typedef FripuckProtocol_Sensors_ProximityLightData_t *FripuckProtocol_Sensors_ProximityLightData_mutable_vec_t;
+typedef struct FripuckProtocol_Sensors_Uint16Array8 FripuckProtocol_Sensors_Uint16Array8_t;
+typedef const FripuckProtocol_Sensors_Uint16Array8_t *FripuckProtocol_Sensors_Uint16Array8_struct_t;
+typedef FripuckProtocol_Sensors_Uint16Array8_t *FripuckProtocol_Sensors_Uint16Array8_mutable_struct_t;
+typedef const FripuckProtocol_Sensors_Uint16Array8_t *FripuckProtocol_Sensors_Uint16Array8_vec_t;
+typedef FripuckProtocol_Sensors_Uint16Array8_t *FripuckProtocol_Sensors_Uint16Array8_mutable_vec_t;
+typedef struct FripuckProtocol_Sensors_ProximityData FripuckProtocol_Sensors_ProximityData_t;
+typedef const FripuckProtocol_Sensors_ProximityData_t *FripuckProtocol_Sensors_ProximityData_struct_t;
+typedef FripuckProtocol_Sensors_ProximityData_t *FripuckProtocol_Sensors_ProximityData_mutable_struct_t;
+typedef const FripuckProtocol_Sensors_ProximityData_t *FripuckProtocol_Sensors_ProximityData_vec_t;
+typedef FripuckProtocol_Sensors_ProximityData_t *FripuckProtocol_Sensors_ProximityData_mutable_vec_t;
 typedef struct FripuckProtocol_Sensors_TofData FripuckProtocol_Sensors_TofData_t;
 typedef const FripuckProtocol_Sensors_TofData_t *FripuckProtocol_Sensors_TofData_struct_t;
 typedef FripuckProtocol_Sensors_TofData_t *FripuckProtocol_Sensors_TofData_mutable_struct_t;
@@ -72,29 +72,29 @@ typedef const struct FripuckProtocol_Sensors_SensorBatch_table *FripuckProtocol_
 typedef struct FripuckProtocol_Sensors_SensorBatch_table *FripuckProtocol_Sensors_SensorBatch_mutable_table_t;
 typedef const flatbuffers_uoffset_t *FripuckProtocol_Sensors_SensorBatch_vec_t;
 typedef flatbuffers_uoffset_t *FripuckProtocol_Sensors_SensorBatch_mutable_vec_t;
-#ifndef FripuckProtocol_Sensors_RingSensorData_file_identifier
-#define FripuckProtocol_Sensors_RingSensorData_file_identifier "SENS"
+#ifndef FripuckProtocol_Sensors_Uint16Array8_file_identifier
+#define FripuckProtocol_Sensors_Uint16Array8_file_identifier "SENS"
 #endif
-/* deprecated, use FripuckProtocol_Sensors_RingSensorData_file_identifier */
-#ifndef FripuckProtocol_Sensors_RingSensorData_identifier
-#define FripuckProtocol_Sensors_RingSensorData_identifier "SENS"
+/* deprecated, use FripuckProtocol_Sensors_Uint16Array8_file_identifier */
+#ifndef FripuckProtocol_Sensors_Uint16Array8_identifier
+#define FripuckProtocol_Sensors_Uint16Array8_identifier "SENS"
 #endif
-#define FripuckProtocol_Sensors_RingSensorData_type_hash ((flatbuffers_thash_t)0xbba36d9a)
-#define FripuckProtocol_Sensors_RingSensorData_type_identifier "\x9a\x6d\xa3\xbb"
-#ifndef FripuckProtocol_Sensors_RingSensorData_file_extension
-#define FripuckProtocol_Sensors_RingSensorData_file_extension "bin"
+#define FripuckProtocol_Sensors_Uint16Array8_type_hash ((flatbuffers_thash_t)0x67e690b2)
+#define FripuckProtocol_Sensors_Uint16Array8_type_identifier "\xb2\x90\xe6\x67"
+#ifndef FripuckProtocol_Sensors_Uint16Array8_file_extension
+#define FripuckProtocol_Sensors_Uint16Array8_file_extension "bin"
 #endif
-#ifndef FripuckProtocol_Sensors_ProximityLightData_file_identifier
-#define FripuckProtocol_Sensors_ProximityLightData_file_identifier "SENS"
+#ifndef FripuckProtocol_Sensors_ProximityData_file_identifier
+#define FripuckProtocol_Sensors_ProximityData_file_identifier "SENS"
 #endif
-/* deprecated, use FripuckProtocol_Sensors_ProximityLightData_file_identifier */
-#ifndef FripuckProtocol_Sensors_ProximityLightData_identifier
-#define FripuckProtocol_Sensors_ProximityLightData_identifier "SENS"
+/* deprecated, use FripuckProtocol_Sensors_ProximityData_file_identifier */
+#ifndef FripuckProtocol_Sensors_ProximityData_identifier
+#define FripuckProtocol_Sensors_ProximityData_identifier "SENS"
 #endif
-#define FripuckProtocol_Sensors_ProximityLightData_type_hash ((flatbuffers_thash_t)0xba9b94b5)
-#define FripuckProtocol_Sensors_ProximityLightData_type_identifier "\xb5\x94\x9b\xba"
-#ifndef FripuckProtocol_Sensors_ProximityLightData_file_extension
-#define FripuckProtocol_Sensors_ProximityLightData_file_extension "bin"
+#define FripuckProtocol_Sensors_ProximityData_type_hash ((flatbuffers_thash_t)0xbf7407d3)
+#define FripuckProtocol_Sensors_ProximityData_type_identifier "\xd3\x07\x74\xbf"
+#ifndef FripuckProtocol_Sensors_ProximityData_file_extension
+#define FripuckProtocol_Sensors_ProximityData_file_extension "bin"
 #endif
 #ifndef FripuckProtocol_Sensors_TofData_file_identifier
 #define FripuckProtocol_Sensors_TofData_file_identifier "SENS"
@@ -206,43 +206,57 @@ typedef flatbuffers_uoffset_t *FripuckProtocol_Sensors_SensorBatch_mutable_vec_t
 #endif
 
 
-struct FripuckProtocol_Sensors_RingSensorData {
-    alignas(2) uint16_t proximities[8];
+struct FripuckProtocol_Sensors_Uint16Array8 {
+    alignas(2) uint16_t a0;
+    alignas(2) uint16_t a1;
+    alignas(2) uint16_t a2;
+    alignas(2) uint16_t a3;
+    alignas(2) uint16_t a4;
+    alignas(2) uint16_t a5;
+    alignas(2) uint16_t a6;
+    alignas(2) uint16_t a7;
 };
-static_assert(sizeof(FripuckProtocol_Sensors_RingSensorData_t) == 16, "struct size mismatch");
+static_assert(sizeof(FripuckProtocol_Sensors_Uint16Array8_t) == 16, "struct size mismatch");
 
-static inline const FripuckProtocol_Sensors_RingSensorData_t *FripuckProtocol_Sensors_RingSensorData__const_ptr_add(const FripuckProtocol_Sensors_RingSensorData_t *p, size_t i) { return p + i; }
-static inline FripuckProtocol_Sensors_RingSensorData_t *FripuckProtocol_Sensors_RingSensorData__ptr_add(FripuckProtocol_Sensors_RingSensorData_t *p, size_t i) { return p + i; }
-static inline FripuckProtocol_Sensors_RingSensorData_struct_t FripuckProtocol_Sensors_RingSensorData_vec_at(FripuckProtocol_Sensors_RingSensorData_vec_t vec, size_t i)
+static inline const FripuckProtocol_Sensors_Uint16Array8_t *FripuckProtocol_Sensors_Uint16Array8__const_ptr_add(const FripuckProtocol_Sensors_Uint16Array8_t *p, size_t i) { return p + i; }
+static inline FripuckProtocol_Sensors_Uint16Array8_t *FripuckProtocol_Sensors_Uint16Array8__ptr_add(FripuckProtocol_Sensors_Uint16Array8_t *p, size_t i) { return p + i; }
+static inline FripuckProtocol_Sensors_Uint16Array8_struct_t FripuckProtocol_Sensors_Uint16Array8_vec_at(FripuckProtocol_Sensors_Uint16Array8_vec_t vec, size_t i)
 __flatbuffers_struct_vec_at(vec, i)
-static inline size_t FripuckProtocol_Sensors_RingSensorData__size(void) { return 16; }
-static inline size_t FripuckProtocol_Sensors_RingSensorData_vec_len(FripuckProtocol_Sensors_RingSensorData_vec_t vec)
+static inline size_t FripuckProtocol_Sensors_Uint16Array8__size(void) { return 16; }
+static inline size_t FripuckProtocol_Sensors_Uint16Array8_vec_len(FripuckProtocol_Sensors_Uint16Array8_vec_t vec)
 __flatbuffers_vec_len(vec)
-__flatbuffers_struct_as_root(FripuckProtocol_Sensors_RingSensorData)
+__flatbuffers_struct_as_root(FripuckProtocol_Sensors_Uint16Array8)
 
-__flatbuffers_define_struct_scalar_fixed_array_field(FripuckProtocol_Sensors_RingSensorData, proximities, flatbuffers_uint16, uint16_t, 8)
+__flatbuffers_define_struct_scalar_field(FripuckProtocol_Sensors_Uint16Array8, a0, flatbuffers_uint16, uint16_t)
+__flatbuffers_define_struct_scalar_field(FripuckProtocol_Sensors_Uint16Array8, a1, flatbuffers_uint16, uint16_t)
+__flatbuffers_define_struct_scalar_field(FripuckProtocol_Sensors_Uint16Array8, a2, flatbuffers_uint16, uint16_t)
+__flatbuffers_define_struct_scalar_field(FripuckProtocol_Sensors_Uint16Array8, a3, flatbuffers_uint16, uint16_t)
+__flatbuffers_define_struct_scalar_field(FripuckProtocol_Sensors_Uint16Array8, a4, flatbuffers_uint16, uint16_t)
+__flatbuffers_define_struct_scalar_field(FripuckProtocol_Sensors_Uint16Array8, a5, flatbuffers_uint16, uint16_t)
+__flatbuffers_define_struct_scalar_field(FripuckProtocol_Sensors_Uint16Array8, a6, flatbuffers_uint16, uint16_t)
+__flatbuffers_define_struct_scalar_field(FripuckProtocol_Sensors_Uint16Array8, a7, flatbuffers_uint16, uint16_t)
 
-struct FripuckProtocol_Sensors_ProximityLightData {
-    alignas(2) FripuckProtocol_Sensors_RingSensorData_t proximity;
-    alignas(2) FripuckProtocol_Sensors_RingSensorData_t ambient_light;
+struct FripuckProtocol_Sensors_ProximityData {
+    alignas(2) FripuckProtocol_Sensors_Uint16Array8_t proximity;
+    alignas(2) FripuckProtocol_Sensors_Uint16Array8_t ambient_light;
     alignas(2) uint16_t timestamp_offset;
     alignas(2) uint16_t padding;
 };
-static_assert(sizeof(FripuckProtocol_Sensors_ProximityLightData_t) == 36, "struct size mismatch");
+static_assert(sizeof(FripuckProtocol_Sensors_ProximityData_t) == 36, "struct size mismatch");
 
-static inline const FripuckProtocol_Sensors_ProximityLightData_t *FripuckProtocol_Sensors_ProximityLightData__const_ptr_add(const FripuckProtocol_Sensors_ProximityLightData_t *p, size_t i) { return p + i; }
-static inline FripuckProtocol_Sensors_ProximityLightData_t *FripuckProtocol_Sensors_ProximityLightData__ptr_add(FripuckProtocol_Sensors_ProximityLightData_t *p, size_t i) { return p + i; }
-static inline FripuckProtocol_Sensors_ProximityLightData_struct_t FripuckProtocol_Sensors_ProximityLightData_vec_at(FripuckProtocol_Sensors_ProximityLightData_vec_t vec, size_t i)
+static inline const FripuckProtocol_Sensors_ProximityData_t *FripuckProtocol_Sensors_ProximityData__const_ptr_add(const FripuckProtocol_Sensors_ProximityData_t *p, size_t i) { return p + i; }
+static inline FripuckProtocol_Sensors_ProximityData_t *FripuckProtocol_Sensors_ProximityData__ptr_add(FripuckProtocol_Sensors_ProximityData_t *p, size_t i) { return p + i; }
+static inline FripuckProtocol_Sensors_ProximityData_struct_t FripuckProtocol_Sensors_ProximityData_vec_at(FripuckProtocol_Sensors_ProximityData_vec_t vec, size_t i)
 __flatbuffers_struct_vec_at(vec, i)
-static inline size_t FripuckProtocol_Sensors_ProximityLightData__size(void) { return 36; }
-static inline size_t FripuckProtocol_Sensors_ProximityLightData_vec_len(FripuckProtocol_Sensors_ProximityLightData_vec_t vec)
+static inline size_t FripuckProtocol_Sensors_ProximityData__size(void) { return 36; }
+static inline size_t FripuckProtocol_Sensors_ProximityData_vec_len(FripuckProtocol_Sensors_ProximityData_vec_t vec)
 __flatbuffers_vec_len(vec)
-__flatbuffers_struct_as_root(FripuckProtocol_Sensors_ProximityLightData)
+__flatbuffers_struct_as_root(FripuckProtocol_Sensors_ProximityData)
 
-__flatbuffers_define_struct_struct_field(FripuckProtocol_Sensors_ProximityLightData, proximity, FripuckProtocol_Sensors_RingSensorData_struct_t)
-__flatbuffers_define_struct_struct_field(FripuckProtocol_Sensors_ProximityLightData, ambient_light, FripuckProtocol_Sensors_RingSensorData_struct_t)
-__flatbuffers_define_struct_scalar_field(FripuckProtocol_Sensors_ProximityLightData, timestamp_offset, flatbuffers_uint16, uint16_t)
-__flatbuffers_define_struct_scalar_field(FripuckProtocol_Sensors_ProximityLightData, padding, flatbuffers_uint16, uint16_t)
+__flatbuffers_define_struct_struct_field(FripuckProtocol_Sensors_ProximityData, proximity, FripuckProtocol_Sensors_Uint16Array8_struct_t)
+__flatbuffers_define_struct_struct_field(FripuckProtocol_Sensors_ProximityData, ambient_light, FripuckProtocol_Sensors_Uint16Array8_struct_t)
+__flatbuffers_define_struct_scalar_field(FripuckProtocol_Sensors_ProximityData, timestamp_offset, flatbuffers_uint16, uint16_t)
+__flatbuffers_define_struct_scalar_field(FripuckProtocol_Sensors_ProximityData, padding, flatbuffers_uint16, uint16_t)
 
 struct FripuckProtocol_Sensors_TofData {
     alignas(2) uint16_t distance;
@@ -428,7 +442,7 @@ __flatbuffers_offset_vec_at(FripuckProtocol_Sensors_SensorBatch_table_t, vec, i,
 __flatbuffers_table_as_root(FripuckProtocol_Sensors_SensorBatch)
 
 __flatbuffers_define_scalar_field(0, FripuckProtocol_Sensors_SensorBatch, base_timestamp, flatbuffers_uint64, uint64_t, UINT64_C(0))
-__flatbuffers_define_vector_field(1, FripuckProtocol_Sensors_SensorBatch, proximity, FripuckProtocol_Sensors_ProximityLightData_vec_t, 0)
+__flatbuffers_define_vector_field(1, FripuckProtocol_Sensors_SensorBatch, proximity, FripuckProtocol_Sensors_ProximityData_vec_t, 0)
 __flatbuffers_define_vector_field(2, FripuckProtocol_Sensors_SensorBatch, tof, FripuckProtocol_Sensors_TofData_vec_t, 0)
 __flatbuffers_define_vector_field(3, FripuckProtocol_Sensors_SensorBatch, battery, FripuckProtocol_Sensors_BatteryData_vec_t, 0)
 __flatbuffers_define_vector_field(4, FripuckProtocol_Sensors_SensorBatch, encoder, FripuckProtocol_Sensors_EncoderData_vec_t, 0)

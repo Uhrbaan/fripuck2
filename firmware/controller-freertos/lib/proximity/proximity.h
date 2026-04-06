@@ -3,22 +3,22 @@
 
 #include <inttypes.h>
 
-enum proximity_name
+struct Uint16Array8
 {
-    PROXIMITY_0,
-    PROXIMITY_1,
-    PROXIMITY_2,
-    PROXIMITY_3,
-    PROXIMITY_4,
-    PROXIMITY_5,
-    PROXIMITY_6,
-    PROXIMITY_7,
-    NUM_PROXIMITY,
+    uint16_t a0;
+    uint16_t a1;
+    uint16_t a2;
+    uint16_t a3;
+    uint16_t a4;
+    uint16_t a5;
+    uint16_t a6;
+    uint16_t a7;
 };
 
-void proximity_enable(void);
-void proximity_disable(void);
-uint32_t proximity_get(enum proximity_name proximity_number);
-void proximity_get_all(uint16_t *buffer);
+typedef void (*proximity_fn_cb)(struct Uint16Array8 *);
+
+void proximity_init(ADC_HandleTypeDef *hadc1, proximity_fn_cb callback);
+int proximity_start(void);
+int proximity_stop(void);
 
 #endif // PROXIMITY_H

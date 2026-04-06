@@ -16,51 +16,105 @@
 #define flatbuffers_extension "bin"
 #endif
 
-#define __FripuckProtocol_Sensors_RingSensorData_formal_args , const uint16_t v0[8]
-#define __FripuckProtocol_Sensors_RingSensorData_call_args , v0
-static inline FripuckProtocol_Sensors_RingSensorData_t *FripuckProtocol_Sensors_RingSensorData_assign(FripuckProtocol_Sensors_RingSensorData_t *p, const uint16_t v0[8])
-{ flatbuffers_uint16_array_copy(p->proximities, v0, 8);
+#define __FripuckProtocol_Sensors_Uint16Array8_formal_args ,\
+  uint16_t v0, uint16_t v1, uint16_t v2, uint16_t v3,\
+  uint16_t v4, uint16_t v5, uint16_t v6, uint16_t v7
+#define __FripuckProtocol_Sensors_Uint16Array8_call_args ,\
+  v0, v1, v2, v3,\
+  v4, v5, v6, v7
+static inline FripuckProtocol_Sensors_Uint16Array8_t *FripuckProtocol_Sensors_Uint16Array8_assign(FripuckProtocol_Sensors_Uint16Array8_t *p,
+  uint16_t v0, uint16_t v1, uint16_t v2, uint16_t v3,
+  uint16_t v4, uint16_t v5, uint16_t v6, uint16_t v7)
+{ p->a0 = v0; p->a1 = v1; p->a2 = v2; p->a3 = v3;
+  p->a4 = v4; p->a5 = v5; p->a6 = v6; p->a7 = v7;
   return p; }
-static inline FripuckProtocol_Sensors_RingSensorData_t *FripuckProtocol_Sensors_RingSensorData_copy(FripuckProtocol_Sensors_RingSensorData_t *p, const FripuckProtocol_Sensors_RingSensorData_t *p2)
-{ flatbuffers_uint16_array_copy(p->proximities, p2->proximities, 8);
+static inline FripuckProtocol_Sensors_Uint16Array8_t *FripuckProtocol_Sensors_Uint16Array8_copy(FripuckProtocol_Sensors_Uint16Array8_t *p, const FripuckProtocol_Sensors_Uint16Array8_t *p2)
+{ p->a0 = p2->a0; p->a1 = p2->a1; p->a2 = p2->a2; p->a3 = p2->a3;
+  p->a4 = p2->a4; p->a5 = p2->a5; p->a6 = p2->a6; p->a7 = p2->a7;
   return p; }
-static inline FripuckProtocol_Sensors_RingSensorData_t *FripuckProtocol_Sensors_RingSensorData_assign_to_pe(FripuckProtocol_Sensors_RingSensorData_t *p, const uint16_t v0[8])
-{ flatbuffers_uint16_array_copy_to_pe(p->proximities, v0, 8);
+static inline FripuckProtocol_Sensors_Uint16Array8_t *FripuckProtocol_Sensors_Uint16Array8_assign_to_pe(FripuckProtocol_Sensors_Uint16Array8_t *p,
+  uint16_t v0, uint16_t v1, uint16_t v2, uint16_t v3,
+  uint16_t v4, uint16_t v5, uint16_t v6, uint16_t v7)
+{ flatbuffers_uint16_assign_to_pe(&p->a0, v0); flatbuffers_uint16_assign_to_pe(&p->a1, v1); flatbuffers_uint16_assign_to_pe(&p->a2, v2); flatbuffers_uint16_assign_to_pe(&p->a3, v3);
+  flatbuffers_uint16_assign_to_pe(&p->a4, v4); flatbuffers_uint16_assign_to_pe(&p->a5, v5); flatbuffers_uint16_assign_to_pe(&p->a6, v6); flatbuffers_uint16_assign_to_pe(&p->a7, v7);
   return p; }
-static inline FripuckProtocol_Sensors_RingSensorData_t *FripuckProtocol_Sensors_RingSensorData_copy_to_pe(FripuckProtocol_Sensors_RingSensorData_t *p, const FripuckProtocol_Sensors_RingSensorData_t *p2)
-{ flatbuffers_uint16_array_copy_to_pe(p->proximities, p2->proximities, 8);
+static inline FripuckProtocol_Sensors_Uint16Array8_t *FripuckProtocol_Sensors_Uint16Array8_copy_to_pe(FripuckProtocol_Sensors_Uint16Array8_t *p, const FripuckProtocol_Sensors_Uint16Array8_t *p2)
+{ flatbuffers_uint16_copy_to_pe(&p->a0, &p2->a0); flatbuffers_uint16_copy_to_pe(&p->a1, &p2->a1); flatbuffers_uint16_copy_to_pe(&p->a2, &p2->a2); flatbuffers_uint16_copy_to_pe(&p->a3, &p2->a3);
+  flatbuffers_uint16_copy_to_pe(&p->a4, &p2->a4); flatbuffers_uint16_copy_to_pe(&p->a5, &p2->a5); flatbuffers_uint16_copy_to_pe(&p->a6, &p2->a6); flatbuffers_uint16_copy_to_pe(&p->a7, &p2->a7);
   return p; }
-static inline FripuckProtocol_Sensors_RingSensorData_t *FripuckProtocol_Sensors_RingSensorData_assign_from_pe(FripuckProtocol_Sensors_RingSensorData_t *p, const uint16_t v0[8])
-{ flatbuffers_uint16_array_copy_from_pe(p->proximities, v0, 8);
+static inline FripuckProtocol_Sensors_Uint16Array8_t *FripuckProtocol_Sensors_Uint16Array8_assign_from_pe(FripuckProtocol_Sensors_Uint16Array8_t *p,
+  uint16_t v0, uint16_t v1, uint16_t v2, uint16_t v3,
+  uint16_t v4, uint16_t v5, uint16_t v6, uint16_t v7)
+{ flatbuffers_uint16_assign_from_pe(&p->a0, v0); flatbuffers_uint16_assign_from_pe(&p->a1, v1); flatbuffers_uint16_assign_from_pe(&p->a2, v2); flatbuffers_uint16_assign_from_pe(&p->a3, v3);
+  flatbuffers_uint16_assign_from_pe(&p->a4, v4); flatbuffers_uint16_assign_from_pe(&p->a5, v5); flatbuffers_uint16_assign_from_pe(&p->a6, v6); flatbuffers_uint16_assign_from_pe(&p->a7, v7);
   return p; }
-static inline FripuckProtocol_Sensors_RingSensorData_t *FripuckProtocol_Sensors_RingSensorData_copy_from_pe(FripuckProtocol_Sensors_RingSensorData_t *p, const FripuckProtocol_Sensors_RingSensorData_t *p2)
-{ flatbuffers_uint16_array_copy_from_pe(p->proximities, p2->proximities, 8);
+static inline FripuckProtocol_Sensors_Uint16Array8_t *FripuckProtocol_Sensors_Uint16Array8_copy_from_pe(FripuckProtocol_Sensors_Uint16Array8_t *p, const FripuckProtocol_Sensors_Uint16Array8_t *p2)
+{ flatbuffers_uint16_copy_from_pe(&p->a0, &p2->a0); flatbuffers_uint16_copy_from_pe(&p->a1, &p2->a1); flatbuffers_uint16_copy_from_pe(&p->a2, &p2->a2); flatbuffers_uint16_copy_from_pe(&p->a3, &p2->a3);
+  flatbuffers_uint16_copy_from_pe(&p->a4, &p2->a4); flatbuffers_uint16_copy_from_pe(&p->a5, &p2->a5); flatbuffers_uint16_copy_from_pe(&p->a6, &p2->a6); flatbuffers_uint16_copy_from_pe(&p->a7, &p2->a7);
   return p; }
-__flatbuffers_build_struct(flatbuffers_, FripuckProtocol_Sensors_RingSensorData, 16, 2, FripuckProtocol_Sensors_RingSensorData_file_identifier, FripuckProtocol_Sensors_RingSensorData_type_identifier)
-__flatbuffers_define_fixed_array_primitives(flatbuffers_, FripuckProtocol_Sensors_RingSensorData, FripuckProtocol_Sensors_RingSensorData_t)
+__flatbuffers_build_struct(flatbuffers_, FripuckProtocol_Sensors_Uint16Array8, 16, 2, FripuckProtocol_Sensors_Uint16Array8_file_identifier, FripuckProtocol_Sensors_Uint16Array8_type_identifier)
+__flatbuffers_define_fixed_array_primitives(flatbuffers_, FripuckProtocol_Sensors_Uint16Array8, FripuckProtocol_Sensors_Uint16Array8_t)
 
-#define __FripuckProtocol_Sensors_ProximityLightData_formal_args , const uint16_t v0[8], const uint16_t v1[8], uint16_t v2, uint16_t v3
-#define __FripuckProtocol_Sensors_ProximityLightData_call_args , v0, v1, v2, v3
-static inline FripuckProtocol_Sensors_ProximityLightData_t *FripuckProtocol_Sensors_ProximityLightData_assign(FripuckProtocol_Sensors_ProximityLightData_t *p, const uint16_t v0[8], const uint16_t v1[8], uint16_t v2, uint16_t v3)
-{ FripuckProtocol_Sensors_RingSensorData_assign(&p->proximity, v0); FripuckProtocol_Sensors_RingSensorData_assign(&p->ambient_light, v1); p->timestamp_offset = v2; p->padding = v3;
+#define __FripuckProtocol_Sensors_ProximityData_formal_args ,\
+  uint16_t v0, uint16_t v1, uint16_t v2, uint16_t v3,\
+  uint16_t v4, uint16_t v5, uint16_t v6, uint16_t v7,\
+  uint16_t v8, uint16_t v9, uint16_t v10, uint16_t v11,\
+  uint16_t v12, uint16_t v13, uint16_t v14, uint16_t v15, uint16_t v16, uint16_t v17
+#define __FripuckProtocol_Sensors_ProximityData_call_args ,\
+  v0, v1, v2, v3,\
+  v4, v5, v6, v7,\
+  v8, v9, v10, v11,\
+  v12, v13, v14, v15, v16, v17
+static inline FripuckProtocol_Sensors_ProximityData_t *FripuckProtocol_Sensors_ProximityData_assign(FripuckProtocol_Sensors_ProximityData_t *p,
+  uint16_t v0, uint16_t v1, uint16_t v2, uint16_t v3,
+  uint16_t v4, uint16_t v5, uint16_t v6, uint16_t v7,
+  uint16_t v8, uint16_t v9, uint16_t v10, uint16_t v11,
+  uint16_t v12, uint16_t v13, uint16_t v14, uint16_t v15, uint16_t v16, uint16_t v17)
+{ FripuckProtocol_Sensors_Uint16Array8_assign(&p->proximity,
+  v0, v1, v2, v3,
+  v4, v5, v6, v7);
+  FripuckProtocol_Sensors_Uint16Array8_assign(&p->ambient_light,
+  v8, v9, v10, v11,
+  v12, v13, v14, v15);
+  p->timestamp_offset = v16; p->padding = v17;
   return p; }
-static inline FripuckProtocol_Sensors_ProximityLightData_t *FripuckProtocol_Sensors_ProximityLightData_copy(FripuckProtocol_Sensors_ProximityLightData_t *p, const FripuckProtocol_Sensors_ProximityLightData_t *p2)
-{ FripuckProtocol_Sensors_RingSensorData_copy(&p->proximity, &p2->proximity); FripuckProtocol_Sensors_RingSensorData_copy(&p->ambient_light, &p2->ambient_light); p->timestamp_offset = p2->timestamp_offset; p->padding = p2->padding;
+static inline FripuckProtocol_Sensors_ProximityData_t *FripuckProtocol_Sensors_ProximityData_copy(FripuckProtocol_Sensors_ProximityData_t *p, const FripuckProtocol_Sensors_ProximityData_t *p2)
+{ FripuckProtocol_Sensors_Uint16Array8_copy(&p->proximity, &p2->proximity); FripuckProtocol_Sensors_Uint16Array8_copy(&p->ambient_light, &p2->ambient_light); p->timestamp_offset = p2->timestamp_offset; p->padding = p2->padding;
   return p; }
-static inline FripuckProtocol_Sensors_ProximityLightData_t *FripuckProtocol_Sensors_ProximityLightData_assign_to_pe(FripuckProtocol_Sensors_ProximityLightData_t *p, const uint16_t v0[8], const uint16_t v1[8], uint16_t v2, uint16_t v3)
-{ FripuckProtocol_Sensors_RingSensorData_assign_to_pe(&p->proximity, v0); FripuckProtocol_Sensors_RingSensorData_assign_to_pe(&p->ambient_light, v1); flatbuffers_uint16_assign_to_pe(&p->timestamp_offset, v2); flatbuffers_uint16_assign_to_pe(&p->padding, v3);
+static inline FripuckProtocol_Sensors_ProximityData_t *FripuckProtocol_Sensors_ProximityData_assign_to_pe(FripuckProtocol_Sensors_ProximityData_t *p,
+  uint16_t v0, uint16_t v1, uint16_t v2, uint16_t v3,
+  uint16_t v4, uint16_t v5, uint16_t v6, uint16_t v7,
+  uint16_t v8, uint16_t v9, uint16_t v10, uint16_t v11,
+  uint16_t v12, uint16_t v13, uint16_t v14, uint16_t v15, uint16_t v16, uint16_t v17)
+{ FripuckProtocol_Sensors_Uint16Array8_assign_to_pe(&p->proximity,
+  v0, v1, v2, v3,
+  v4, v5, v6, v7);
+  FripuckProtocol_Sensors_Uint16Array8_assign_to_pe(&p->ambient_light,
+  v8, v9, v10, v11,
+  v12, v13, v14, v15);
+  flatbuffers_uint16_assign_to_pe(&p->timestamp_offset, v16); flatbuffers_uint16_assign_to_pe(&p->padding, v17);
   return p; }
-static inline FripuckProtocol_Sensors_ProximityLightData_t *FripuckProtocol_Sensors_ProximityLightData_copy_to_pe(FripuckProtocol_Sensors_ProximityLightData_t *p, const FripuckProtocol_Sensors_ProximityLightData_t *p2)
-{ FripuckProtocol_Sensors_RingSensorData_copy_to_pe(&p->proximity, &p2->proximity); FripuckProtocol_Sensors_RingSensorData_copy_to_pe(&p->ambient_light, &p2->ambient_light); flatbuffers_uint16_copy_to_pe(&p->timestamp_offset, &p2->timestamp_offset); flatbuffers_uint16_copy_to_pe(&p->padding, &p2->padding);
+static inline FripuckProtocol_Sensors_ProximityData_t *FripuckProtocol_Sensors_ProximityData_copy_to_pe(FripuckProtocol_Sensors_ProximityData_t *p, const FripuckProtocol_Sensors_ProximityData_t *p2)
+{ FripuckProtocol_Sensors_Uint16Array8_copy_to_pe(&p->proximity, &p2->proximity); FripuckProtocol_Sensors_Uint16Array8_copy_to_pe(&p->ambient_light, &p2->ambient_light); flatbuffers_uint16_copy_to_pe(&p->timestamp_offset, &p2->timestamp_offset); flatbuffers_uint16_copy_to_pe(&p->padding, &p2->padding);
   return p; }
-static inline FripuckProtocol_Sensors_ProximityLightData_t *FripuckProtocol_Sensors_ProximityLightData_assign_from_pe(FripuckProtocol_Sensors_ProximityLightData_t *p, const uint16_t v0[8], const uint16_t v1[8], uint16_t v2, uint16_t v3)
-{ FripuckProtocol_Sensors_RingSensorData_assign_from_pe(&p->proximity, v0); FripuckProtocol_Sensors_RingSensorData_assign_from_pe(&p->ambient_light, v1); flatbuffers_uint16_assign_from_pe(&p->timestamp_offset, v2); flatbuffers_uint16_assign_from_pe(&p->padding, v3);
+static inline FripuckProtocol_Sensors_ProximityData_t *FripuckProtocol_Sensors_ProximityData_assign_from_pe(FripuckProtocol_Sensors_ProximityData_t *p,
+  uint16_t v0, uint16_t v1, uint16_t v2, uint16_t v3,
+  uint16_t v4, uint16_t v5, uint16_t v6, uint16_t v7,
+  uint16_t v8, uint16_t v9, uint16_t v10, uint16_t v11,
+  uint16_t v12, uint16_t v13, uint16_t v14, uint16_t v15, uint16_t v16, uint16_t v17)
+{ FripuckProtocol_Sensors_Uint16Array8_assign_from_pe(&p->proximity,
+  v0, v1, v2, v3,
+  v4, v5, v6, v7);
+  FripuckProtocol_Sensors_Uint16Array8_assign_from_pe(&p->ambient_light,
+  v8, v9, v10, v11,
+  v12, v13, v14, v15);
+  flatbuffers_uint16_assign_from_pe(&p->timestamp_offset, v16); flatbuffers_uint16_assign_from_pe(&p->padding, v17);
   return p; }
-static inline FripuckProtocol_Sensors_ProximityLightData_t *FripuckProtocol_Sensors_ProximityLightData_copy_from_pe(FripuckProtocol_Sensors_ProximityLightData_t *p, const FripuckProtocol_Sensors_ProximityLightData_t *p2)
-{ FripuckProtocol_Sensors_RingSensorData_copy_from_pe(&p->proximity, &p2->proximity); FripuckProtocol_Sensors_RingSensorData_copy_from_pe(&p->ambient_light, &p2->ambient_light); flatbuffers_uint16_copy_from_pe(&p->timestamp_offset, &p2->timestamp_offset); flatbuffers_uint16_copy_from_pe(&p->padding, &p2->padding);
+static inline FripuckProtocol_Sensors_ProximityData_t *FripuckProtocol_Sensors_ProximityData_copy_from_pe(FripuckProtocol_Sensors_ProximityData_t *p, const FripuckProtocol_Sensors_ProximityData_t *p2)
+{ FripuckProtocol_Sensors_Uint16Array8_copy_from_pe(&p->proximity, &p2->proximity); FripuckProtocol_Sensors_Uint16Array8_copy_from_pe(&p->ambient_light, &p2->ambient_light); flatbuffers_uint16_copy_from_pe(&p->timestamp_offset, &p2->timestamp_offset); flatbuffers_uint16_copy_from_pe(&p->padding, &p2->padding);
   return p; }
-__flatbuffers_build_struct(flatbuffers_, FripuckProtocol_Sensors_ProximityLightData, 36, 2, FripuckProtocol_Sensors_ProximityLightData_file_identifier, FripuckProtocol_Sensors_ProximityLightData_type_identifier)
-__flatbuffers_define_fixed_array_primitives(flatbuffers_, FripuckProtocol_Sensors_ProximityLightData, FripuckProtocol_Sensors_ProximityLightData_t)
+__flatbuffers_build_struct(flatbuffers_, FripuckProtocol_Sensors_ProximityData, 36, 2, FripuckProtocol_Sensors_ProximityData_file_identifier, FripuckProtocol_Sensors_ProximityData_type_identifier)
+__flatbuffers_define_fixed_array_primitives(flatbuffers_, FripuckProtocol_Sensors_ProximityData, FripuckProtocol_Sensors_ProximityData_t)
 
 #define __FripuckProtocol_Sensors_TofData_formal_args , uint16_t v0, uint16_t v1
 #define __FripuckProtocol_Sensors_TofData_call_args , v0, v1
@@ -298,7 +352,7 @@ static FripuckProtocol_Sensors_SensorBatch_ref_t FripuckProtocol_Sensors_SensorB
 __flatbuffers_build_table(flatbuffers_, FripuckProtocol_Sensors_SensorBatch, 10)
 
 #define __FripuckProtocol_Sensors_SensorBatch_formal_args ,\
-  uint64_t v0, FripuckProtocol_Sensors_ProximityLightData_vec_ref_t v1, FripuckProtocol_Sensors_TofData_vec_ref_t v2, FripuckProtocol_Sensors_BatteryData_vec_ref_t v3,\
+  uint64_t v0, FripuckProtocol_Sensors_ProximityData_vec_ref_t v1, FripuckProtocol_Sensors_TofData_vec_ref_t v2, FripuckProtocol_Sensors_BatteryData_vec_ref_t v3,\
   FripuckProtocol_Sensors_EncoderData_vec_ref_t v4, FripuckProtocol_Sensors_ImuData_vec_ref_t v5, flatbuffers_uint8_vec_ref_t v6, FripuckProtocol_Sensors_AudioMetadata_vec_ref_t v7, flatbuffers_uint8_vec_ref_t v8, FripuckProtocol_Sensors_VideoMetadata_vec_ref_t v9
 #define __FripuckProtocol_Sensors_SensorBatch_call_args ,\
   v0, v1, v2, v3,\
@@ -307,7 +361,7 @@ static inline FripuckProtocol_Sensors_SensorBatch_ref_t FripuckProtocol_Sensors_
 __flatbuffers_build_table_prolog(flatbuffers_, FripuckProtocol_Sensors_SensorBatch, FripuckProtocol_Sensors_SensorBatch_file_identifier, FripuckProtocol_Sensors_SensorBatch_type_identifier)
 
 __flatbuffers_build_scalar_field(0, flatbuffers_, FripuckProtocol_Sensors_SensorBatch_base_timestamp, flatbuffers_uint64, uint64_t, 8, 8, UINT64_C(0), FripuckProtocol_Sensors_SensorBatch)
-__flatbuffers_build_vector_field(1, flatbuffers_, FripuckProtocol_Sensors_SensorBatch_proximity, FripuckProtocol_Sensors_ProximityLightData, FripuckProtocol_Sensors_ProximityLightData_t, FripuckProtocol_Sensors_SensorBatch)
+__flatbuffers_build_vector_field(1, flatbuffers_, FripuckProtocol_Sensors_SensorBatch_proximity, FripuckProtocol_Sensors_ProximityData, FripuckProtocol_Sensors_ProximityData_t, FripuckProtocol_Sensors_SensorBatch)
 __flatbuffers_build_vector_field(2, flatbuffers_, FripuckProtocol_Sensors_SensorBatch_tof, FripuckProtocol_Sensors_TofData, FripuckProtocol_Sensors_TofData_t, FripuckProtocol_Sensors_SensorBatch)
 __flatbuffers_build_vector_field(3, flatbuffers_, FripuckProtocol_Sensors_SensorBatch_battery, FripuckProtocol_Sensors_BatteryData, FripuckProtocol_Sensors_BatteryData_t, FripuckProtocol_Sensors_SensorBatch)
 __flatbuffers_build_vector_field(4, flatbuffers_, FripuckProtocol_Sensors_SensorBatch_encoder, FripuckProtocol_Sensors_EncoderData, FripuckProtocol_Sensors_EncoderData_t, FripuckProtocol_Sensors_SensorBatch)

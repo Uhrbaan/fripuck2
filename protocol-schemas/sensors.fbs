@@ -1,20 +1,20 @@
 namespace FripuckProtocol.Sensors;
 
 // Proximity
-struct RingSensorData {
-    s0: uint16;
-    s1: uint16;
-    s2: uint16;
-    s3: uint16;
-    s4: uint16;
-    s5: uint16;
-    s6: uint16;
-    s7: uint16;
+struct Uint16Array8 {
+    a0: uint16;
+    a1: uint16;
+    a2: uint16;
+    a3: uint16;
+    a4: uint16;
+    a5: uint16;
+    a6: uint16;
+    a7: uint16;
 }
 
-struct ProximityLightData {
-    proximity: RingSensorData;
-    ambient_light: RingSensorData;
+struct ProximityData {
+    proximity: Uint16Array8;
+    ambient_light: Uint16Array8;
     timestamp_offset: uint16;
     padding: uint16; // 4-byte aligned
 }
@@ -86,7 +86,7 @@ struct VideoMetadata {
 table SensorBatch {
     // Sensor readings
     base_timestamp: uint64;
-    proximity: [ProximityLightData];
+    proximity: [ProximityData];
     tof: [TofData];
     battery: [BatteryData];
     encoder: [EncoderData];

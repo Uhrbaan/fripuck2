@@ -37,28 +37,21 @@ void spi_recieve_cb(uint8_t *data, uint16_t length) {
         ESP_LOGW(TAG, "Failed to verify the data coming in.");
         return;
     }
+    FripuckProtocol_Sensors_SensorBatch_table_t batch = FripuckProtocol_Sensors_SensorBatch_as_root(data);
 
     // Log the first TOF element for logging purposes
-    // FripuckProtocol_Sensors_SensorBatch_table_t batch = FripuckProtocol_Sensors_SensorBatch_as_root(data);
-    // FripuckProtocol_Sensors_TofData_vec_t tof_vec = FripuckProtocol_Sensors_SensorBatch_tof(batch);
-
-    // size_t tof_count = FripuckProtocol_Sensors_TofData_vec_len(tof_vec);
-    // if (tof_vec == NULL || tof_count == 0) {
-    //     ESP_LOGW(TAG, "No TOF data found in this batch.");
-    //     return;
-    // }
-
-    // // 5. Access the first element (index 0)
-    // // TofData is a 'struct' in your schema, so we get a direct pointer
-    // FripuckProtocol_Sensors_TofData_struct_t first_tof = FripuckProtocol_Sensors_TofData_vec_at(tof_vec, 0);
-
-    // // 6. Log the distance field
-    // uint16_t dist = FripuckProtocol_Sensors_TofData_distance(first_tof);
-    // uint16_t timestamp = FripuckProtocol_Sensors_TofData_timestamp_offset(first_tof);
-    // ESP_LOGI(TAG, "[%u] First TOF Distance: %u mm", timestamp, dist);
+    FripuckProtocol_Sensors_TofData_vec_t tof_vec = FripuckProtocol_Sensors_SensorBatch_tof(batch);
+    size_t tof_count = FripuckProtocol_Sensors_TofData_vec_len(tof_vec);
+    if (tof_vec == NULL || tof_count == 0) {
+        ESP_LOGW(TAG, "No TOF data found in this batch.");
+        return;
+    }
+    FripuckProtocol_Sensors_TofData_struct_t first_tof = FripuckProtocol_Sensors_TofData_vec_at(tof_vec, 0);
+    uint16_t dist = FripuckProtocol_Sensors_TofData_distance(first_tof);
+    uint16_t timestamp = FripuckProtocol_Sensors_TofData_timestamp_offset(first_tof);
+    ESP_LOGI(TAG, "[%u] First TOF Distance: %u mm", timestamp, dist);
 
     // Log proximity
-    FripuckProtocol_Sensors_SensorBatch_table_t batch = FripuckProtocol_Sensors_SensorBatch_as_root(data);
     FripuckProtocol_Sensors_ProximityData_vec_t prox_vec = FripuckProtocol_Sensors_SensorBatch_proximity(batch);
     size_t prox_count = FripuckProtocol_Sensors_ProximityData_vec_len(prox_vec);
     if (prox_vec == NULL || prox_count == 0) {

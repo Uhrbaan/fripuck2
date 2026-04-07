@@ -1,21 +1,21 @@
 /* USER CODE BEGIN Header */
 /**
- ******************************************************************************
- * @file           : main.h
- * @brief          : Header for main.c file.
- *                   This file contains the common defines of the application.
- ******************************************************************************
- * @attention
- *
- * Copyright (c) 2025 STMicroelectronics.
- * All rights reserved.
- *
- * This software is licensed under terms that can be found in the LICENSE file
- * in the root directory of this software component.
- * If no LICENSE file comes with this software, it is provided AS-IS.
- *
- ******************************************************************************
- */
+  ******************************************************************************
+  * @file           : main.h
+  * @brief          : Header for main.c file.
+  *                   This file contains the common defines of the application.
+  ******************************************************************************
+  * @attention
+  *
+  * Copyright (c) 2025 STMicroelectronics.
+  * All rights reserved.
+  *
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *
+  ******************************************************************************
+  */
 /* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
@@ -23,35 +23,34 @@
 #define __MAIN_H
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 
-  /* Private includes ----------------------------------------------------------*/
-  /* USER CODE BEGIN Includes */
+/* Private includes ----------------------------------------------------------*/
+/* USER CODE BEGIN Includes */
 
-  /* USER CODE END Includes */
+/* USER CODE END Includes */
 
-  /* Exported types ------------------------------------------------------------*/
-  /* USER CODE BEGIN ET */
+/* Exported types ------------------------------------------------------------*/
+/* USER CODE BEGIN ET */
 
-  /* USER CODE END ET */
+/* USER CODE END ET */
 
-  /* Exported constants --------------------------------------------------------*/
-  /* USER CODE BEGIN EC */
+/* Exported constants --------------------------------------------------------*/
+/* USER CODE BEGIN EC */
 
-  /* USER CODE END EC */
+/* USER CODE END EC */
 
-  /* Exported macro ------------------------------------------------------------*/
-  /* USER CODE BEGIN EM */
+/* Exported macro ------------------------------------------------------------*/
+/* USER CODE BEGIN EM */
 
-  /* USER CODE END EM */
+/* USER CODE END EM */
 
-  /* Exported functions prototypes ---------------------------------------------*/
-  void Error_Handler(void);
+/* Exported functions prototypes ---------------------------------------------*/
+void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
 
@@ -78,14 +77,14 @@ extern "C"
 #define OSC_IN_GPIO_Port GPIOH
 #define OSC_OUT_Pin GPIO_PIN_1
 #define OSC_OUT_GPIO_Port GPIOH
-#define IR6_AN_Pin GPIO_PIN_0
-#define IR6_AN_GPIO_Port GPIOC
-#define IR7_AN_Pin GPIO_PIN_1
-#define IR7_AN_GPIO_Port GPIOC
-#define IR0_AN_Pin GPIO_PIN_2
-#define IR0_AN_GPIO_Port GPIOC
-#define IR1_AN_Pin GPIO_PIN_3
-#define IR1_AN_GPIO_Port GPIOC
+#define PROX6_Pin GPIO_PIN_0
+#define PROX6_GPIO_Port GPIOC
+#define PROX7_Pin GPIO_PIN_1
+#define PROX7_GPIO_Port GPIOC
+#define PROX0_Pin GPIO_PIN_2
+#define PROX0_GPIO_Port GPIOC
+#define PROX1_Pin GPIO_PIN_3
+#define PROX1_GPIO_Port GPIOC
 #define CAM_MCLK_Pin GPIO_PIN_0
 #define CAM_MCLK_GPIO_Port GPIOA
 #define BATT_AN_Pin GPIO_PIN_1
@@ -102,14 +101,14 @@ extern "C"
 #define CAM_PCLK_GPIO_Port GPIOA
 #define SPI1_MOSI_Pin GPIO_PIN_7
 #define SPI1_MOSI_GPIO_Port GPIOA
-#define IR2_AN_Pin GPIO_PIN_4
-#define IR2_AN_GPIO_Port GPIOC
-#define IR3_AN_Pin GPIO_PIN_5
-#define IR3_AN_GPIO_Port GPIOC
-#define IR5_AN_Pin GPIO_PIN_0
-#define IR5_AN_GPIO_Port GPIOB
-#define IR4_AN_Pin GPIO_PIN_1
-#define IR4_AN_GPIO_Port GPIOB
+#define PROX2_Pin GPIO_PIN_4
+#define PROX2_GPIO_Port GPIOC
+#define PROX3_Pin GPIO_PIN_5
+#define PROX3_GPIO_Port GPIOC
+#define PROX5_Pin GPIO_PIN_0
+#define PROX5_GPIO_Port GPIOB
+#define PROX4_Pin GPIO_PIN_1
+#define PROX4_GPIO_Port GPIOB
 #define LED_BODY_Pin GPIO_PIN_2
 #define LED_BODY_GPIO_Port GPIOB
 #define SD_DETECT_Pin GPIO_PIN_7
@@ -223,9 +222,9 @@ extern "C"
 #define CAM_D3_Pin GPIO_PIN_1
 #define CAM_D3_GPIO_Port GPIOE
 
-  /* USER CODE BEGIN Private defines */
+/* USER CODE BEGIN Private defines */
 
-  /* USER CODE END Private defines */
+/* USER CODE END Private defines */
 
 #ifdef __cplusplus
 }

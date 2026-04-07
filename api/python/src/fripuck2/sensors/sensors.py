@@ -25,15 +25,17 @@ class ProxHisory(SensorHistory):
             for i in range(batch.ProximityLength()):
                 item = batch.Proximity(i)
                 proximities = sensors.Uint16Array8()
+                ambients = sensors.Uint16Array8()
                 item.Proximity(proximities)
+                item.AmbientLight(ambients)
                 self._add([
                     base_timestamp + item.TimestampOffset(), 
-                    proximities.A0(), 
-                    proximities.A1(), 
-                    proximities.A2(), 
-                    proximities.A3(), 
-                    proximities.A4(), 
-                    proximities.A5(), 
-                    proximities.A6(), 
-                    proximities.A7()
+                    proximities.A0() - ambients.A0(), # Calculate the difference
+                    proximities.A1() - ambients.A1(), 
+                    proximities.A2() - ambients.A2(), 
+                    proximities.A3() - ambients.A3(), 
+                    proximities.A4() - ambients.A4(), 
+                    proximities.A5() - ambients.A5(), 
+                    proximities.A6() - ambients.A6(), 
+                    proximities.A7() - ambients.A7()
                 ])

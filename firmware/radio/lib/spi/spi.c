@@ -45,6 +45,7 @@ esp_err_t spi_init(spi_host_device_t host_device, spi_callback_fn callback) {
         return ESP_FAIL;
     }
 
+    ESP_LOGI(TAG, "Susccessfully initialized SPI reception.");
     return ESP_OK;
 }
 

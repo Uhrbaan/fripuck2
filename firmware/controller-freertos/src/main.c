@@ -21,7 +21,6 @@
 #include "spi.h"
 #include "time_of_flight.h"
 #include "i2c.h"
-#include "proximity.h"
 #include <spi_conf.h>
 #include <strings.h>
 #include <stdio.h>
@@ -39,6 +38,7 @@ int init_hardware(void)
     MX_CAN1_Init();
     MX_TIM3_Init();
     MX_TIM4_Init();
+    MX_TIM5_Init();
     MX_USART3_UART_Init();
     MX_SPI1_Init();
     MX_CAN1_Init();
@@ -85,11 +85,10 @@ void TelemetryTask(void *argument)
         }
         else if (final_size > RADIO_MAX_PACKET_SIZE)
         {
-            // Error: Even with threshold, we went over 1KB (likely a very long string)
         }
 
         flatcc_builder_reset(&builder);
-        osDelay(pdMS_TO_TICKS(33)); // 30fps
+        osDelay(pdMS_TO_TICKS(500)); // 30 fps
     }
 
     flatcc_builder_clear(&builder);
@@ -107,13 +106,11 @@ void StartDefaultTask(void *argument)
     spi_bus_init(&hspi1);
     i2c_init(&hi2c1);
     tof_init(&hi2c1, TOF_HIGH_SPEED);
-    proximity_init(&hadc1, prox_insert_callback);
-    prox_initialize_lock();
 
     tofTask_attributes.stack_size = 1024;
     tofTaskHandle = osThreadNew(tof_task, (void *)TOF_HIGH_SPEED, &tofTask_attributes);
     telemetryTaskHandle = osThreadNew(TelemetryTask, NULL, &telemetryTask_attributes);
-    proximity_start();
+    proximity_start(&htim5, &hadc1);
 
     while (1)
     {

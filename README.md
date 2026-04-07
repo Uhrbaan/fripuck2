@@ -29,6 +29,7 @@ Reaching full feature parity is probably an impossible task since I am alone for
 || Gyroscope | ✅
 || Magnetometer | Available in firmware
 || Time of flight | ✅ | ✅
+|| Proximity | ✅ | ✅
 | **Vision** | Color video feedback | ✅
 || Basic image processing | ✅ 
 || Yolo (AI) image processing | ✅
@@ -38,7 +39,7 @@ Reaching full feature parity is probably an impossible task since I am alone for
 || Play streamed audio | ❌
 | **Feedback** | Red LEDs | ✅
 || Other LEDs | ✅
-| **Communication** | Bluetooth LE | Available in firmware | ❌<br>Not planned
+| **Communication** | Bluetooth LE | Available in firmware | ❌\ Not planned
 || Wi-Fi (station) | ✅ | ✅ |
 || Wi-Fi (access point) | Available in firmware | 
 || Manage connection loss | 

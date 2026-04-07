@@ -1566,3 +1566,34 @@ So yesterday I finished the ToF, and this morning I tested wether there was any 
 Sadly, but as expected, there isn't. This is probably due to the fact that the sensor itself is limited to at most 50 Hz, since both apis (mine and the original) are limited to approximately 48-50 readings per second.
 
 Now, I will work on the network manager: if the client disconnects from the robot, the robot should automatically stop its TCP communication and restart it.
+
+== 2026.04.06
+Working on getting proximity sensors working. I got them spitting out values arount 4000 by using a simple script with ADC in continuous mode, but the values weren't changing much so I figured I am better off following what GCtronic has done in their code.
+It works the following:
+
+To minimize interference, proximity sensors are fired in pairs on the opposite side of the robot.
+We both read their value when fired and when disabled, meaning we get a reading for the ambien light too.
+
+We use a timer that has at least two chanels available, TIM5 for example. We want the following sequence:
++ *0.00* ms: the timer overflows which triggers an interrupt. We enable the IR lights
++ *0.26* ms: the timer reaches the second channel (set at 260 ticks, running at 1000 ticks per millisecond). It sends an output trigger to the ADC (in ADC we select `Timer 5 Capture Compare 2 event`)
++ *0.30* ms: the timer reaches the first channel set to 300 ticks. This is when another interrupt happens and we turn all the IR lights off to save power.
+
+Then we also need to configure ADC. we enable discontinuous scan, enable DMA in circular mode, since we scan both ambien and reflection light for 8 different sensors, we have 16 as the total number of conversions, and we don't forget to select the timer 5 as the trigger source. Then, we need to modify each rank to select the right pairs to scan togetherm so the ones that are opposite to eachother.
+
+For that, we can have labeled the pins in the next picture:
+#image("assets/Copie d'écran_20260218_204500.png")
+And if we click on the pins, it shows which channels they are:
+#table(
+  columns: 2,
+  [ADC1 Channel], [Sensor No],
+  `IN12`, `PROX0`,
+  `IN9`, `PROX4`,
+  `IN13`, `PROX1`,
+  `IN8`, `PROX5`,
+  `IN14`, `PROX2`,
+  `IN10`, `PROX6`,
+  `IN15`, `PROX3`,
+  `IN11`, `PROX7`,
+)
+

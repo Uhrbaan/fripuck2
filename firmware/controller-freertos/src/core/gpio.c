@@ -36,9 +36,7 @@
      PE4   ------> DCMI_D4
      PE5   ------> DCMI_D6
      PE6   ------> DCMI_D7
-     PA0-WKUP   ------> S_TIM5_CH1
      PA2   ------> S_TIM9_CH1
-     PA3   ------> S_TIM5_CH4
      PA4   ------> DCMI_HSYNC
      PA6   ------> DCMI_PIXCLK
      PB0   ------> SharedAnalog_PB0
@@ -121,14 +119,6 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : CAM_MCLK_Pin */
-  GPIO_InitStruct.Pin = CAM_MCLK_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-  GPIO_InitStruct.Alternate = GPIO_AF2_TIM5;
-  HAL_GPIO_Init(CAM_MCLK_GPIO_Port, &GPIO_InitStruct);
-
   /*Configure GPIO pins : BATT_AN_Pin AUDIO_SPEAKER_Pin */
   GPIO_InitStruct.Pin = BATT_AN_Pin|AUDIO_SPEAKER_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
@@ -143,14 +133,6 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Alternate = GPIO_AF3_TIM9;
   HAL_GPIO_Init(c_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : MIC_TIMER_OUT_Pin */
-  GPIO_InitStruct.Pin = MIC_TIMER_OUT_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-  GPIO_InitStruct.Alternate = GPIO_AF2_TIM5;
-  HAL_GPIO_Init(MIC_TIMER_OUT_GPIO_Port, &GPIO_InitStruct);
-
   /*Configure GPIO pins : CAM_HSYNC_Pin CAM_PCLK_Pin */
   GPIO_InitStruct.Pin = CAM_HSYNC_Pin|CAM_PCLK_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
@@ -159,11 +141,11 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Alternate = GPIO_AF13_DCMI;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : IR5_AN_Pin */
-  GPIO_InitStruct.Pin = IR5_AN_Pin;
+  /*Configure GPIO pin : PROX5_Pin */
+  GPIO_InitStruct.Pin = PROX5_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(IR5_AN_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(PROX5_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : LED_BODY_Pin SPI1_CS_ENC_L_Pin PULSE_0_Pin PULSE_1_Pin */
   GPIO_InitStruct.Pin = LED_BODY_Pin|SPI1_CS_ENC_L_Pin|PULSE_0_Pin|PULSE_1_Pin;

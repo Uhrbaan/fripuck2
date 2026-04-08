@@ -27,6 +27,7 @@
 
 #include "tof/tof.h"
 #include "prox/prox.h"
+#include "imu/imu.h"
 
 int init_hardware(void)
 {
@@ -71,8 +72,9 @@ void TelemetryTask(void *argument)
         FripuckProtocol_Sensors_SensorBatch_start_as_root(&builder);
         FripuckProtocol_Sensors_SensorBatch_base_timestamp_add(&builder, 0);
 
-        pack_tof_to_vector(&builder);
-        pack_prox_to_vector(&builder);
+        // pack_tof_to_vector(&builder);
+        // pack_prox_to_vector(&builder);
+        pack_imu_to_vector(&builder);
 
         FripuckProtocol_Sensors_SensorBatch_end_as_root(&builder);
 
@@ -88,7 +90,7 @@ void TelemetryTask(void *argument)
         }
 
         flatcc_builder_reset(&builder);
-        osDelay(pdMS_TO_TICKS(500)); // 30 fps
+        osDelay(pdMS_TO_TICKS(100)); // 30 fps
     }
 
     flatcc_builder_clear(&builder);
@@ -103,14 +105,11 @@ const osThreadAttr_t defaultTask_attributes = {
 
 void StartDefaultTask(void *argument)
 {
-    spi_bus_init(&hspi1);
-    i2c_init(&hi2c1);
-    tof_init(&hi2c1, TOF_HIGH_SPEED);
-
-    tofTask_attributes.stack_size = 1024;
+    tofTask_attributes.stack_size = 512;
     tofTaskHandle = osThreadNew(tof_task, (void *)TOF_HIGH_SPEED, &tofTask_attributes);
     telemetryTaskHandle = osThreadNew(TelemetryTask, NULL, &telemetryTask_attributes);
     proximity_start(&htim5, &hadc1);
+    imu_start();
 
     while (1)
     {
@@ -124,7 +123,12 @@ int main(void)
 
     /* Init scheduler */
     osKernelInitialize(); /* Call init function for freertos objects (in cmsis_os2.c) */
+
+    spi_bus_init(&hspi1);
+    i2c_init(&hi2c1);
+    tof_init(&hi2c1, TOF_HIGH_SPEED);
     defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+
     osKernelStart();
     while (1)
     {

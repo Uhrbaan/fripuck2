@@ -44,12 +44,12 @@ void spi_recieve_cb(uint8_t *data, uint16_t length) {
     size_t tof_count = FripuckProtocol_Sensors_TofData_vec_len(tof_vec);
     if (tof_vec == NULL || tof_count == 0) {
         ESP_LOGW(TAG, "No TOF data found in this batch.");
-        return;
+    } else {
+        FripuckProtocol_Sensors_TofData_struct_t first_tof = FripuckProtocol_Sensors_TofData_vec_at(tof_vec, 0);
+        uint16_t dist = FripuckProtocol_Sensors_TofData_distance(first_tof);
+        uint16_t timestamp = FripuckProtocol_Sensors_TofData_timestamp_offset(first_tof);
+        ESP_LOGI(TAG, "[%u] First TOF Distance: %u mm", timestamp, dist);
     }
-    FripuckProtocol_Sensors_TofData_struct_t first_tof = FripuckProtocol_Sensors_TofData_vec_at(tof_vec, 0);
-    uint16_t dist = FripuckProtocol_Sensors_TofData_distance(first_tof);
-    uint16_t timestamp = FripuckProtocol_Sensors_TofData_timestamp_offset(first_tof);
-    ESP_LOGI(TAG, "[%u] First TOF Distance: %u mm", timestamp, dist);
 
     // Log proximity
     FripuckProtocol_Sensors_ProximityData_vec_t prox_vec = FripuckProtocol_Sensors_SensorBatch_proximity(batch);
@@ -62,6 +62,17 @@ void spi_recieve_cb(uint8_t *data, uint16_t length) {
         FripuckProtocol_Sensors_Uint16Array8_t proximities = prox_data->proximity;
         ESP_LOGI(TAG, "Proximities: %d, %d, %d, %d, %d, %d, %d, %d", proximities.a0, proximities.a1, proximities.a2,
                  proximities.a3, proximities.a4, proximities.a5, proximities.a6, proximities.a7);
+    }
+
+    // Log IMU
+    FripuckProtocol_Sensors_ImuData_vec_t imu_vec = FripuckProtocol_Sensors_SensorBatch_imu(batch);
+    size_t imu_count = FripuckProtocol_Sensors_ImuData_vec_len(imu_vec);
+    if (imu_vec == NULL || imu_count == 0) {
+        ESP_LOGE(TAG, "IMU vector is empty...");
+    } else {
+        FripuckProtocol_Sensors_ImuData_struct_t imu_data = FripuckProtocol_Sensors_ImuData_vec_at(imu_vec, 0);
+        ESP_LOGI(TAG, "IMU data came, sample temperature is: %.2f. It contains %d elements.", imu_data->temperature,
+                 imu_count);
     }
 
     if (spi_to_udp_queue) {

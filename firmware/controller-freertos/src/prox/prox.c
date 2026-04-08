@@ -48,7 +48,7 @@ void ProximityTask(void *argument)
     {
         // Block indefinitely until the ADC DMA interrupt wakes this task
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
-        FripuckProtocol_Sensors_ProximityData_t *p = &proximity_buffer[write_pointer%MAX_PROXIMITY_SAMPLES];
+        FripuckProtocol_Sensors_ProximityData_t *p = &proximity_buffer[write_pointer % MAX_PROXIMITY_SAMPLES];
 
         osMutexAcquire(prox_data_mutex, osWaitForever);
         // Copy proximity values
@@ -141,7 +141,7 @@ void proximity_start(TIM_HandleTypeDef *tim5_handle, ADC_HandleTypeDef *adc1_han
     // Create a mutex so we can't read/modify the data while it is being updated
     static const osMutexAttr_t mutex_attributes = {"prox_data_mutex", osMutexRecursive | osMutexPrioInherit, NULL, 0};
     prox_data_mutex = osMutexNew(&mutex_attributes);
-    
+
     // Start ADC with DMA
     HAL_ADC_Start_DMA(adc_handle, (uint32_t *)adc_buffer, 16);
 
@@ -150,9 +150,11 @@ void proximity_start(TIM_HandleTypeDef *tim5_handle, ADC_HandleTypeDef *adc1_han
     HAL_TIM_OC_Start_IT(timer_handle, TIM_CHANNEL_1);
     HAL_TIM_PWM_Start(timer_handle, TIM_CHANNEL_2);
 
-    BaseType_t status = xTaskCreate(ProximityTask, "proximity_task", 1024, NULL, osPriorityNormal, &proximity_task_handle);
-    if (status != pdPASS) {
-        while(1);     // Task creation failed (likely out of Heap memory)
+    BaseType_t status = xTaskCreate(ProximityTask, "proximity_task", 256, NULL, osPriorityNormal, &proximity_task_handle);
+    if (status != pdPASS)
+    {
+        while (1)
+            ; // Task creation failed (likely out of Heap memory)
     }
 }
 
@@ -211,7 +213,7 @@ void proximity_timer_channel1_disable_ir_cb(TIM_HandleTypeDef *htim)
     if (htim->Instance == TIM5 && htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1)
     {
         // Disable all IR lights
-        HAL_GPIO_WritePin(GPIOB, PROX4_Pin | PROX5_Pin, GPIO_PIN_RESET);                                   // B
+        HAL_GPIO_WritePin(GPIOB, PROX4_Pin | PROX5_Pin, GPIO_PIN_RESET);                                     // B
         HAL_GPIO_WritePin(GPIOC, PROX0_Pin | PROX2_Pin | PROX3_Pin | PROX6_Pin | PROX7_Pin, GPIO_PIN_RESET); // C
 
         // Move to next state
@@ -222,9 +224,10 @@ void proximity_timer_channel1_disable_ir_cb(TIM_HandleTypeDef *htim)
 // Once the program has done all 16 readings, this gets called
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
-    if (hadc->Instance == adc_handle->Instance && proximity_task_handle != NULL) {
+    if (hadc->Instance == adc_handle->Instance && proximity_task_handle != NULL)
+    {
         BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-    
+
         // Notify the FreeRTOS task that 16 samples are ready in the DMA buffer
         vTaskNotifyGiveFromISR(proximity_task_handle, &xHigherPriorityTaskWoken);
         portYIELD_FROM_ISR(xHigherPriorityTaskWoken);

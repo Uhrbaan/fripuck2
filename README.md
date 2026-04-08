@@ -24,12 +24,12 @@ Reaching full feature parity is probably an impossible task since I am alone for
 | **Movement** | Speed control | ✅ 
 | | Distance target | ❌ 
 | | Encoder feedback | ✅ 
-| **Sensing** | Proximity sensors | ✅
+| **Sensing** | Proximity sensors | ✅ | ✅
+|| Ground sensors | ✅ 
 || Accelerometers | ✅ 
 || Gyroscope | ✅
 || Magnetometer | Available in firmware
 || Time of flight | ✅ | ✅
-|| Proximity | ✅ | ✅
 | **Vision** | Color video feedback | ✅
 || Basic image processing | ✅ 
 || Yolo (AI) image processing | ✅

@@ -42,11 +42,11 @@ typedef const FripuckProtocol_Sensors_EncoderData_t *FripuckProtocol_Sensors_Enc
 typedef FripuckProtocol_Sensors_EncoderData_t *FripuckProtocol_Sensors_EncoderData_mutable_struct_t;
 typedef const FripuckProtocol_Sensors_EncoderData_t *FripuckProtocol_Sensors_EncoderData_vec_t;
 typedef FripuckProtocol_Sensors_EncoderData_t *FripuckProtocol_Sensors_EncoderData_mutable_vec_t;
-typedef struct FripuckProtocol_Sensors_Vector3D FripuckProtocol_Sensors_Vector3D_t;
-typedef const FripuckProtocol_Sensors_Vector3D_t *FripuckProtocol_Sensors_Vector3D_struct_t;
-typedef FripuckProtocol_Sensors_Vector3D_t *FripuckProtocol_Sensors_Vector3D_mutable_struct_t;
-typedef const FripuckProtocol_Sensors_Vector3D_t *FripuckProtocol_Sensors_Vector3D_vec_t;
-typedef FripuckProtocol_Sensors_Vector3D_t *FripuckProtocol_Sensors_Vector3D_mutable_vec_t;
+typedef struct FripuckProtocol_Sensors_Vector3f FripuckProtocol_Sensors_Vector3f_t;
+typedef const FripuckProtocol_Sensors_Vector3f_t *FripuckProtocol_Sensors_Vector3f_struct_t;
+typedef FripuckProtocol_Sensors_Vector3f_t *FripuckProtocol_Sensors_Vector3f_mutable_struct_t;
+typedef const FripuckProtocol_Sensors_Vector3f_t *FripuckProtocol_Sensors_Vector3f_vec_t;
+typedef FripuckProtocol_Sensors_Vector3f_t *FripuckProtocol_Sensors_Vector3f_mutable_vec_t;
 typedef struct FripuckProtocol_Sensors_ImuData FripuckProtocol_Sensors_ImuData_t;
 typedef const FripuckProtocol_Sensors_ImuData_t *FripuckProtocol_Sensors_ImuData_struct_t;
 typedef FripuckProtocol_Sensors_ImuData_t *FripuckProtocol_Sensors_ImuData_mutable_struct_t;
@@ -132,17 +132,17 @@ typedef flatbuffers_uoffset_t *FripuckProtocol_Sensors_SensorBatch_mutable_vec_t
 #ifndef FripuckProtocol_Sensors_EncoderData_file_extension
 #define FripuckProtocol_Sensors_EncoderData_file_extension "bin"
 #endif
-#ifndef FripuckProtocol_Sensors_Vector3D_file_identifier
-#define FripuckProtocol_Sensors_Vector3D_file_identifier "SENS"
+#ifndef FripuckProtocol_Sensors_Vector3f_file_identifier
+#define FripuckProtocol_Sensors_Vector3f_file_identifier "SENS"
 #endif
-/* deprecated, use FripuckProtocol_Sensors_Vector3D_file_identifier */
-#ifndef FripuckProtocol_Sensors_Vector3D_identifier
-#define FripuckProtocol_Sensors_Vector3D_identifier "SENS"
+/* deprecated, use FripuckProtocol_Sensors_Vector3f_file_identifier */
+#ifndef FripuckProtocol_Sensors_Vector3f_identifier
+#define FripuckProtocol_Sensors_Vector3f_identifier "SENS"
 #endif
-#define FripuckProtocol_Sensors_Vector3D_type_hash ((flatbuffers_thash_t)0x8f670e2)
-#define FripuckProtocol_Sensors_Vector3D_type_identifier "\xe2\x70\xf6\x08"
-#ifndef FripuckProtocol_Sensors_Vector3D_file_extension
-#define FripuckProtocol_Sensors_Vector3D_file_extension "bin"
+#define FripuckProtocol_Sensors_Vector3f_type_hash ((flatbuffers_thash_t)0x26f6a01c)
+#define FripuckProtocol_Sensors_Vector3f_type_identifier "\x1c\xa0\xf6\x26"
+#ifndef FripuckProtocol_Sensors_Vector3f_file_extension
+#define FripuckProtocol_Sensors_Vector3f_file_extension "bin"
 #endif
 #ifndef FripuckProtocol_Sensors_ImuData_file_identifier
 #define FripuckProtocol_Sensors_ImuData_file_identifier "SENS"
@@ -316,46 +316,48 @@ __flatbuffers_define_struct_scalar_field(FripuckProtocol_Sensors_EncoderData, ri
 __flatbuffers_define_struct_scalar_field(FripuckProtocol_Sensors_EncoderData, timestamp_offset, flatbuffers_uint16, uint16_t)
 __flatbuffers_define_struct_scalar_field(FripuckProtocol_Sensors_EncoderData, padding, flatbuffers_uint16, uint16_t)
 
-struct FripuckProtocol_Sensors_Vector3D {
-    alignas(2) int16_t x;
-    alignas(2) int16_t y;
-    alignas(2) int16_t z;
+struct FripuckProtocol_Sensors_Vector3f {
+    alignas(4) float x;
+    alignas(4) float y;
+    alignas(4) float z;
 };
-static_assert(sizeof(FripuckProtocol_Sensors_Vector3D_t) == 6, "struct size mismatch");
+static_assert(sizeof(FripuckProtocol_Sensors_Vector3f_t) == 12, "struct size mismatch");
 
-static inline const FripuckProtocol_Sensors_Vector3D_t *FripuckProtocol_Sensors_Vector3D__const_ptr_add(const FripuckProtocol_Sensors_Vector3D_t *p, size_t i) { return p + i; }
-static inline FripuckProtocol_Sensors_Vector3D_t *FripuckProtocol_Sensors_Vector3D__ptr_add(FripuckProtocol_Sensors_Vector3D_t *p, size_t i) { return p + i; }
-static inline FripuckProtocol_Sensors_Vector3D_struct_t FripuckProtocol_Sensors_Vector3D_vec_at(FripuckProtocol_Sensors_Vector3D_vec_t vec, size_t i)
+static inline const FripuckProtocol_Sensors_Vector3f_t *FripuckProtocol_Sensors_Vector3f__const_ptr_add(const FripuckProtocol_Sensors_Vector3f_t *p, size_t i) { return p + i; }
+static inline FripuckProtocol_Sensors_Vector3f_t *FripuckProtocol_Sensors_Vector3f__ptr_add(FripuckProtocol_Sensors_Vector3f_t *p, size_t i) { return p + i; }
+static inline FripuckProtocol_Sensors_Vector3f_struct_t FripuckProtocol_Sensors_Vector3f_vec_at(FripuckProtocol_Sensors_Vector3f_vec_t vec, size_t i)
 __flatbuffers_struct_vec_at(vec, i)
-static inline size_t FripuckProtocol_Sensors_Vector3D__size(void) { return 6; }
-static inline size_t FripuckProtocol_Sensors_Vector3D_vec_len(FripuckProtocol_Sensors_Vector3D_vec_t vec)
+static inline size_t FripuckProtocol_Sensors_Vector3f__size(void) { return 12; }
+static inline size_t FripuckProtocol_Sensors_Vector3f_vec_len(FripuckProtocol_Sensors_Vector3f_vec_t vec)
 __flatbuffers_vec_len(vec)
-__flatbuffers_struct_as_root(FripuckProtocol_Sensors_Vector3D)
+__flatbuffers_struct_as_root(FripuckProtocol_Sensors_Vector3f)
 
-__flatbuffers_define_struct_scalar_field(FripuckProtocol_Sensors_Vector3D, x, flatbuffers_int16, int16_t)
-__flatbuffers_define_struct_scalar_field(FripuckProtocol_Sensors_Vector3D, y, flatbuffers_int16, int16_t)
-__flatbuffers_define_struct_scalar_field(FripuckProtocol_Sensors_Vector3D, z, flatbuffers_int16, int16_t)
+__flatbuffers_define_struct_scalar_field(FripuckProtocol_Sensors_Vector3f, x, flatbuffers_float, float)
+__flatbuffers_define_struct_scalar_field(FripuckProtocol_Sensors_Vector3f, y, flatbuffers_float, float)
+__flatbuffers_define_struct_scalar_field(FripuckProtocol_Sensors_Vector3f, z, flatbuffers_float, float)
 
 struct FripuckProtocol_Sensors_ImuData {
-    alignas(2) FripuckProtocol_Sensors_Vector3D_t accelerometer;
-    alignas(2) FripuckProtocol_Sensors_Vector3D_t gyroscope;
-    alignas(2) FripuckProtocol_Sensors_Vector3D_t magnetometer;
+    alignas(4) FripuckProtocol_Sensors_Vector3f_t accelerometer;
+    alignas(4) FripuckProtocol_Sensors_Vector3f_t gyroscope;
+    alignas(4) FripuckProtocol_Sensors_Vector3f_t magnetometer;
+    alignas(4) float temperature;
     alignas(2) uint16_t timestamp_offset;
 };
-static_assert(sizeof(FripuckProtocol_Sensors_ImuData_t) == 20, "struct size mismatch");
+static_assert(sizeof(FripuckProtocol_Sensors_ImuData_t) == 44, "struct size mismatch");
 
 static inline const FripuckProtocol_Sensors_ImuData_t *FripuckProtocol_Sensors_ImuData__const_ptr_add(const FripuckProtocol_Sensors_ImuData_t *p, size_t i) { return p + i; }
 static inline FripuckProtocol_Sensors_ImuData_t *FripuckProtocol_Sensors_ImuData__ptr_add(FripuckProtocol_Sensors_ImuData_t *p, size_t i) { return p + i; }
 static inline FripuckProtocol_Sensors_ImuData_struct_t FripuckProtocol_Sensors_ImuData_vec_at(FripuckProtocol_Sensors_ImuData_vec_t vec, size_t i)
 __flatbuffers_struct_vec_at(vec, i)
-static inline size_t FripuckProtocol_Sensors_ImuData__size(void) { return 20; }
+static inline size_t FripuckProtocol_Sensors_ImuData__size(void) { return 44; }
 static inline size_t FripuckProtocol_Sensors_ImuData_vec_len(FripuckProtocol_Sensors_ImuData_vec_t vec)
 __flatbuffers_vec_len(vec)
 __flatbuffers_struct_as_root(FripuckProtocol_Sensors_ImuData)
 
-__flatbuffers_define_struct_struct_field(FripuckProtocol_Sensors_ImuData, accelerometer, FripuckProtocol_Sensors_Vector3D_struct_t)
-__flatbuffers_define_struct_struct_field(FripuckProtocol_Sensors_ImuData, gyroscope, FripuckProtocol_Sensors_Vector3D_struct_t)
-__flatbuffers_define_struct_struct_field(FripuckProtocol_Sensors_ImuData, magnetometer, FripuckProtocol_Sensors_Vector3D_struct_t)
+__flatbuffers_define_struct_struct_field(FripuckProtocol_Sensors_ImuData, accelerometer, FripuckProtocol_Sensors_Vector3f_struct_t)
+__flatbuffers_define_struct_struct_field(FripuckProtocol_Sensors_ImuData, gyroscope, FripuckProtocol_Sensors_Vector3f_struct_t)
+__flatbuffers_define_struct_struct_field(FripuckProtocol_Sensors_ImuData, magnetometer, FripuckProtocol_Sensors_Vector3f_struct_t)
+__flatbuffers_define_struct_scalar_field(FripuckProtocol_Sensors_ImuData, temperature, flatbuffers_float, float)
 __flatbuffers_define_struct_scalar_field(FripuckProtocol_Sensors_ImuData, timestamp_offset, flatbuffers_uint16, uint16_t)
 
 struct FripuckProtocol_Sensors_VolumeData {

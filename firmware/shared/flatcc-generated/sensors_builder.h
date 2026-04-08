@@ -185,69 +185,77 @@ static inline FripuckProtocol_Sensors_EncoderData_t *FripuckProtocol_Sensors_Enc
 __flatbuffers_build_struct(flatbuffers_, FripuckProtocol_Sensors_EncoderData, 12, 4, FripuckProtocol_Sensors_EncoderData_file_identifier, FripuckProtocol_Sensors_EncoderData_type_identifier)
 __flatbuffers_define_fixed_array_primitives(flatbuffers_, FripuckProtocol_Sensors_EncoderData, FripuckProtocol_Sensors_EncoderData_t)
 
-#define __FripuckProtocol_Sensors_Vector3D_formal_args , int16_t v0, int16_t v1, int16_t v2
-#define __FripuckProtocol_Sensors_Vector3D_call_args , v0, v1, v2
-static inline FripuckProtocol_Sensors_Vector3D_t *FripuckProtocol_Sensors_Vector3D_assign(FripuckProtocol_Sensors_Vector3D_t *p, int16_t v0, int16_t v1, int16_t v2)
+#define __FripuckProtocol_Sensors_Vector3f_formal_args , float v0, float v1, float v2
+#define __FripuckProtocol_Sensors_Vector3f_call_args , v0, v1, v2
+static inline FripuckProtocol_Sensors_Vector3f_t *FripuckProtocol_Sensors_Vector3f_assign(FripuckProtocol_Sensors_Vector3f_t *p, float v0, float v1, float v2)
 { p->x = v0; p->y = v1; p->z = v2;
   return p; }
-static inline FripuckProtocol_Sensors_Vector3D_t *FripuckProtocol_Sensors_Vector3D_copy(FripuckProtocol_Sensors_Vector3D_t *p, const FripuckProtocol_Sensors_Vector3D_t *p2)
+static inline FripuckProtocol_Sensors_Vector3f_t *FripuckProtocol_Sensors_Vector3f_copy(FripuckProtocol_Sensors_Vector3f_t *p, const FripuckProtocol_Sensors_Vector3f_t *p2)
 { p->x = p2->x; p->y = p2->y; p->z = p2->z;
   return p; }
-static inline FripuckProtocol_Sensors_Vector3D_t *FripuckProtocol_Sensors_Vector3D_assign_to_pe(FripuckProtocol_Sensors_Vector3D_t *p, int16_t v0, int16_t v1, int16_t v2)
-{ flatbuffers_int16_assign_to_pe(&p->x, v0); flatbuffers_int16_assign_to_pe(&p->y, v1); flatbuffers_int16_assign_to_pe(&p->z, v2);
+static inline FripuckProtocol_Sensors_Vector3f_t *FripuckProtocol_Sensors_Vector3f_assign_to_pe(FripuckProtocol_Sensors_Vector3f_t *p, float v0, float v1, float v2)
+{ flatbuffers_float_assign_to_pe(&p->x, v0); flatbuffers_float_assign_to_pe(&p->y, v1); flatbuffers_float_assign_to_pe(&p->z, v2);
   return p; }
-static inline FripuckProtocol_Sensors_Vector3D_t *FripuckProtocol_Sensors_Vector3D_copy_to_pe(FripuckProtocol_Sensors_Vector3D_t *p, const FripuckProtocol_Sensors_Vector3D_t *p2)
-{ flatbuffers_int16_copy_to_pe(&p->x, &p2->x); flatbuffers_int16_copy_to_pe(&p->y, &p2->y); flatbuffers_int16_copy_to_pe(&p->z, &p2->z);
+static inline FripuckProtocol_Sensors_Vector3f_t *FripuckProtocol_Sensors_Vector3f_copy_to_pe(FripuckProtocol_Sensors_Vector3f_t *p, const FripuckProtocol_Sensors_Vector3f_t *p2)
+{ flatbuffers_float_copy_to_pe(&p->x, &p2->x); flatbuffers_float_copy_to_pe(&p->y, &p2->y); flatbuffers_float_copy_to_pe(&p->z, &p2->z);
   return p; }
-static inline FripuckProtocol_Sensors_Vector3D_t *FripuckProtocol_Sensors_Vector3D_assign_from_pe(FripuckProtocol_Sensors_Vector3D_t *p, int16_t v0, int16_t v1, int16_t v2)
-{ flatbuffers_int16_assign_from_pe(&p->x, v0); flatbuffers_int16_assign_from_pe(&p->y, v1); flatbuffers_int16_assign_from_pe(&p->z, v2);
+static inline FripuckProtocol_Sensors_Vector3f_t *FripuckProtocol_Sensors_Vector3f_assign_from_pe(FripuckProtocol_Sensors_Vector3f_t *p, float v0, float v1, float v2)
+{ flatbuffers_float_assign_from_pe(&p->x, v0); flatbuffers_float_assign_from_pe(&p->y, v1); flatbuffers_float_assign_from_pe(&p->z, v2);
   return p; }
-static inline FripuckProtocol_Sensors_Vector3D_t *FripuckProtocol_Sensors_Vector3D_copy_from_pe(FripuckProtocol_Sensors_Vector3D_t *p, const FripuckProtocol_Sensors_Vector3D_t *p2)
-{ flatbuffers_int16_copy_from_pe(&p->x, &p2->x); flatbuffers_int16_copy_from_pe(&p->y, &p2->y); flatbuffers_int16_copy_from_pe(&p->z, &p2->z);
+static inline FripuckProtocol_Sensors_Vector3f_t *FripuckProtocol_Sensors_Vector3f_copy_from_pe(FripuckProtocol_Sensors_Vector3f_t *p, const FripuckProtocol_Sensors_Vector3f_t *p2)
+{ flatbuffers_float_copy_from_pe(&p->x, &p2->x); flatbuffers_float_copy_from_pe(&p->y, &p2->y); flatbuffers_float_copy_from_pe(&p->z, &p2->z);
   return p; }
-__flatbuffers_build_struct(flatbuffers_, FripuckProtocol_Sensors_Vector3D, 6, 2, FripuckProtocol_Sensors_Vector3D_file_identifier, FripuckProtocol_Sensors_Vector3D_type_identifier)
-__flatbuffers_define_fixed_array_primitives(flatbuffers_, FripuckProtocol_Sensors_Vector3D, FripuckProtocol_Sensors_Vector3D_t)
+__flatbuffers_build_struct(flatbuffers_, FripuckProtocol_Sensors_Vector3f, 12, 4, FripuckProtocol_Sensors_Vector3f_file_identifier, FripuckProtocol_Sensors_Vector3f_type_identifier)
+__flatbuffers_define_fixed_array_primitives(flatbuffers_, FripuckProtocol_Sensors_Vector3f, FripuckProtocol_Sensors_Vector3f_t)
 
 #define __FripuckProtocol_Sensors_ImuData_formal_args ,\
-  int16_t v0, int16_t v1, int16_t v2, int16_t v3,\
-  int16_t v4, int16_t v5, int16_t v6, int16_t v7, int16_t v8, uint16_t v9
+  float v0, float v1, float v2, float v3,\
+  float v4, float v5, float v6, float v7,\
+  float v8, float v9, uint16_t v10
 #define __FripuckProtocol_Sensors_ImuData_call_args ,\
   v0, v1, v2, v3,\
-  v4, v5, v6, v7, v8, v9
+  v4, v5, v6, v7,\
+  v8, v9, v10
 static inline FripuckProtocol_Sensors_ImuData_t *FripuckProtocol_Sensors_ImuData_assign(FripuckProtocol_Sensors_ImuData_t *p,
-  int16_t v0, int16_t v1, int16_t v2, int16_t v3,
-  int16_t v4, int16_t v5, int16_t v6, int16_t v7, int16_t v8, uint16_t v9)
-{ FripuckProtocol_Sensors_Vector3D_assign(&p->accelerometer,
-  v0, v1, v2); FripuckProtocol_Sensors_Vector3D_assign(&p->gyroscope,
-  v3, v4, v5); FripuckProtocol_Sensors_Vector3D_assign(&p->magnetometer,
-  v6, v7, v8); p->timestamp_offset = v9;
+  float v0, float v1, float v2, float v3,
+  float v4, float v5, float v6, float v7,
+  float v8, float v9, uint16_t v10)
+{ FripuckProtocol_Sensors_Vector3f_assign(&p->accelerometer,
+  v0, v1, v2); FripuckProtocol_Sensors_Vector3f_assign(&p->gyroscope,
+  v3, v4, v5); FripuckProtocol_Sensors_Vector3f_assign(&p->magnetometer,
+  v6, v7, v8); p->temperature = v9; p->timestamp_offset = v10;
   return p; }
 static inline FripuckProtocol_Sensors_ImuData_t *FripuckProtocol_Sensors_ImuData_copy(FripuckProtocol_Sensors_ImuData_t *p, const FripuckProtocol_Sensors_ImuData_t *p2)
-{ FripuckProtocol_Sensors_Vector3D_copy(&p->accelerometer, &p2->accelerometer); FripuckProtocol_Sensors_Vector3D_copy(&p->gyroscope, &p2->gyroscope); FripuckProtocol_Sensors_Vector3D_copy(&p->magnetometer, &p2->magnetometer); p->timestamp_offset = p2->timestamp_offset;
+{ FripuckProtocol_Sensors_Vector3f_copy(&p->accelerometer, &p2->accelerometer); FripuckProtocol_Sensors_Vector3f_copy(&p->gyroscope, &p2->gyroscope); FripuckProtocol_Sensors_Vector3f_copy(&p->magnetometer, &p2->magnetometer); p->temperature = p2->temperature;
+  p->timestamp_offset = p2->timestamp_offset;
   return p; }
 static inline FripuckProtocol_Sensors_ImuData_t *FripuckProtocol_Sensors_ImuData_assign_to_pe(FripuckProtocol_Sensors_ImuData_t *p,
-  int16_t v0, int16_t v1, int16_t v2, int16_t v3,
-  int16_t v4, int16_t v5, int16_t v6, int16_t v7, int16_t v8, uint16_t v9)
-{ FripuckProtocol_Sensors_Vector3D_assign_to_pe(&p->accelerometer,
-  v0, v1, v2); FripuckProtocol_Sensors_Vector3D_assign_to_pe(&p->gyroscope,
-  v3, v4, v5); FripuckProtocol_Sensors_Vector3D_assign_to_pe(&p->magnetometer,
-  v6, v7, v8); flatbuffers_uint16_assign_to_pe(&p->timestamp_offset, v9);
+  float v0, float v1, float v2, float v3,
+  float v4, float v5, float v6, float v7,
+  float v8, float v9, uint16_t v10)
+{ FripuckProtocol_Sensors_Vector3f_assign_to_pe(&p->accelerometer,
+  v0, v1, v2); FripuckProtocol_Sensors_Vector3f_assign_to_pe(&p->gyroscope,
+  v3, v4, v5); FripuckProtocol_Sensors_Vector3f_assign_to_pe(&p->magnetometer,
+  v6, v7, v8); flatbuffers_float_assign_to_pe(&p->temperature, v9); flatbuffers_uint16_assign_to_pe(&p->timestamp_offset, v10);
   return p; }
 static inline FripuckProtocol_Sensors_ImuData_t *FripuckProtocol_Sensors_ImuData_copy_to_pe(FripuckProtocol_Sensors_ImuData_t *p, const FripuckProtocol_Sensors_ImuData_t *p2)
-{ FripuckProtocol_Sensors_Vector3D_copy_to_pe(&p->accelerometer, &p2->accelerometer); FripuckProtocol_Sensors_Vector3D_copy_to_pe(&p->gyroscope, &p2->gyroscope); FripuckProtocol_Sensors_Vector3D_copy_to_pe(&p->magnetometer, &p2->magnetometer); flatbuffers_uint16_copy_to_pe(&p->timestamp_offset, &p2->timestamp_offset);
+{ FripuckProtocol_Sensors_Vector3f_copy_to_pe(&p->accelerometer, &p2->accelerometer); FripuckProtocol_Sensors_Vector3f_copy_to_pe(&p->gyroscope, &p2->gyroscope); FripuckProtocol_Sensors_Vector3f_copy_to_pe(&p->magnetometer, &p2->magnetometer); flatbuffers_float_copy_to_pe(&p->temperature, &p2->temperature);
+  flatbuffers_uint16_copy_to_pe(&p->timestamp_offset, &p2->timestamp_offset);
   return p; }
 static inline FripuckProtocol_Sensors_ImuData_t *FripuckProtocol_Sensors_ImuData_assign_from_pe(FripuckProtocol_Sensors_ImuData_t *p,
-  int16_t v0, int16_t v1, int16_t v2, int16_t v3,
-  int16_t v4, int16_t v5, int16_t v6, int16_t v7, int16_t v8, uint16_t v9)
-{ FripuckProtocol_Sensors_Vector3D_assign_from_pe(&p->accelerometer,
-  v0, v1, v2); FripuckProtocol_Sensors_Vector3D_assign_from_pe(&p->gyroscope,
-  v3, v4, v5); FripuckProtocol_Sensors_Vector3D_assign_from_pe(&p->magnetometer,
-  v6, v7, v8); flatbuffers_uint16_assign_from_pe(&p->timestamp_offset, v9);
+  float v0, float v1, float v2, float v3,
+  float v4, float v5, float v6, float v7,
+  float v8, float v9, uint16_t v10)
+{ FripuckProtocol_Sensors_Vector3f_assign_from_pe(&p->accelerometer,
+  v0, v1, v2); FripuckProtocol_Sensors_Vector3f_assign_from_pe(&p->gyroscope,
+  v3, v4, v5); FripuckProtocol_Sensors_Vector3f_assign_from_pe(&p->magnetometer,
+  v6, v7, v8); flatbuffers_float_assign_from_pe(&p->temperature, v9); flatbuffers_uint16_assign_from_pe(&p->timestamp_offset, v10);
   return p; }
 static inline FripuckProtocol_Sensors_ImuData_t *FripuckProtocol_Sensors_ImuData_copy_from_pe(FripuckProtocol_Sensors_ImuData_t *p, const FripuckProtocol_Sensors_ImuData_t *p2)
-{ FripuckProtocol_Sensors_Vector3D_copy_from_pe(&p->accelerometer, &p2->accelerometer); FripuckProtocol_Sensors_Vector3D_copy_from_pe(&p->gyroscope, &p2->gyroscope); FripuckProtocol_Sensors_Vector3D_copy_from_pe(&p->magnetometer, &p2->magnetometer); flatbuffers_uint16_copy_from_pe(&p->timestamp_offset, &p2->timestamp_offset);
+{ FripuckProtocol_Sensors_Vector3f_copy_from_pe(&p->accelerometer, &p2->accelerometer); FripuckProtocol_Sensors_Vector3f_copy_from_pe(&p->gyroscope, &p2->gyroscope); FripuckProtocol_Sensors_Vector3f_copy_from_pe(&p->magnetometer, &p2->magnetometer); flatbuffers_float_copy_from_pe(&p->temperature, &p2->temperature);
+  flatbuffers_uint16_copy_from_pe(&p->timestamp_offset, &p2->timestamp_offset);
   return p; }
-__flatbuffers_build_struct(flatbuffers_, FripuckProtocol_Sensors_ImuData, 20, 2, FripuckProtocol_Sensors_ImuData_file_identifier, FripuckProtocol_Sensors_ImuData_type_identifier)
+__flatbuffers_build_struct(flatbuffers_, FripuckProtocol_Sensors_ImuData, 44, 4, FripuckProtocol_Sensors_ImuData_file_identifier, FripuckProtocol_Sensors_ImuData_type_identifier)
 __flatbuffers_define_fixed_array_primitives(flatbuffers_, FripuckProtocol_Sensors_ImuData, FripuckProtocol_Sensors_ImuData_t)
 
 #define __FripuckProtocol_Sensors_VolumeData_formal_args ,\

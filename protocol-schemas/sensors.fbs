@@ -40,16 +40,17 @@ struct EncoderData {
 }
 
 // IMU
-struct Vector3D {
-    x: int16;
-    y: int16;
-    z: int16;
+struct Vector3f {
+    x: float;
+    y: float;
+    z: float;
 }
 
 struct ImuData {
-    accelerometer: Vector3D;
-    gyroscope: Vector3D;
-    magnetometer: Vector3D;
+    accelerometer: Vector3f;
+    gyroscope: Vector3f;
+    magnetometer: Vector3f;
+    temperature: float;
     timestamp_offset: uint16;
 }
 

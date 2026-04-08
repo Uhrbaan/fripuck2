@@ -211,84 +211,84 @@ static inline int FripuckProtocol_Sensors_EncoderData_verify_as_root_with_identi
     return flatcc_verify_struct_as_root_with_size(buf, bufsiz, fid, 12, 4);
 }
 
-static inline int FripuckProtocol_Sensors_Vector3D_verify_as_root(const void *buf, size_t bufsiz)
+static inline int FripuckProtocol_Sensors_Vector3f_verify_as_root(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_struct_as_root(buf, bufsiz, FripuckProtocol_Sensors_Vector3D_identifier, 6, 2);
+    return flatcc_verify_struct_as_root(buf, bufsiz, FripuckProtocol_Sensors_Vector3f_identifier, 12, 4);
 }
 
-static inline int FripuckProtocol_Sensors_Vector3D_verify_as_root_with_size(const void *buf, size_t bufsiz)
+static inline int FripuckProtocol_Sensors_Vector3f_verify_as_root_with_size(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_struct_as_root_with_size(buf, bufsiz, FripuckProtocol_Sensors_Vector3D_identifier, 6, 2);
+    return flatcc_verify_struct_as_root_with_size(buf, bufsiz, FripuckProtocol_Sensors_Vector3f_identifier, 12, 4);
 }
 
-static inline int FripuckProtocol_Sensors_Vector3D_verify_as_typed_root(const void *buf, size_t bufsiz)
+static inline int FripuckProtocol_Sensors_Vector3f_verify_as_typed_root(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_struct_as_typed_root(buf, bufsiz, FripuckProtocol_Sensors_Vector3D_type_hash, 6, 2);
+    return flatcc_verify_struct_as_typed_root(buf, bufsiz, FripuckProtocol_Sensors_Vector3f_type_hash, 12, 4);
 }
 
-static inline int FripuckProtocol_Sensors_Vector3D_verify_as_typed_root_with_size(const void *buf, size_t bufsiz)
+static inline int FripuckProtocol_Sensors_Vector3f_verify_as_typed_root_with_size(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_struct_as_typed_root_with_size(buf, bufsiz, FripuckProtocol_Sensors_Vector3D_type_hash, 6, 2);
+    return flatcc_verify_struct_as_typed_root_with_size(buf, bufsiz, FripuckProtocol_Sensors_Vector3f_type_hash, 12, 4);
 }
 
-static inline int FripuckProtocol_Sensors_Vector3D_verify_as_root_with_type_hash(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
+static inline int FripuckProtocol_Sensors_Vector3f_verify_as_root_with_type_hash(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
 {
-    return flatcc_verify_struct_as_typed_root(buf, bufsiz, thash, 6, 2);
+    return flatcc_verify_struct_as_typed_root(buf, bufsiz, thash, 12, 4);
 }
 
-static inline int FripuckProtocol_Sensors_Vector3D_verify_as_root_with_type_hash_and_size(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
+static inline int FripuckProtocol_Sensors_Vector3f_verify_as_root_with_type_hash_and_size(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
 {
-    return flatcc_verify_struct_as_typed_root_with_size(buf, bufsiz, thash, 6, 2);
+    return flatcc_verify_struct_as_typed_root_with_size(buf, bufsiz, thash, 12, 4);
 }
 
-static inline int FripuckProtocol_Sensors_Vector3D_verify_as_root_with_identifier(const void *buf, size_t bufsiz, const char *fid)
+static inline int FripuckProtocol_Sensors_Vector3f_verify_as_root_with_identifier(const void *buf, size_t bufsiz, const char *fid)
 {
-    return flatcc_verify_struct_as_root(buf, bufsiz, fid, 6, 2);
+    return flatcc_verify_struct_as_root(buf, bufsiz, fid, 12, 4);
 }
 
-static inline int FripuckProtocol_Sensors_Vector3D_verify_as_root_with_identifier_and_size(const void *buf, size_t bufsiz, const char *fid)
+static inline int FripuckProtocol_Sensors_Vector3f_verify_as_root_with_identifier_and_size(const void *buf, size_t bufsiz, const char *fid)
 {
-    return flatcc_verify_struct_as_root_with_size(buf, bufsiz, fid, 6, 2);
+    return flatcc_verify_struct_as_root_with_size(buf, bufsiz, fid, 12, 4);
 }
 
 static inline int FripuckProtocol_Sensors_ImuData_verify_as_root(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_struct_as_root(buf, bufsiz, FripuckProtocol_Sensors_ImuData_identifier, 20, 2);
+    return flatcc_verify_struct_as_root(buf, bufsiz, FripuckProtocol_Sensors_ImuData_identifier, 44, 4);
 }
 
 static inline int FripuckProtocol_Sensors_ImuData_verify_as_root_with_size(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_struct_as_root_with_size(buf, bufsiz, FripuckProtocol_Sensors_ImuData_identifier, 20, 2);
+    return flatcc_verify_struct_as_root_with_size(buf, bufsiz, FripuckProtocol_Sensors_ImuData_identifier, 44, 4);
 }
 
 static inline int FripuckProtocol_Sensors_ImuData_verify_as_typed_root(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_struct_as_typed_root(buf, bufsiz, FripuckProtocol_Sensors_ImuData_type_hash, 20, 2);
+    return flatcc_verify_struct_as_typed_root(buf, bufsiz, FripuckProtocol_Sensors_ImuData_type_hash, 44, 4);
 }
 
 static inline int FripuckProtocol_Sensors_ImuData_verify_as_typed_root_with_size(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_struct_as_typed_root_with_size(buf, bufsiz, FripuckProtocol_Sensors_ImuData_type_hash, 20, 2);
+    return flatcc_verify_struct_as_typed_root_with_size(buf, bufsiz, FripuckProtocol_Sensors_ImuData_type_hash, 44, 4);
 }
 
 static inline int FripuckProtocol_Sensors_ImuData_verify_as_root_with_type_hash(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
 {
-    return flatcc_verify_struct_as_typed_root(buf, bufsiz, thash, 20, 2);
+    return flatcc_verify_struct_as_typed_root(buf, bufsiz, thash, 44, 4);
 }
 
 static inline int FripuckProtocol_Sensors_ImuData_verify_as_root_with_type_hash_and_size(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
 {
-    return flatcc_verify_struct_as_typed_root_with_size(buf, bufsiz, thash, 20, 2);
+    return flatcc_verify_struct_as_typed_root_with_size(buf, bufsiz, thash, 44, 4);
 }
 
 static inline int FripuckProtocol_Sensors_ImuData_verify_as_root_with_identifier(const void *buf, size_t bufsiz, const char *fid)
 {
-    return flatcc_verify_struct_as_root(buf, bufsiz, fid, 20, 2);
+    return flatcc_verify_struct_as_root(buf, bufsiz, fid, 44, 4);
 }
 
 static inline int FripuckProtocol_Sensors_ImuData_verify_as_root_with_identifier_and_size(const void *buf, size_t bufsiz, const char *fid)
 {
-    return flatcc_verify_struct_as_root_with_size(buf, bufsiz, fid, 20, 2);
+    return flatcc_verify_struct_as_root_with_size(buf, bufsiz, fid, 44, 4);
 }
 
 static inline int FripuckProtocol_Sensors_VolumeData_verify_as_root(const void *buf, size_t bufsiz)
@@ -419,7 +419,7 @@ static int FripuckProtocol_Sensors_SensorBatch_verify_table(flatcc_table_verifie
     if ((ret = flatcc_verify_vector_field(td, 2, 0, 4, 2, INT64_C(1073741823)) /* tof */)) return ret;
     if ((ret = flatcc_verify_vector_field(td, 3, 0, 4, 2, INT64_C(1073741823)) /* battery */)) return ret;
     if ((ret = flatcc_verify_vector_field(td, 4, 0, 12, 4, INT64_C(357913941)) /* encoder */)) return ret;
-    if ((ret = flatcc_verify_vector_field(td, 5, 0, 20, 2, INT64_C(214748364)) /* imu */)) return ret;
+    if ((ret = flatcc_verify_vector_field(td, 5, 0, 44, 4, INT64_C(97612893)) /* imu */)) return ret;
     if ((ret = flatcc_verify_vector_field(td, 6, 0, 1, 1, INT64_C(4294967295)) /* audio_blob */)) return ret;
     if ((ret = flatcc_verify_vector_field(td, 7, 0, 8, 2, INT64_C(536870911)) /* audio_metadata */)) return ret;
     if ((ret = flatcc_verify_vector_field(td, 8, 0, 1, 1, INT64_C(4294967295)) /* video_blob */)) return ret;

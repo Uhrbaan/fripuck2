@@ -7,9 +7,10 @@ import (
 )
 
 type ImuDataT struct {
-	Accelerometer *Vector3DT `json:"accelerometer"`
-	Gyroscope *Vector3DT `json:"gyroscope"`
-	Magnetometer *Vector3DT `json:"magnetometer"`
+	Accelerometer *Vector3fT `json:"accelerometer"`
+	Gyroscope *Vector3fT `json:"gyroscope"`
+	Magnetometer *Vector3fT `json:"magnetometer"`
+	Temperature float32 `json:"temperature"`
 	TimestampOffset uint16 `json:"timestamp_offset"`
 }
 
@@ -17,12 +18,13 @@ func (t *ImuDataT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 	if t == nil {
 		return 0
 	}
-	return CreateImuData(builder, t.Accelerometer.X, t.Accelerometer.Y, t.Accelerometer.Z, t.Gyroscope.X, t.Gyroscope.Y, t.Gyroscope.Z, t.Magnetometer.X, t.Magnetometer.Y, t.Magnetometer.Z, t.TimestampOffset)
+	return CreateImuData(builder, t.Accelerometer.X, t.Accelerometer.Y, t.Accelerometer.Z, t.Gyroscope.X, t.Gyroscope.Y, t.Gyroscope.Z, t.Magnetometer.X, t.Magnetometer.Y, t.Magnetometer.Z, t.Temperature, t.TimestampOffset)
 }
 func (rcv *ImuData) UnPackTo(t *ImuDataT) {
 	t.Accelerometer = rcv.Accelerometer(nil).UnPack()
 	t.Gyroscope = rcv.Gyroscope(nil).UnPack()
 	t.Magnetometer = rcv.Magnetometer(nil).UnPack()
+	t.Temperature = rcv.Temperature()
 	t.TimestampOffset = rcv.TimestampOffset()
 }
 
@@ -48,48 +50,57 @@ func (rcv *ImuData) Table() flatbuffers.Table {
 	return rcv._tab.Table
 }
 
-func (rcv *ImuData) Accelerometer(obj *Vector3D) *Vector3D {
+func (rcv *ImuData) Accelerometer(obj *Vector3f) *Vector3f {
 	if obj == nil {
-		obj = new(Vector3D)
+		obj = new(Vector3f)
 	}
 	obj.Init(rcv._tab.Bytes, rcv._tab.Pos+0)
 	return obj
 }
-func (rcv *ImuData) Gyroscope(obj *Vector3D) *Vector3D {
+func (rcv *ImuData) Gyroscope(obj *Vector3f) *Vector3f {
 	if obj == nil {
-		obj = new(Vector3D)
-	}
-	obj.Init(rcv._tab.Bytes, rcv._tab.Pos+6)
-	return obj
-}
-func (rcv *ImuData) Magnetometer(obj *Vector3D) *Vector3D {
-	if obj == nil {
-		obj = new(Vector3D)
+		obj = new(Vector3f)
 	}
 	obj.Init(rcv._tab.Bytes, rcv._tab.Pos+12)
 	return obj
 }
-func (rcv *ImuData) TimestampOffset() uint16 {
-	return rcv._tab.GetUint16(rcv._tab.Pos + flatbuffers.UOffsetT(18))
+func (rcv *ImuData) Magnetometer(obj *Vector3f) *Vector3f {
+	if obj == nil {
+		obj = new(Vector3f)
+	}
+	obj.Init(rcv._tab.Bytes, rcv._tab.Pos+24)
+	return obj
 }
-func (rcv *ImuData) MutateTimestampOffset(n uint16) bool {
-	return rcv._tab.MutateUint16(rcv._tab.Pos+flatbuffers.UOffsetT(18), n)
+func (rcv *ImuData) Temperature() float32 {
+	return rcv._tab.GetFloat32(rcv._tab.Pos + flatbuffers.UOffsetT(36))
+}
+func (rcv *ImuData) MutateTemperature(n float32) bool {
+	return rcv._tab.MutateFloat32(rcv._tab.Pos+flatbuffers.UOffsetT(36), n)
 }
 
-func CreateImuData(builder *flatbuffers.Builder, accelerometer_x int16, accelerometer_y int16, accelerometer_z int16, gyroscope_x int16, gyroscope_y int16, gyroscope_z int16, magnetometer_x int16, magnetometer_y int16, magnetometer_z int16, timestampOffset uint16) flatbuffers.UOffsetT {
-	builder.Prep(2, 20)
+func (rcv *ImuData) TimestampOffset() uint16 {
+	return rcv._tab.GetUint16(rcv._tab.Pos + flatbuffers.UOffsetT(40))
+}
+func (rcv *ImuData) MutateTimestampOffset(n uint16) bool {
+	return rcv._tab.MutateUint16(rcv._tab.Pos+flatbuffers.UOffsetT(40), n)
+}
+
+func CreateImuData(builder *flatbuffers.Builder, accelerometer_x float32, accelerometer_y float32, accelerometer_z float32, gyroscope_x float32, gyroscope_y float32, gyroscope_z float32, magnetometer_x float32, magnetometer_y float32, magnetometer_z float32, temperature float32, timestampOffset uint16) flatbuffers.UOffsetT {
+	builder.Prep(4, 44)
+	builder.Pad(2)
 	builder.PrependUint16(timestampOffset)
-	builder.Prep(2, 6)
-	builder.PrependInt16(magnetometer_z)
-	builder.PrependInt16(magnetometer_y)
-	builder.PrependInt16(magnetometer_x)
-	builder.Prep(2, 6)
-	builder.PrependInt16(gyroscope_z)
-	builder.PrependInt16(gyroscope_y)
-	builder.PrependInt16(gyroscope_x)
-	builder.Prep(2, 6)
-	builder.PrependInt16(accelerometer_z)
-	builder.PrependInt16(accelerometer_y)
-	builder.PrependInt16(accelerometer_x)
+	builder.PrependFloat32(temperature)
+	builder.Prep(4, 12)
+	builder.PrependFloat32(magnetometer_z)
+	builder.PrependFloat32(magnetometer_y)
+	builder.PrependFloat32(magnetometer_x)
+	builder.Prep(4, 12)
+	builder.PrependFloat32(gyroscope_z)
+	builder.PrependFloat32(gyroscope_y)
+	builder.PrependFloat32(gyroscope_x)
+	builder.Prep(4, 12)
+	builder.PrependFloat32(accelerometer_z)
+	builder.PrependFloat32(accelerometer_y)
+	builder.PrependFloat32(accelerometer_x)
 	return builder.Offset()
 }

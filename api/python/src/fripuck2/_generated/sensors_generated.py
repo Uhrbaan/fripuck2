@@ -409,50 +409,50 @@ class EncoderDataT(object):
         return CreateEncoderData(builder, self.leftSteps, self.rightSteps, self.timestampOffset, self.padding)
 
 
-class Vector3D(object):
+class Vector3f(object):
     __slots__ = ['_tab']
 
     @classmethod
     def SizeOf(cls):
-        return 6
+        return 12
 
-    # Vector3D
+    # Vector3f
     def Init(self, buf, pos):
         self._tab = flatbuffers.table.Table(buf, pos)
 
-    # Vector3D
-    def X(self): return self._tab.Get(flatbuffers.number_types.Int16Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(0))
-    # Vector3D
-    def Y(self): return self._tab.Get(flatbuffers.number_types.Int16Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(2))
-    # Vector3D
-    def Z(self): return self._tab.Get(flatbuffers.number_types.Int16Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(4))
+    # Vector3f
+    def X(self): return self._tab.Get(flatbuffers.number_types.Float32Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(0))
+    # Vector3f
+    def Y(self): return self._tab.Get(flatbuffers.number_types.Float32Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(4))
+    # Vector3f
+    def Z(self): return self._tab.Get(flatbuffers.number_types.Float32Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(8))
 
-def CreateVector3D(builder, x, y, z):
-    builder.Prep(2, 6)
-    builder.PrependInt16(z)
-    builder.PrependInt16(y)
-    builder.PrependInt16(x)
+def CreateVector3f(builder, x, y, z):
+    builder.Prep(4, 12)
+    builder.PrependFloat32(z)
+    builder.PrependFloat32(y)
+    builder.PrependFloat32(x)
     return builder.Offset()
 
 
-class Vector3DT(object):
+class Vector3fT(object):
 
-    # Vector3DT
+    # Vector3fT
     def __init__(
         self,
-        x = 0,
-        y = 0,
-        z = 0,
+        x = 0.0,
+        y = 0.0,
+        z = 0.0,
     ):
-        self.x = x  # type: int
-        self.y = y  # type: int
-        self.z = z  # type: int
+        self.x = x  # type: float
+        self.y = y  # type: float
+        self.z = z  # type: float
 
     @classmethod
     def InitFromBuf(cls, buf, pos):
-        vector3D = Vector3D()
-        vector3D.Init(buf, pos)
-        return cls.InitFromObj(vector3D)
+        vector3f = Vector3f()
+        vector3f.Init(buf, pos)
+        return cls.InitFromObj(vector3f)
 
     @classmethod
     def InitFromPackedBuf(cls, buf, pos=0):
@@ -460,22 +460,22 @@ class Vector3DT(object):
         return cls.InitFromBuf(buf, pos+n)
 
     @classmethod
-    def InitFromObj(cls, vector3D):
-        x = Vector3DT()
-        x._UnPack(vector3D)
+    def InitFromObj(cls, vector3f):
+        x = Vector3fT()
+        x._UnPack(vector3f)
         return x
 
-    # Vector3DT
-    def _UnPack(self, vector3D):
-        if vector3D is None:
+    # Vector3fT
+    def _UnPack(self, vector3f):
+        if vector3f is None:
             return
-        self.x = vector3D.X()
-        self.y = vector3D.Y()
-        self.z = vector3D.Z()
+        self.x = vector3f.X()
+        self.y = vector3f.Y()
+        self.z = vector3f.Z()
 
-    # Vector3DT
+    # Vector3fT
     def Pack(self, builder):
-        return CreateVector3D(builder, self.x, self.y, self.z)
+        return CreateVector3f(builder, self.x, self.y, self.z)
 
 
 class ImuData(object):
@@ -483,7 +483,7 @@ class ImuData(object):
 
     @classmethod
     def SizeOf(cls):
-        return 20
+        return 44
 
     # ImuData
     def Init(self, buf, pos):
@@ -496,32 +496,36 @@ class ImuData(object):
 
     # ImuData
     def Gyroscope(self, obj):
-        obj.Init(self._tab.Bytes, self._tab.Pos + 6)
-        return obj
-
-    # ImuData
-    def Magnetometer(self, obj):
         obj.Init(self._tab.Bytes, self._tab.Pos + 12)
         return obj
 
     # ImuData
-    def TimestampOffset(self): return self._tab.Get(flatbuffers.number_types.Uint16Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(18))
+    def Magnetometer(self, obj):
+        obj.Init(self._tab.Bytes, self._tab.Pos + 24)
+        return obj
 
-def CreateImuData(builder, accelerometer_x, accelerometer_y, accelerometer_z, gyroscope_x, gyroscope_y, gyroscope_z, magnetometer_x, magnetometer_y, magnetometer_z, timestampOffset):
-    builder.Prep(2, 20)
+    # ImuData
+    def Temperature(self): return self._tab.Get(flatbuffers.number_types.Float32Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(36))
+    # ImuData
+    def TimestampOffset(self): return self._tab.Get(flatbuffers.number_types.Uint16Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(40))
+
+def CreateImuData(builder, accelerometer_x, accelerometer_y, accelerometer_z, gyroscope_x, gyroscope_y, gyroscope_z, magnetometer_x, magnetometer_y, magnetometer_z, temperature, timestampOffset):
+    builder.Prep(4, 44)
+    builder.Pad(2)
     builder.PrependUint16(timestampOffset)
-    builder.Prep(2, 6)
-    builder.PrependInt16(magnetometer_z)
-    builder.PrependInt16(magnetometer_y)
-    builder.PrependInt16(magnetometer_x)
-    builder.Prep(2, 6)
-    builder.PrependInt16(gyroscope_z)
-    builder.PrependInt16(gyroscope_y)
-    builder.PrependInt16(gyroscope_x)
-    builder.Prep(2, 6)
-    builder.PrependInt16(accelerometer_z)
-    builder.PrependInt16(accelerometer_y)
-    builder.PrependInt16(accelerometer_x)
+    builder.PrependFloat32(temperature)
+    builder.Prep(4, 12)
+    builder.PrependFloat32(magnetometer_z)
+    builder.PrependFloat32(magnetometer_y)
+    builder.PrependFloat32(magnetometer_x)
+    builder.Prep(4, 12)
+    builder.PrependFloat32(gyroscope_z)
+    builder.PrependFloat32(gyroscope_y)
+    builder.PrependFloat32(gyroscope_x)
+    builder.Prep(4, 12)
+    builder.PrependFloat32(accelerometer_z)
+    builder.PrependFloat32(accelerometer_y)
+    builder.PrependFloat32(accelerometer_x)
     return builder.Offset()
 
 try:
@@ -537,11 +541,13 @@ class ImuDataT(object):
         accelerometer = None,
         gyroscope = None,
         magnetometer = None,
+        temperature = 0.0,
         timestampOffset = 0,
     ):
-        self.accelerometer = accelerometer  # type: Optional[Vector3DT]
-        self.gyroscope = gyroscope  # type: Optional[Vector3DT]
-        self.magnetometer = magnetometer  # type: Optional[Vector3DT]
+        self.accelerometer = accelerometer  # type: Optional[Vector3fT]
+        self.gyroscope = gyroscope  # type: Optional[Vector3fT]
+        self.magnetometer = magnetometer  # type: Optional[Vector3fT]
+        self.temperature = temperature  # type: float
         self.timestampOffset = timestampOffset  # type: int
 
     @classmethod
@@ -565,17 +571,18 @@ class ImuDataT(object):
     def _UnPack(self, imuData):
         if imuData is None:
             return
-        if imuData.Accelerometer(Vector3D()) is not None:
-            self.accelerometer = Vector3DT.InitFromObj(imuData.Accelerometer(Vector3D()))
-        if imuData.Gyroscope(Vector3D()) is not None:
-            self.gyroscope = Vector3DT.InitFromObj(imuData.Gyroscope(Vector3D()))
-        if imuData.Magnetometer(Vector3D()) is not None:
-            self.magnetometer = Vector3DT.InitFromObj(imuData.Magnetometer(Vector3D()))
+        if imuData.Accelerometer(Vector3f()) is not None:
+            self.accelerometer = Vector3fT.InitFromObj(imuData.Accelerometer(Vector3f()))
+        if imuData.Gyroscope(Vector3f()) is not None:
+            self.gyroscope = Vector3fT.InitFromObj(imuData.Gyroscope(Vector3f()))
+        if imuData.Magnetometer(Vector3f()) is not None:
+            self.magnetometer = Vector3fT.InitFromObj(imuData.Magnetometer(Vector3f()))
+        self.temperature = imuData.Temperature()
         self.timestampOffset = imuData.TimestampOffset()
 
     # ImuDataT
     def Pack(self, builder):
-        return CreateImuData(builder, self.accelerometer.x, self.accelerometer.y, self.accelerometer.z, self.gyroscope.x, self.gyroscope.y, self.gyroscope.z, self.magnetometer.x, self.magnetometer.y, self.magnetometer.z, self.timestampOffset)
+        return CreateImuData(builder, self.accelerometer.x, self.accelerometer.y, self.accelerometer.z, self.gyroscope.x, self.gyroscope.y, self.gyroscope.z, self.magnetometer.x, self.magnetometer.y, self.magnetometer.z, self.temperature, self.timestampOffset)
 
 
 class VolumeData(object):
@@ -953,7 +960,7 @@ class SensorBatch(object):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(14))
         if o != 0:
             x = self._tab.Vector(o)
-            x += flatbuffers.number_types.UOffsetTFlags.py_type(j) * 20
+            x += flatbuffers.number_types.UOffsetTFlags.py_type(j) * 44
             obj = ImuData()
             obj.Init(self._tab.Bytes, x)
             return obj
@@ -1133,11 +1140,11 @@ def SensorBatchAddImu(builder, imu):
     builder.PrependUOffsetTRelativeSlot(5, flatbuffers.number_types.UOffsetTFlags.py_type(imu), 0)
 
 def SensorBatchStartImuVector(builder, numElems):
-    return builder.StartVector(20, numElems, 2)
+    return builder.StartVector(44, numElems, 4)
 
 def SensorBatchCreateImuVector(builder, data):
     data = list(data)
-    builder.StartVector(20, len(data), 2)
+    builder.StartVector(44, len(data), 4)
     for item in reversed(data):
         item.Pack(builder)
     return builder.EndVector()

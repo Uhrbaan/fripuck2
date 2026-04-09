@@ -1,43 +1,32 @@
-import numpy
+from collections import deque
 from abc import ABC, abstractmethod
+from typing import TypeVar, Generic, List, Optional
+from .._generated.sensors_generated import SensorBatch
 
-class SensorHistory(ABC):
-    def __init__(self, size=100, dims=2):
-        self._size = size 
-        self._dims = dims
-        # Use dims to handle different array widths (e.g., [t, x, y, z])
-        self._data = numpy.zeros((size, dims))
-        self._ptr = 0
-        self._count = 0
+T = TypeVar('T')
 
-    def _add(self, values: list):
+class SensorHistory(ABC, Generic[T]):
+    def __init__(self, size=100):
+        self._size = size
+        self._data: deque[T] = deque(maxlen=size)
+
+    def _add(self, value: T):
         """Internal method to handle circular insertion."""
-        self._data[self._ptr] = values
-        self._ptr = (self._ptr + 1) % self._size
-        if self._count < self._size:
-            self._count += 1
+        self._data.append(value)
 
     @abstractmethod
-    def _parse(self, base_timestamp, batch):
-        """Subclasses must implement specific parsing logic here."""
+    def _parse(self, base_timestamp: int, batch: SensorBatch):
         pass
 
-    def get(self):
+    def get(self) -> Optional[T]:
         """Returns the most recent entry."""
-        if self._count == 0:
-            return None
-        return self._data[(self._ptr - 1) % self._size]
+        return self._data[-1] if self._data else None
 
-    def get_all(self): 
-        """Returns sorted data and clears the buffer."""
-        if self._count < self._size:
-            result = self._data[:self._ptr].copy()
-        else:
-            result = numpy.roll(self._data, -self._ptr, axis=0)
-
-        self._ptr = 0
-        self._count = 0
+    def get_all(self) -> List[T]:
+        """Returns data in order and clears the buffer."""
+        result = list(self._data)
+        self._data.clear()
         return result
 
     def __len__(self):
-        return self._count
+        return len(self._data)

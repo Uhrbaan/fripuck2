@@ -1,3 +1,3 @@
-from .sensors import TofHisory, ProxHisory
+from .sensors import TofHisory, ProxHisory, ImuHistory
 
-__all__ = ["TofHisory", "ProxHisory"]
+__all__ = ["TofHisory", "ProxHisory", "ImuHistory"]

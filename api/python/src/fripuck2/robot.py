@@ -1,6 +1,6 @@
 from ._generated import sensors_generated as sensors
 from ._generated import commands_generated as commands
-from .sensors.sensors import TofHisory, ProxHisory
+from .sensors.sensors import TofHisory, ProxHisory, ImuHistory
 
 class Robot:
     def __init__(self, ip: str, history_size=100): 
@@ -15,6 +15,7 @@ class Robot:
         self.ip = ip 
         self.tof = TofHisory(size=history_size)
         self.prox = ProxHisory(size=history_size)
+        self.imu = ImuHistory(size=history_size)
 
     def _receive_packet(self, data: bytes):
         """Default callback function to recieve UDP/TCP packets."""
@@ -30,6 +31,7 @@ class Robot:
         base_timestamp = batch.BaseTimestamp()
         self.tof._parse(base_timestamp, batch)
         self.prox._parse(base_timestamp, batch)
+        self.imu._parse(base_timestamp, batch)
         # (base_timestamp, batch)
         # (base_timestamp, batch)
         # (base_timestamp, batch)

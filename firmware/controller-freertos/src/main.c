@@ -90,7 +90,7 @@ void TelemetryTask(void *argument)
         }
 
         flatcc_builder_reset(&builder);
-        osDelay(pdMS_TO_TICKS(100)); // 30 fps
+        osDelay(pdMS_TO_TICKS(500)); // 30 fps
     }
 
     flatcc_builder_clear(&builder);

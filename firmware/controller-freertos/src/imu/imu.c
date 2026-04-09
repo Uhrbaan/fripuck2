@@ -48,7 +48,7 @@ void imu_task(void *argument)
 		osMutexRelease(imu_data_mutex);
 
 		write_pointer++;
-		vTaskDelay(pdMS_TO_TICKS(4)); // FIXME: lower it
+		vTaskDelay(pdMS_TO_TICKS(40)); // FIXME: lower it
 	}
 }
 

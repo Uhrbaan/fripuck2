@@ -18,22 +18,41 @@ void i2c_init(I2C_HandleTypeDef *hi2c)
 
 HAL_StatusTypeDef i2c_read_reg(uint8_t dev_addr, uint8_t reg, uint8_t *buffer, uint16_t len)
 {
-    osMutexAcquire(i2c_mutex, osWaitForever); // lock
+    HAL_StatusTypeDef res;
+    osMutexAcquire(i2c_mutex, osWaitForever);
 
-    // Shifted address because I2C expects 7-bit addresses where the last byte is set for read or write.
-    HAL_StatusTypeDef hal_res = HAL_I2C_Mem_Read(i2c_handle, (dev_addr << 1), reg, I2C_MEMADD_SIZE_8BIT, buffer, len, 100);
+    // Announce which device/register will be sent to
+    res = HAL_I2C_Master_Transmit(i2c_handle, (dev_addr << 1), &reg, 1, 100);
 
-    osMutexRelease(i2c_mutex); // unlock
+    if (res == HAL_OK)
+    {
+        // Recieve data from the slave
+        res = HAL_I2C_Master_Receive(i2c_handle, (dev_addr << 1), buffer, len, 100);
+    }
 
-    return hal_res;
+    osMutexRelease(i2c_mutex);
+    return res;
 }
 
 HAL_StatusTypeDef i2c_write_reg(uint8_t dev_addr, uint8_t reg, uint8_t *buffer, uint16_t len)
 {
-    osMutexAcquire(i2c_mutex, osWaitForever); // lock
+    // Local buffer to combine reg + data
+    uint8_t tmp[len + 1];
+    tmp[0] = reg;
+    memcpy(&tmp[1], buffer, len);
 
-    HAL_StatusTypeDef hal_res = HAL_I2C_Mem_Write(i2c_handle, (uint16_t)(dev_addr << 1), (uint16_t)reg, I2C_MEMADD_SIZE_8BIT, buffer, len, 100);
+    osMutexAcquire(i2c_mutex, osWaitForever);
+    HAL_StatusTypeDef res = HAL_I2C_Master_Transmit(i2c_handle, (dev_addr << 1), tmp, len + 1, 100);
+    osMutexRelease(i2c_mutex);
 
-    osMutexRelease(i2c_mutex); // unlock
-    return hal_res;
+    return res;
+}
+
+void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *hi2c)
+{
+    int err = HAL_I2C_GetError(hi2c);
+    if (err != HAL_OK)
+    {
+        __BKPT(0);
+    }
 }

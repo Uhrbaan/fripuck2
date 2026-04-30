@@ -50,3 +50,13 @@ class ImuHistory(SensorHistory[Tuple[float, sensors.ImuDataT]]):
             for i in range(batch.ImuLength()):
                 item = sensors.ImuDataT.InitFromObj(batch.Imu(i))
                 self._add(((base_timestamp + item.timestampOffset)/1000, item))
+
+class GroundHistory(SensorHistory[Tuple[float, sensors.GroundDataT]]):
+    def __init__(self, size=100):
+        super().__init__(size=size)
+    
+    def _parse(self, base_timestamp, batch: sensors.SensorBatch):
+        if not batch.ImuIsNone(): 
+            for i in range(batch.GroundLength()):
+                item = sensors.GroundDataT.InitFromObj(batch.Ground(i))
+                self._add(((base_timestamp + item.timestampOffset)/1000, item))

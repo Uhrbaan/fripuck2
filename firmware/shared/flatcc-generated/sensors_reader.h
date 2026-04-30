@@ -27,6 +27,16 @@ typedef const FripuckProtocol_Sensors_ProximityData_t *FripuckProtocol_Sensors_P
 typedef FripuckProtocol_Sensors_ProximityData_t *FripuckProtocol_Sensors_ProximityData_mutable_struct_t;
 typedef const FripuckProtocol_Sensors_ProximityData_t *FripuckProtocol_Sensors_ProximityData_vec_t;
 typedef FripuckProtocol_Sensors_ProximityData_t *FripuckProtocol_Sensors_ProximityData_mutable_vec_t;
+typedef struct FripuckProtocol_Sensors_GroundArray FripuckProtocol_Sensors_GroundArray_t;
+typedef const FripuckProtocol_Sensors_GroundArray_t *FripuckProtocol_Sensors_GroundArray_struct_t;
+typedef FripuckProtocol_Sensors_GroundArray_t *FripuckProtocol_Sensors_GroundArray_mutable_struct_t;
+typedef const FripuckProtocol_Sensors_GroundArray_t *FripuckProtocol_Sensors_GroundArray_vec_t;
+typedef FripuckProtocol_Sensors_GroundArray_t *FripuckProtocol_Sensors_GroundArray_mutable_vec_t;
+typedef struct FripuckProtocol_Sensors_GroundData FripuckProtocol_Sensors_GroundData_t;
+typedef const FripuckProtocol_Sensors_GroundData_t *FripuckProtocol_Sensors_GroundData_struct_t;
+typedef FripuckProtocol_Sensors_GroundData_t *FripuckProtocol_Sensors_GroundData_mutable_struct_t;
+typedef const FripuckProtocol_Sensors_GroundData_t *FripuckProtocol_Sensors_GroundData_vec_t;
+typedef FripuckProtocol_Sensors_GroundData_t *FripuckProtocol_Sensors_GroundData_mutable_vec_t;
 typedef struct FripuckProtocol_Sensors_TofData FripuckProtocol_Sensors_TofData_t;
 typedef const FripuckProtocol_Sensors_TofData_t *FripuckProtocol_Sensors_TofData_struct_t;
 typedef FripuckProtocol_Sensors_TofData_t *FripuckProtocol_Sensors_TofData_mutable_struct_t;
@@ -95,6 +105,30 @@ typedef flatbuffers_uoffset_t *FripuckProtocol_Sensors_SensorBatch_mutable_vec_t
 #define FripuckProtocol_Sensors_ProximityData_type_identifier "\xd3\x07\x74\xbf"
 #ifndef FripuckProtocol_Sensors_ProximityData_file_extension
 #define FripuckProtocol_Sensors_ProximityData_file_extension "bin"
+#endif
+#ifndef FripuckProtocol_Sensors_GroundArray_file_identifier
+#define FripuckProtocol_Sensors_GroundArray_file_identifier "SENS"
+#endif
+/* deprecated, use FripuckProtocol_Sensors_GroundArray_file_identifier */
+#ifndef FripuckProtocol_Sensors_GroundArray_identifier
+#define FripuckProtocol_Sensors_GroundArray_identifier "SENS"
+#endif
+#define FripuckProtocol_Sensors_GroundArray_type_hash ((flatbuffers_thash_t)0xead92a1a)
+#define FripuckProtocol_Sensors_GroundArray_type_identifier "\x1a\x2a\xd9\xea"
+#ifndef FripuckProtocol_Sensors_GroundArray_file_extension
+#define FripuckProtocol_Sensors_GroundArray_file_extension "bin"
+#endif
+#ifndef FripuckProtocol_Sensors_GroundData_file_identifier
+#define FripuckProtocol_Sensors_GroundData_file_identifier "SENS"
+#endif
+/* deprecated, use FripuckProtocol_Sensors_GroundData_file_identifier */
+#ifndef FripuckProtocol_Sensors_GroundData_identifier
+#define FripuckProtocol_Sensors_GroundData_identifier "SENS"
+#endif
+#define FripuckProtocol_Sensors_GroundData_type_hash ((flatbuffers_thash_t)0x499638a1)
+#define FripuckProtocol_Sensors_GroundData_type_identifier "\xa1\x38\x96\x49"
+#ifndef FripuckProtocol_Sensors_GroundData_file_extension
+#define FripuckProtocol_Sensors_GroundData_file_extension "bin"
 #endif
 #ifndef FripuckProtocol_Sensors_TofData_file_identifier
 #define FripuckProtocol_Sensors_TofData_file_identifier "SENS"
@@ -257,6 +291,50 @@ __flatbuffers_define_struct_struct_field(FripuckProtocol_Sensors_ProximityData, 
 __flatbuffers_define_struct_struct_field(FripuckProtocol_Sensors_ProximityData, ambient_light, FripuckProtocol_Sensors_Uint16Array8_struct_t)
 __flatbuffers_define_struct_scalar_field(FripuckProtocol_Sensors_ProximityData, timestamp_offset, flatbuffers_uint16, uint16_t)
 __flatbuffers_define_struct_scalar_field(FripuckProtocol_Sensors_ProximityData, padding, flatbuffers_uint16, uint16_t)
+
+struct FripuckProtocol_Sensors_GroundArray {
+    alignas(2) uint16_t g0;
+    alignas(2) uint16_t g1;
+    alignas(2) uint16_t g2;
+    alignas(2) uint16_t cliff0;
+    alignas(2) uint16_t cliff1;
+};
+static_assert(sizeof(FripuckProtocol_Sensors_GroundArray_t) == 10, "struct size mismatch");
+
+static inline const FripuckProtocol_Sensors_GroundArray_t *FripuckProtocol_Sensors_GroundArray__const_ptr_add(const FripuckProtocol_Sensors_GroundArray_t *p, size_t i) { return p + i; }
+static inline FripuckProtocol_Sensors_GroundArray_t *FripuckProtocol_Sensors_GroundArray__ptr_add(FripuckProtocol_Sensors_GroundArray_t *p, size_t i) { return p + i; }
+static inline FripuckProtocol_Sensors_GroundArray_struct_t FripuckProtocol_Sensors_GroundArray_vec_at(FripuckProtocol_Sensors_GroundArray_vec_t vec, size_t i)
+__flatbuffers_struct_vec_at(vec, i)
+static inline size_t FripuckProtocol_Sensors_GroundArray__size(void) { return 10; }
+static inline size_t FripuckProtocol_Sensors_GroundArray_vec_len(FripuckProtocol_Sensors_GroundArray_vec_t vec)
+__flatbuffers_vec_len(vec)
+__flatbuffers_struct_as_root(FripuckProtocol_Sensors_GroundArray)
+
+__flatbuffers_define_struct_scalar_field(FripuckProtocol_Sensors_GroundArray, g0, flatbuffers_uint16, uint16_t)
+__flatbuffers_define_struct_scalar_field(FripuckProtocol_Sensors_GroundArray, g1, flatbuffers_uint16, uint16_t)
+__flatbuffers_define_struct_scalar_field(FripuckProtocol_Sensors_GroundArray, g2, flatbuffers_uint16, uint16_t)
+__flatbuffers_define_struct_scalar_field(FripuckProtocol_Sensors_GroundArray, cliff0, flatbuffers_uint16, uint16_t)
+__flatbuffers_define_struct_scalar_field(FripuckProtocol_Sensors_GroundArray, cliff1, flatbuffers_uint16, uint16_t)
+
+struct FripuckProtocol_Sensors_GroundData {
+    alignas(2) FripuckProtocol_Sensors_GroundArray_t ambient;
+    alignas(2) FripuckProtocol_Sensors_GroundArray_t delta;
+    alignas(2) uint16_t timestamp_offset;
+};
+static_assert(sizeof(FripuckProtocol_Sensors_GroundData_t) == 22, "struct size mismatch");
+
+static inline const FripuckProtocol_Sensors_GroundData_t *FripuckProtocol_Sensors_GroundData__const_ptr_add(const FripuckProtocol_Sensors_GroundData_t *p, size_t i) { return p + i; }
+static inline FripuckProtocol_Sensors_GroundData_t *FripuckProtocol_Sensors_GroundData__ptr_add(FripuckProtocol_Sensors_GroundData_t *p, size_t i) { return p + i; }
+static inline FripuckProtocol_Sensors_GroundData_struct_t FripuckProtocol_Sensors_GroundData_vec_at(FripuckProtocol_Sensors_GroundData_vec_t vec, size_t i)
+__flatbuffers_struct_vec_at(vec, i)
+static inline size_t FripuckProtocol_Sensors_GroundData__size(void) { return 22; }
+static inline size_t FripuckProtocol_Sensors_GroundData_vec_len(FripuckProtocol_Sensors_GroundData_vec_t vec)
+__flatbuffers_vec_len(vec)
+__flatbuffers_struct_as_root(FripuckProtocol_Sensors_GroundData)
+
+__flatbuffers_define_struct_struct_field(FripuckProtocol_Sensors_GroundData, ambient, FripuckProtocol_Sensors_GroundArray_struct_t)
+__flatbuffers_define_struct_struct_field(FripuckProtocol_Sensors_GroundData, delta, FripuckProtocol_Sensors_GroundArray_struct_t)
+__flatbuffers_define_struct_scalar_field(FripuckProtocol_Sensors_GroundData, timestamp_offset, flatbuffers_uint16, uint16_t)
 
 struct FripuckProtocol_Sensors_TofData {
     alignas(2) uint16_t distance;
@@ -445,14 +523,15 @@ __flatbuffers_table_as_root(FripuckProtocol_Sensors_SensorBatch)
 
 __flatbuffers_define_scalar_field(0, FripuckProtocol_Sensors_SensorBatch, base_timestamp, flatbuffers_uint64, uint64_t, UINT64_C(0))
 __flatbuffers_define_vector_field(1, FripuckProtocol_Sensors_SensorBatch, proximity, FripuckProtocol_Sensors_ProximityData_vec_t, 0)
-__flatbuffers_define_vector_field(2, FripuckProtocol_Sensors_SensorBatch, tof, FripuckProtocol_Sensors_TofData_vec_t, 0)
-__flatbuffers_define_vector_field(3, FripuckProtocol_Sensors_SensorBatch, battery, FripuckProtocol_Sensors_BatteryData_vec_t, 0)
-__flatbuffers_define_vector_field(4, FripuckProtocol_Sensors_SensorBatch, encoder, FripuckProtocol_Sensors_EncoderData_vec_t, 0)
-__flatbuffers_define_vector_field(5, FripuckProtocol_Sensors_SensorBatch, imu, FripuckProtocol_Sensors_ImuData_vec_t, 0)
-__flatbuffers_define_vector_field(6, FripuckProtocol_Sensors_SensorBatch, audio_blob, flatbuffers_uint8_vec_t, 0)
-__flatbuffers_define_vector_field(7, FripuckProtocol_Sensors_SensorBatch, audio_metadata, FripuckProtocol_Sensors_AudioMetadata_vec_t, 0)
-__flatbuffers_define_vector_field(8, FripuckProtocol_Sensors_SensorBatch, video_blob, flatbuffers_uint8_vec_t, 0)
-__flatbuffers_define_vector_field(9, FripuckProtocol_Sensors_SensorBatch, video_metadata, FripuckProtocol_Sensors_VideoMetadata_vec_t, 0)
+__flatbuffers_define_vector_field(2, FripuckProtocol_Sensors_SensorBatch, ground, FripuckProtocol_Sensors_GroundData_vec_t, 0)
+__flatbuffers_define_vector_field(3, FripuckProtocol_Sensors_SensorBatch, tof, FripuckProtocol_Sensors_TofData_vec_t, 0)
+__flatbuffers_define_vector_field(4, FripuckProtocol_Sensors_SensorBatch, battery, FripuckProtocol_Sensors_BatteryData_vec_t, 0)
+__flatbuffers_define_vector_field(5, FripuckProtocol_Sensors_SensorBatch, encoder, FripuckProtocol_Sensors_EncoderData_vec_t, 0)
+__flatbuffers_define_vector_field(6, FripuckProtocol_Sensors_SensorBatch, imu, FripuckProtocol_Sensors_ImuData_vec_t, 0)
+__flatbuffers_define_vector_field(7, FripuckProtocol_Sensors_SensorBatch, audio_blob, flatbuffers_uint8_vec_t, 0)
+__flatbuffers_define_vector_field(8, FripuckProtocol_Sensors_SensorBatch, audio_metadata, FripuckProtocol_Sensors_AudioMetadata_vec_t, 0)
+__flatbuffers_define_vector_field(9, FripuckProtocol_Sensors_SensorBatch, video_blob, flatbuffers_uint8_vec_t, 0)
+__flatbuffers_define_vector_field(10, FripuckProtocol_Sensors_SensorBatch, video_metadata, FripuckProtocol_Sensors_VideoMetadata_vec_t, 0)
 
 
 #include "flatcc/flatcc_epilogue.h"

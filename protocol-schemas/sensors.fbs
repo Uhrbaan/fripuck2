@@ -19,6 +19,21 @@ struct ProximityData {
     padding: uint16; // 4-byte aligned
 }
 
+// Ground sensors
+struct GroundArray {
+    g0: uint16;
+    g1: uint16;
+    g2: uint16;
+    cliff0: uint16;
+    cliff1: uint16;
+}
+
+struct GroundData {
+    ambient: GroundArray;
+    delta: GroundArray;
+    timestamp_offset: uint16;
+}
+
 // Time of flight
 struct TofData {
     distance: uint16;
@@ -88,6 +103,7 @@ table SensorBatch {
     // Sensor readings
     base_timestamp: uint64;
     proximity: [ProximityData];
+    ground: [GroundData];
     tof: [TofData];
     battery: [BatteryData];
     encoder: [EncoderData];

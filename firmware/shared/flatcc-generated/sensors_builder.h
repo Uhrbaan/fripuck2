@@ -116,6 +116,90 @@ static inline FripuckProtocol_Sensors_ProximityData_t *FripuckProtocol_Sensors_P
 __flatbuffers_build_struct(flatbuffers_, FripuckProtocol_Sensors_ProximityData, 36, 2, FripuckProtocol_Sensors_ProximityData_file_identifier, FripuckProtocol_Sensors_ProximityData_type_identifier)
 __flatbuffers_define_fixed_array_primitives(flatbuffers_, FripuckProtocol_Sensors_ProximityData, FripuckProtocol_Sensors_ProximityData_t)
 
+#define __FripuckProtocol_Sensors_GroundArray_formal_args ,\
+  uint16_t v0, uint16_t v1, uint16_t v2, uint16_t v3, uint16_t v4
+#define __FripuckProtocol_Sensors_GroundArray_call_args ,\
+  v0, v1, v2, v3, v4
+static inline FripuckProtocol_Sensors_GroundArray_t *FripuckProtocol_Sensors_GroundArray_assign(FripuckProtocol_Sensors_GroundArray_t *p,
+  uint16_t v0, uint16_t v1, uint16_t v2, uint16_t v3, uint16_t v4)
+{ p->g0 = v0; p->g1 = v1; p->g2 = v2; p->cliff0 = v3;
+  p->cliff1 = v4;
+  return p; }
+static inline FripuckProtocol_Sensors_GroundArray_t *FripuckProtocol_Sensors_GroundArray_copy(FripuckProtocol_Sensors_GroundArray_t *p, const FripuckProtocol_Sensors_GroundArray_t *p2)
+{ p->g0 = p2->g0; p->g1 = p2->g1; p->g2 = p2->g2; p->cliff0 = p2->cliff0;
+  p->cliff1 = p2->cliff1;
+  return p; }
+static inline FripuckProtocol_Sensors_GroundArray_t *FripuckProtocol_Sensors_GroundArray_assign_to_pe(FripuckProtocol_Sensors_GroundArray_t *p,
+  uint16_t v0, uint16_t v1, uint16_t v2, uint16_t v3, uint16_t v4)
+{ flatbuffers_uint16_assign_to_pe(&p->g0, v0); flatbuffers_uint16_assign_to_pe(&p->g1, v1); flatbuffers_uint16_assign_to_pe(&p->g2, v2); flatbuffers_uint16_assign_to_pe(&p->cliff0, v3);
+  flatbuffers_uint16_assign_to_pe(&p->cliff1, v4);
+  return p; }
+static inline FripuckProtocol_Sensors_GroundArray_t *FripuckProtocol_Sensors_GroundArray_copy_to_pe(FripuckProtocol_Sensors_GroundArray_t *p, const FripuckProtocol_Sensors_GroundArray_t *p2)
+{ flatbuffers_uint16_copy_to_pe(&p->g0, &p2->g0); flatbuffers_uint16_copy_to_pe(&p->g1, &p2->g1); flatbuffers_uint16_copy_to_pe(&p->g2, &p2->g2); flatbuffers_uint16_copy_to_pe(&p->cliff0, &p2->cliff0);
+  flatbuffers_uint16_copy_to_pe(&p->cliff1, &p2->cliff1);
+  return p; }
+static inline FripuckProtocol_Sensors_GroundArray_t *FripuckProtocol_Sensors_GroundArray_assign_from_pe(FripuckProtocol_Sensors_GroundArray_t *p,
+  uint16_t v0, uint16_t v1, uint16_t v2, uint16_t v3, uint16_t v4)
+{ flatbuffers_uint16_assign_from_pe(&p->g0, v0); flatbuffers_uint16_assign_from_pe(&p->g1, v1); flatbuffers_uint16_assign_from_pe(&p->g2, v2); flatbuffers_uint16_assign_from_pe(&p->cliff0, v3);
+  flatbuffers_uint16_assign_from_pe(&p->cliff1, v4);
+  return p; }
+static inline FripuckProtocol_Sensors_GroundArray_t *FripuckProtocol_Sensors_GroundArray_copy_from_pe(FripuckProtocol_Sensors_GroundArray_t *p, const FripuckProtocol_Sensors_GroundArray_t *p2)
+{ flatbuffers_uint16_copy_from_pe(&p->g0, &p2->g0); flatbuffers_uint16_copy_from_pe(&p->g1, &p2->g1); flatbuffers_uint16_copy_from_pe(&p->g2, &p2->g2); flatbuffers_uint16_copy_from_pe(&p->cliff0, &p2->cliff0);
+  flatbuffers_uint16_copy_from_pe(&p->cliff1, &p2->cliff1);
+  return p; }
+__flatbuffers_build_struct(flatbuffers_, FripuckProtocol_Sensors_GroundArray, 10, 2, FripuckProtocol_Sensors_GroundArray_file_identifier, FripuckProtocol_Sensors_GroundArray_type_identifier)
+__flatbuffers_define_fixed_array_primitives(flatbuffers_, FripuckProtocol_Sensors_GroundArray, FripuckProtocol_Sensors_GroundArray_t)
+
+#define __FripuckProtocol_Sensors_GroundData_formal_args ,\
+  uint16_t v0, uint16_t v1, uint16_t v2, uint16_t v3,\
+  uint16_t v4, uint16_t v5, uint16_t v6, uint16_t v7,\
+  uint16_t v8, uint16_t v9, uint16_t v10
+#define __FripuckProtocol_Sensors_GroundData_call_args ,\
+  v0, v1, v2, v3,\
+  v4, v5, v6, v7,\
+  v8, v9, v10
+static inline FripuckProtocol_Sensors_GroundData_t *FripuckProtocol_Sensors_GroundData_assign(FripuckProtocol_Sensors_GroundData_t *p,
+  uint16_t v0, uint16_t v1, uint16_t v2, uint16_t v3,
+  uint16_t v4, uint16_t v5, uint16_t v6, uint16_t v7,
+  uint16_t v8, uint16_t v9, uint16_t v10)
+{ FripuckProtocol_Sensors_GroundArray_assign(&p->ambient,
+  v0, v1, v2, v3,
+  v4); FripuckProtocol_Sensors_GroundArray_assign(&p->delta,
+  v5, v6, v7, v8,
+  v9); p->timestamp_offset = v10;
+  return p; }
+static inline FripuckProtocol_Sensors_GroundData_t *FripuckProtocol_Sensors_GroundData_copy(FripuckProtocol_Sensors_GroundData_t *p, const FripuckProtocol_Sensors_GroundData_t *p2)
+{ FripuckProtocol_Sensors_GroundArray_copy(&p->ambient, &p2->ambient); FripuckProtocol_Sensors_GroundArray_copy(&p->delta, &p2->delta); p->timestamp_offset = p2->timestamp_offset;
+  return p; }
+static inline FripuckProtocol_Sensors_GroundData_t *FripuckProtocol_Sensors_GroundData_assign_to_pe(FripuckProtocol_Sensors_GroundData_t *p,
+  uint16_t v0, uint16_t v1, uint16_t v2, uint16_t v3,
+  uint16_t v4, uint16_t v5, uint16_t v6, uint16_t v7,
+  uint16_t v8, uint16_t v9, uint16_t v10)
+{ FripuckProtocol_Sensors_GroundArray_assign_to_pe(&p->ambient,
+  v0, v1, v2, v3,
+  v4); FripuckProtocol_Sensors_GroundArray_assign_to_pe(&p->delta,
+  v5, v6, v7, v8,
+  v9); flatbuffers_uint16_assign_to_pe(&p->timestamp_offset, v10);
+  return p; }
+static inline FripuckProtocol_Sensors_GroundData_t *FripuckProtocol_Sensors_GroundData_copy_to_pe(FripuckProtocol_Sensors_GroundData_t *p, const FripuckProtocol_Sensors_GroundData_t *p2)
+{ FripuckProtocol_Sensors_GroundArray_copy_to_pe(&p->ambient, &p2->ambient); FripuckProtocol_Sensors_GroundArray_copy_to_pe(&p->delta, &p2->delta); flatbuffers_uint16_copy_to_pe(&p->timestamp_offset, &p2->timestamp_offset);
+  return p; }
+static inline FripuckProtocol_Sensors_GroundData_t *FripuckProtocol_Sensors_GroundData_assign_from_pe(FripuckProtocol_Sensors_GroundData_t *p,
+  uint16_t v0, uint16_t v1, uint16_t v2, uint16_t v3,
+  uint16_t v4, uint16_t v5, uint16_t v6, uint16_t v7,
+  uint16_t v8, uint16_t v9, uint16_t v10)
+{ FripuckProtocol_Sensors_GroundArray_assign_from_pe(&p->ambient,
+  v0, v1, v2, v3,
+  v4); FripuckProtocol_Sensors_GroundArray_assign_from_pe(&p->delta,
+  v5, v6, v7, v8,
+  v9); flatbuffers_uint16_assign_from_pe(&p->timestamp_offset, v10);
+  return p; }
+static inline FripuckProtocol_Sensors_GroundData_t *FripuckProtocol_Sensors_GroundData_copy_from_pe(FripuckProtocol_Sensors_GroundData_t *p, const FripuckProtocol_Sensors_GroundData_t *p2)
+{ FripuckProtocol_Sensors_GroundArray_copy_from_pe(&p->ambient, &p2->ambient); FripuckProtocol_Sensors_GroundArray_copy_from_pe(&p->delta, &p2->delta); flatbuffers_uint16_copy_from_pe(&p->timestamp_offset, &p2->timestamp_offset);
+  return p; }
+__flatbuffers_build_struct(flatbuffers_, FripuckProtocol_Sensors_GroundData, 22, 2, FripuckProtocol_Sensors_GroundData_file_identifier, FripuckProtocol_Sensors_GroundData_type_identifier)
+__flatbuffers_define_fixed_array_primitives(flatbuffers_, FripuckProtocol_Sensors_GroundData, FripuckProtocol_Sensors_GroundData_t)
+
 #define __FripuckProtocol_Sensors_TofData_formal_args , uint16_t v0, uint16_t v1
 #define __FripuckProtocol_Sensors_TofData_call_args , v0, v1
 static inline FripuckProtocol_Sensors_TofData_t *FripuckProtocol_Sensors_TofData_assign(FripuckProtocol_Sensors_TofData_t *p, uint16_t v0, uint16_t v1)
@@ -357,41 +441,45 @@ __flatbuffers_define_fixed_array_primitives(flatbuffers_, FripuckProtocol_Sensor
 static const flatbuffers_voffset_t __FripuckProtocol_Sensors_SensorBatch_required[] = { 0 };
 typedef flatbuffers_ref_t FripuckProtocol_Sensors_SensorBatch_ref_t;
 static FripuckProtocol_Sensors_SensorBatch_ref_t FripuckProtocol_Sensors_SensorBatch_clone(flatbuffers_builder_t *B, FripuckProtocol_Sensors_SensorBatch_table_t t);
-__flatbuffers_build_table(flatbuffers_, FripuckProtocol_Sensors_SensorBatch, 10)
+__flatbuffers_build_table(flatbuffers_, FripuckProtocol_Sensors_SensorBatch, 11)
 
 #define __FripuckProtocol_Sensors_SensorBatch_formal_args ,\
-  uint64_t v0, FripuckProtocol_Sensors_ProximityData_vec_ref_t v1, FripuckProtocol_Sensors_TofData_vec_ref_t v2, FripuckProtocol_Sensors_BatteryData_vec_ref_t v3,\
-  FripuckProtocol_Sensors_EncoderData_vec_ref_t v4, FripuckProtocol_Sensors_ImuData_vec_ref_t v5, flatbuffers_uint8_vec_ref_t v6, FripuckProtocol_Sensors_AudioMetadata_vec_ref_t v7, flatbuffers_uint8_vec_ref_t v8, FripuckProtocol_Sensors_VideoMetadata_vec_ref_t v9
+  uint64_t v0, FripuckProtocol_Sensors_ProximityData_vec_ref_t v1, FripuckProtocol_Sensors_GroundData_vec_ref_t v2, FripuckProtocol_Sensors_TofData_vec_ref_t v3,\
+  FripuckProtocol_Sensors_BatteryData_vec_ref_t v4, FripuckProtocol_Sensors_EncoderData_vec_ref_t v5, FripuckProtocol_Sensors_ImuData_vec_ref_t v6, flatbuffers_uint8_vec_ref_t v7,\
+  FripuckProtocol_Sensors_AudioMetadata_vec_ref_t v8, flatbuffers_uint8_vec_ref_t v9, FripuckProtocol_Sensors_VideoMetadata_vec_ref_t v10
 #define __FripuckProtocol_Sensors_SensorBatch_call_args ,\
   v0, v1, v2, v3,\
-  v4, v5, v6, v7, v8, v9
+  v4, v5, v6, v7,\
+  v8, v9, v10
 static inline FripuckProtocol_Sensors_SensorBatch_ref_t FripuckProtocol_Sensors_SensorBatch_create(flatbuffers_builder_t *B __FripuckProtocol_Sensors_SensorBatch_formal_args);
 __flatbuffers_build_table_prolog(flatbuffers_, FripuckProtocol_Sensors_SensorBatch, FripuckProtocol_Sensors_SensorBatch_file_identifier, FripuckProtocol_Sensors_SensorBatch_type_identifier)
 
 __flatbuffers_build_scalar_field(0, flatbuffers_, FripuckProtocol_Sensors_SensorBatch_base_timestamp, flatbuffers_uint64, uint64_t, 8, 8, UINT64_C(0), FripuckProtocol_Sensors_SensorBatch)
 __flatbuffers_build_vector_field(1, flatbuffers_, FripuckProtocol_Sensors_SensorBatch_proximity, FripuckProtocol_Sensors_ProximityData, FripuckProtocol_Sensors_ProximityData_t, FripuckProtocol_Sensors_SensorBatch)
-__flatbuffers_build_vector_field(2, flatbuffers_, FripuckProtocol_Sensors_SensorBatch_tof, FripuckProtocol_Sensors_TofData, FripuckProtocol_Sensors_TofData_t, FripuckProtocol_Sensors_SensorBatch)
-__flatbuffers_build_vector_field(3, flatbuffers_, FripuckProtocol_Sensors_SensorBatch_battery, FripuckProtocol_Sensors_BatteryData, FripuckProtocol_Sensors_BatteryData_t, FripuckProtocol_Sensors_SensorBatch)
-__flatbuffers_build_vector_field(4, flatbuffers_, FripuckProtocol_Sensors_SensorBatch_encoder, FripuckProtocol_Sensors_EncoderData, FripuckProtocol_Sensors_EncoderData_t, FripuckProtocol_Sensors_SensorBatch)
-__flatbuffers_build_vector_field(5, flatbuffers_, FripuckProtocol_Sensors_SensorBatch_imu, FripuckProtocol_Sensors_ImuData, FripuckProtocol_Sensors_ImuData_t, FripuckProtocol_Sensors_SensorBatch)
-__flatbuffers_build_vector_field(6, flatbuffers_, FripuckProtocol_Sensors_SensorBatch_audio_blob, flatbuffers_uint8, uint8_t, FripuckProtocol_Sensors_SensorBatch)
-__flatbuffers_build_vector_field(7, flatbuffers_, FripuckProtocol_Sensors_SensorBatch_audio_metadata, FripuckProtocol_Sensors_AudioMetadata, FripuckProtocol_Sensors_AudioMetadata_t, FripuckProtocol_Sensors_SensorBatch)
-__flatbuffers_build_vector_field(8, flatbuffers_, FripuckProtocol_Sensors_SensorBatch_video_blob, flatbuffers_uint8, uint8_t, FripuckProtocol_Sensors_SensorBatch)
-__flatbuffers_build_vector_field(9, flatbuffers_, FripuckProtocol_Sensors_SensorBatch_video_metadata, FripuckProtocol_Sensors_VideoMetadata, FripuckProtocol_Sensors_VideoMetadata_t, FripuckProtocol_Sensors_SensorBatch)
+__flatbuffers_build_vector_field(2, flatbuffers_, FripuckProtocol_Sensors_SensorBatch_ground, FripuckProtocol_Sensors_GroundData, FripuckProtocol_Sensors_GroundData_t, FripuckProtocol_Sensors_SensorBatch)
+__flatbuffers_build_vector_field(3, flatbuffers_, FripuckProtocol_Sensors_SensorBatch_tof, FripuckProtocol_Sensors_TofData, FripuckProtocol_Sensors_TofData_t, FripuckProtocol_Sensors_SensorBatch)
+__flatbuffers_build_vector_field(4, flatbuffers_, FripuckProtocol_Sensors_SensorBatch_battery, FripuckProtocol_Sensors_BatteryData, FripuckProtocol_Sensors_BatteryData_t, FripuckProtocol_Sensors_SensorBatch)
+__flatbuffers_build_vector_field(5, flatbuffers_, FripuckProtocol_Sensors_SensorBatch_encoder, FripuckProtocol_Sensors_EncoderData, FripuckProtocol_Sensors_EncoderData_t, FripuckProtocol_Sensors_SensorBatch)
+__flatbuffers_build_vector_field(6, flatbuffers_, FripuckProtocol_Sensors_SensorBatch_imu, FripuckProtocol_Sensors_ImuData, FripuckProtocol_Sensors_ImuData_t, FripuckProtocol_Sensors_SensorBatch)
+__flatbuffers_build_vector_field(7, flatbuffers_, FripuckProtocol_Sensors_SensorBatch_audio_blob, flatbuffers_uint8, uint8_t, FripuckProtocol_Sensors_SensorBatch)
+__flatbuffers_build_vector_field(8, flatbuffers_, FripuckProtocol_Sensors_SensorBatch_audio_metadata, FripuckProtocol_Sensors_AudioMetadata, FripuckProtocol_Sensors_AudioMetadata_t, FripuckProtocol_Sensors_SensorBatch)
+__flatbuffers_build_vector_field(9, flatbuffers_, FripuckProtocol_Sensors_SensorBatch_video_blob, flatbuffers_uint8, uint8_t, FripuckProtocol_Sensors_SensorBatch)
+__flatbuffers_build_vector_field(10, flatbuffers_, FripuckProtocol_Sensors_SensorBatch_video_metadata, FripuckProtocol_Sensors_VideoMetadata, FripuckProtocol_Sensors_VideoMetadata_t, FripuckProtocol_Sensors_SensorBatch)
 
 static inline FripuckProtocol_Sensors_SensorBatch_ref_t FripuckProtocol_Sensors_SensorBatch_create(flatbuffers_builder_t *B __FripuckProtocol_Sensors_SensorBatch_formal_args)
 {
     if (FripuckProtocol_Sensors_SensorBatch_start(B)
         || FripuckProtocol_Sensors_SensorBatch_base_timestamp_add(B, v0)
         || FripuckProtocol_Sensors_SensorBatch_proximity_add(B, v1)
-        || FripuckProtocol_Sensors_SensorBatch_tof_add(B, v2)
-        || FripuckProtocol_Sensors_SensorBatch_battery_add(B, v3)
-        || FripuckProtocol_Sensors_SensorBatch_encoder_add(B, v4)
-        || FripuckProtocol_Sensors_SensorBatch_imu_add(B, v5)
-        || FripuckProtocol_Sensors_SensorBatch_audio_blob_add(B, v6)
-        || FripuckProtocol_Sensors_SensorBatch_audio_metadata_add(B, v7)
-        || FripuckProtocol_Sensors_SensorBatch_video_blob_add(B, v8)
-        || FripuckProtocol_Sensors_SensorBatch_video_metadata_add(B, v9)) {
+        || FripuckProtocol_Sensors_SensorBatch_ground_add(B, v2)
+        || FripuckProtocol_Sensors_SensorBatch_tof_add(B, v3)
+        || FripuckProtocol_Sensors_SensorBatch_battery_add(B, v4)
+        || FripuckProtocol_Sensors_SensorBatch_encoder_add(B, v5)
+        || FripuckProtocol_Sensors_SensorBatch_imu_add(B, v6)
+        || FripuckProtocol_Sensors_SensorBatch_audio_blob_add(B, v7)
+        || FripuckProtocol_Sensors_SensorBatch_audio_metadata_add(B, v8)
+        || FripuckProtocol_Sensors_SensorBatch_video_blob_add(B, v9)
+        || FripuckProtocol_Sensors_SensorBatch_video_metadata_add(B, v10)) {
         return 0;
     }
     return FripuckProtocol_Sensors_SensorBatch_end(B);
@@ -403,6 +491,7 @@ static FripuckProtocol_Sensors_SensorBatch_ref_t FripuckProtocol_Sensors_SensorB
     if (FripuckProtocol_Sensors_SensorBatch_start(B)
         || FripuckProtocol_Sensors_SensorBatch_base_timestamp_pick(B, t)
         || FripuckProtocol_Sensors_SensorBatch_proximity_pick(B, t)
+        || FripuckProtocol_Sensors_SensorBatch_ground_pick(B, t)
         || FripuckProtocol_Sensors_SensorBatch_tof_pick(B, t)
         || FripuckProtocol_Sensors_SensorBatch_battery_pick(B, t)
         || FripuckProtocol_Sensors_SensorBatch_encoder_pick(B, t)

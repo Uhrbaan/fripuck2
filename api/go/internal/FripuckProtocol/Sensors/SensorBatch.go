@@ -9,6 +9,7 @@ import (
 type SensorBatchT struct {
 	BaseTimestamp uint64 `json:"base_timestamp"`
 	Proximity []*ProximityDataT `json:"proximity"`
+	Ground []*GroundDataT `json:"ground"`
 	Tof []*TofDataT `json:"tof"`
 	Battery []*BatteryDataT `json:"battery"`
 	Encoder []*EncoderDataT `json:"encoder"`
@@ -31,6 +32,15 @@ func (t *SensorBatchT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 			t.Proximity[j].Pack(builder)
 		}
 		proximityOffset = builder.EndVector(proximityLength)
+	}
+	groundOffset := flatbuffers.UOffsetT(0)
+	if t.Ground != nil {
+		groundLength := len(t.Ground)
+		SensorBatchStartGroundVector(builder, groundLength)
+		for j := groundLength - 1; j >= 0; j-- {
+			t.Ground[j].Pack(builder)
+		}
+		groundOffset = builder.EndVector(groundLength)
 	}
 	tofOffset := flatbuffers.UOffsetT(0)
 	if t.Tof != nil {
@@ -97,6 +107,7 @@ func (t *SensorBatchT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 	SensorBatchStart(builder)
 	SensorBatchAddBaseTimestamp(builder, t.BaseTimestamp)
 	SensorBatchAddProximity(builder, proximityOffset)
+	SensorBatchAddGround(builder, groundOffset)
 	SensorBatchAddTof(builder, tofOffset)
 	SensorBatchAddBattery(builder, batteryOffset)
 	SensorBatchAddEncoder(builder, encoderOffset)
@@ -116,6 +127,13 @@ func (rcv *SensorBatch) UnPackTo(t *SensorBatchT) {
 		x := ProximityData{}
 		rcv.Proximity(&x, j)
 		t.Proximity[j] = x.UnPack()
+	}
+	groundLength := rcv.GroundLength()
+	t.Ground = make([]*GroundDataT, groundLength)
+	for j := 0; j < groundLength; j++ {
+		x := GroundData{}
+		rcv.Ground(&x, j)
+		t.Ground[j] = x.UnPack()
 	}
 	tofLength := rcv.TofLength()
 	t.Tof = make([]*TofDataT, tofLength)
@@ -250,8 +268,27 @@ func (rcv *SensorBatch) ProximityLength() int {
 	return 0
 }
 
-func (rcv *SensorBatch) Tof(obj *TofData, j int) bool {
+func (rcv *SensorBatch) Ground(obj *GroundData, j int) bool {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(8))
+	if o != 0 {
+		x := rcv._tab.Vector(o)
+		x += flatbuffers.UOffsetT(j) * 22
+		obj.Init(rcv._tab.Bytes, x)
+		return true
+	}
+	return false
+}
+
+func (rcv *SensorBatch) GroundLength() int {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(8))
+	if o != 0 {
+		return rcv._tab.VectorLen(o)
+	}
+	return 0
+}
+
+func (rcv *SensorBatch) Tof(obj *TofData, j int) bool {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(10))
 	if o != 0 {
 		x := rcv._tab.Vector(o)
 		x += flatbuffers.UOffsetT(j) * 4
@@ -262,7 +299,7 @@ func (rcv *SensorBatch) Tof(obj *TofData, j int) bool {
 }
 
 func (rcv *SensorBatch) TofLength() int {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(8))
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(10))
 	if o != 0 {
 		return rcv._tab.VectorLen(o)
 	}
@@ -270,7 +307,7 @@ func (rcv *SensorBatch) TofLength() int {
 }
 
 func (rcv *SensorBatch) Battery(obj *BatteryData, j int) bool {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(10))
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(12))
 	if o != 0 {
 		x := rcv._tab.Vector(o)
 		x += flatbuffers.UOffsetT(j) * 4
@@ -281,7 +318,7 @@ func (rcv *SensorBatch) Battery(obj *BatteryData, j int) bool {
 }
 
 func (rcv *SensorBatch) BatteryLength() int {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(10))
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(12))
 	if o != 0 {
 		return rcv._tab.VectorLen(o)
 	}
@@ -289,7 +326,7 @@ func (rcv *SensorBatch) BatteryLength() int {
 }
 
 func (rcv *SensorBatch) Encoder(obj *EncoderData, j int) bool {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(12))
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(14))
 	if o != 0 {
 		x := rcv._tab.Vector(o)
 		x += flatbuffers.UOffsetT(j) * 12
@@ -300,7 +337,7 @@ func (rcv *SensorBatch) Encoder(obj *EncoderData, j int) bool {
 }
 
 func (rcv *SensorBatch) EncoderLength() int {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(12))
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(14))
 	if o != 0 {
 		return rcv._tab.VectorLen(o)
 	}
@@ -308,7 +345,7 @@ func (rcv *SensorBatch) EncoderLength() int {
 }
 
 func (rcv *SensorBatch) Imu(obj *ImuData, j int) bool {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(14))
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(16))
 	if o != 0 {
 		x := rcv._tab.Vector(o)
 		x += flatbuffers.UOffsetT(j) * 44
@@ -319,7 +356,7 @@ func (rcv *SensorBatch) Imu(obj *ImuData, j int) bool {
 }
 
 func (rcv *SensorBatch) ImuLength() int {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(14))
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(16))
 	if o != 0 {
 		return rcv._tab.VectorLen(o)
 	}
@@ -327,7 +364,7 @@ func (rcv *SensorBatch) ImuLength() int {
 }
 
 func (rcv *SensorBatch) AudioBlob(j int) byte {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(16))
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(18))
 	if o != 0 {
 		a := rcv._tab.Vector(o)
 		return rcv._tab.GetByte(a + flatbuffers.UOffsetT(j*1))
@@ -336,7 +373,7 @@ func (rcv *SensorBatch) AudioBlob(j int) byte {
 }
 
 func (rcv *SensorBatch) AudioBlobLength() int {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(16))
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(18))
 	if o != 0 {
 		return rcv._tab.VectorLen(o)
 	}
@@ -344,7 +381,7 @@ func (rcv *SensorBatch) AudioBlobLength() int {
 }
 
 func (rcv *SensorBatch) AudioBlobBytes() []byte {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(16))
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(18))
 	if o != 0 {
 		return rcv._tab.ByteVector(o + rcv._tab.Pos)
 	}
@@ -352,7 +389,7 @@ func (rcv *SensorBatch) AudioBlobBytes() []byte {
 }
 
 func (rcv *SensorBatch) MutateAudioBlob(j int, n byte) bool {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(16))
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(18))
 	if o != 0 {
 		a := rcv._tab.Vector(o)
 		return rcv._tab.MutateByte(a+flatbuffers.UOffsetT(j*1), n)
@@ -361,7 +398,7 @@ func (rcv *SensorBatch) MutateAudioBlob(j int, n byte) bool {
 }
 
 func (rcv *SensorBatch) AudioMetadata(obj *AudioMetadata, j int) bool {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(18))
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(20))
 	if o != 0 {
 		x := rcv._tab.Vector(o)
 		x += flatbuffers.UOffsetT(j) * 8
@@ -372,7 +409,7 @@ func (rcv *SensorBatch) AudioMetadata(obj *AudioMetadata, j int) bool {
 }
 
 func (rcv *SensorBatch) AudioMetadataLength() int {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(18))
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(20))
 	if o != 0 {
 		return rcv._tab.VectorLen(o)
 	}
@@ -380,7 +417,7 @@ func (rcv *SensorBatch) AudioMetadataLength() int {
 }
 
 func (rcv *SensorBatch) VideoBlob(j int) byte {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(20))
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(22))
 	if o != 0 {
 		a := rcv._tab.Vector(o)
 		return rcv._tab.GetByte(a + flatbuffers.UOffsetT(j*1))
@@ -389,7 +426,7 @@ func (rcv *SensorBatch) VideoBlob(j int) byte {
 }
 
 func (rcv *SensorBatch) VideoBlobLength() int {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(20))
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(22))
 	if o != 0 {
 		return rcv._tab.VectorLen(o)
 	}
@@ -397,7 +434,7 @@ func (rcv *SensorBatch) VideoBlobLength() int {
 }
 
 func (rcv *SensorBatch) VideoBlobBytes() []byte {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(20))
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(22))
 	if o != 0 {
 		return rcv._tab.ByteVector(o + rcv._tab.Pos)
 	}
@@ -405,7 +442,7 @@ func (rcv *SensorBatch) VideoBlobBytes() []byte {
 }
 
 func (rcv *SensorBatch) MutateVideoBlob(j int, n byte) bool {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(20))
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(22))
 	if o != 0 {
 		a := rcv._tab.Vector(o)
 		return rcv._tab.MutateByte(a+flatbuffers.UOffsetT(j*1), n)
@@ -414,7 +451,7 @@ func (rcv *SensorBatch) MutateVideoBlob(j int, n byte) bool {
 }
 
 func (rcv *SensorBatch) VideoMetadata(obj *VideoMetadata, j int) bool {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(22))
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(24))
 	if o != 0 {
 		x := rcv._tab.Vector(o)
 		x += flatbuffers.UOffsetT(j) * 16
@@ -425,7 +462,7 @@ func (rcv *SensorBatch) VideoMetadata(obj *VideoMetadata, j int) bool {
 }
 
 func (rcv *SensorBatch) VideoMetadataLength() int {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(22))
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(24))
 	if o != 0 {
 		return rcv._tab.VectorLen(o)
 	}
@@ -433,7 +470,7 @@ func (rcv *SensorBatch) VideoMetadataLength() int {
 }
 
 func SensorBatchStart(builder *flatbuffers.Builder) {
-	builder.StartObject(10)
+	builder.StartObject(11)
 }
 func SensorBatchAddBaseTimestamp(builder *flatbuffers.Builder, baseTimestamp uint64) {
 	builder.PrependUint64Slot(0, baseTimestamp, 0)
@@ -444,50 +481,56 @@ func SensorBatchAddProximity(builder *flatbuffers.Builder, proximity flatbuffers
 func SensorBatchStartProximityVector(builder *flatbuffers.Builder, numElems int) flatbuffers.UOffsetT {
 	return builder.StartVector(36, numElems, 2)
 }
+func SensorBatchAddGround(builder *flatbuffers.Builder, ground flatbuffers.UOffsetT) {
+	builder.PrependUOffsetTSlot(2, flatbuffers.UOffsetT(ground), 0)
+}
+func SensorBatchStartGroundVector(builder *flatbuffers.Builder, numElems int) flatbuffers.UOffsetT {
+	return builder.StartVector(22, numElems, 2)
+}
 func SensorBatchAddTof(builder *flatbuffers.Builder, tof flatbuffers.UOffsetT) {
-	builder.PrependUOffsetTSlot(2, flatbuffers.UOffsetT(tof), 0)
+	builder.PrependUOffsetTSlot(3, flatbuffers.UOffsetT(tof), 0)
 }
 func SensorBatchStartTofVector(builder *flatbuffers.Builder, numElems int) flatbuffers.UOffsetT {
 	return builder.StartVector(4, numElems, 2)
 }
 func SensorBatchAddBattery(builder *flatbuffers.Builder, battery flatbuffers.UOffsetT) {
-	builder.PrependUOffsetTSlot(3, flatbuffers.UOffsetT(battery), 0)
+	builder.PrependUOffsetTSlot(4, flatbuffers.UOffsetT(battery), 0)
 }
 func SensorBatchStartBatteryVector(builder *flatbuffers.Builder, numElems int) flatbuffers.UOffsetT {
 	return builder.StartVector(4, numElems, 2)
 }
 func SensorBatchAddEncoder(builder *flatbuffers.Builder, encoder flatbuffers.UOffsetT) {
-	builder.PrependUOffsetTSlot(4, flatbuffers.UOffsetT(encoder), 0)
+	builder.PrependUOffsetTSlot(5, flatbuffers.UOffsetT(encoder), 0)
 }
 func SensorBatchStartEncoderVector(builder *flatbuffers.Builder, numElems int) flatbuffers.UOffsetT {
 	return builder.StartVector(12, numElems, 4)
 }
 func SensorBatchAddImu(builder *flatbuffers.Builder, imu flatbuffers.UOffsetT) {
-	builder.PrependUOffsetTSlot(5, flatbuffers.UOffsetT(imu), 0)
+	builder.PrependUOffsetTSlot(6, flatbuffers.UOffsetT(imu), 0)
 }
 func SensorBatchStartImuVector(builder *flatbuffers.Builder, numElems int) flatbuffers.UOffsetT {
 	return builder.StartVector(44, numElems, 4)
 }
 func SensorBatchAddAudioBlob(builder *flatbuffers.Builder, audioBlob flatbuffers.UOffsetT) {
-	builder.PrependUOffsetTSlot(6, flatbuffers.UOffsetT(audioBlob), 0)
+	builder.PrependUOffsetTSlot(7, flatbuffers.UOffsetT(audioBlob), 0)
 }
 func SensorBatchStartAudioBlobVector(builder *flatbuffers.Builder, numElems int) flatbuffers.UOffsetT {
 	return builder.StartVector(1, numElems, 1)
 }
 func SensorBatchAddAudioMetadata(builder *flatbuffers.Builder, audioMetadata flatbuffers.UOffsetT) {
-	builder.PrependUOffsetTSlot(7, flatbuffers.UOffsetT(audioMetadata), 0)
+	builder.PrependUOffsetTSlot(8, flatbuffers.UOffsetT(audioMetadata), 0)
 }
 func SensorBatchStartAudioMetadataVector(builder *flatbuffers.Builder, numElems int) flatbuffers.UOffsetT {
 	return builder.StartVector(8, numElems, 2)
 }
 func SensorBatchAddVideoBlob(builder *flatbuffers.Builder, videoBlob flatbuffers.UOffsetT) {
-	builder.PrependUOffsetTSlot(8, flatbuffers.UOffsetT(videoBlob), 0)
+	builder.PrependUOffsetTSlot(9, flatbuffers.UOffsetT(videoBlob), 0)
 }
 func SensorBatchStartVideoBlobVector(builder *flatbuffers.Builder, numElems int) flatbuffers.UOffsetT {
 	return builder.StartVector(1, numElems, 1)
 }
 func SensorBatchAddVideoMetadata(builder *flatbuffers.Builder, videoMetadata flatbuffers.UOffsetT) {
-	builder.PrependUOffsetTSlot(9, flatbuffers.UOffsetT(videoMetadata), 0)
+	builder.PrependUOffsetTSlot(10, flatbuffers.UOffsetT(videoMetadata), 0)
 }
 func SensorBatchStartVideoMetadataVector(builder *flatbuffers.Builder, numElems int) flatbuffers.UOffsetT {
 	return builder.StartVector(16, numElems, 4)

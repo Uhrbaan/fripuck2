@@ -208,6 +208,178 @@ class ProximityDataT(object):
         return CreateProximityData(builder, self.proximity.a0, self.proximity.a1, self.proximity.a2, self.proximity.a3, self.proximity.a4, self.proximity.a5, self.proximity.a6, self.proximity.a7, self.ambientLight.a0, self.ambientLight.a1, self.ambientLight.a2, self.ambientLight.a3, self.ambientLight.a4, self.ambientLight.a5, self.ambientLight.a6, self.ambientLight.a7, self.timestampOffset, self.padding)
 
 
+class GroundArray(object):
+    __slots__ = ['_tab']
+
+    @classmethod
+    def SizeOf(cls):
+        return 10
+
+    # GroundArray
+    def Init(self, buf, pos):
+        self._tab = flatbuffers.table.Table(buf, pos)
+
+    # GroundArray
+    def G0(self): return self._tab.Get(flatbuffers.number_types.Uint16Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(0))
+    # GroundArray
+    def G1(self): return self._tab.Get(flatbuffers.number_types.Uint16Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(2))
+    # GroundArray
+    def G2(self): return self._tab.Get(flatbuffers.number_types.Uint16Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(4))
+    # GroundArray
+    def Cliff0(self): return self._tab.Get(flatbuffers.number_types.Uint16Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(6))
+    # GroundArray
+    def Cliff1(self): return self._tab.Get(flatbuffers.number_types.Uint16Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(8))
+
+def CreateGroundArray(builder, g0, g1, g2, cliff0, cliff1):
+    builder.Prep(2, 10)
+    builder.PrependUint16(cliff1)
+    builder.PrependUint16(cliff0)
+    builder.PrependUint16(g2)
+    builder.PrependUint16(g1)
+    builder.PrependUint16(g0)
+    return builder.Offset()
+
+
+class GroundArrayT(object):
+
+    # GroundArrayT
+    def __init__(
+        self,
+        g0 = 0,
+        g1 = 0,
+        g2 = 0,
+        cliff0 = 0,
+        cliff1 = 0,
+    ):
+        self.g0 = g0  # type: int
+        self.g1 = g1  # type: int
+        self.g2 = g2  # type: int
+        self.cliff0 = cliff0  # type: int
+        self.cliff1 = cliff1  # type: int
+
+    @classmethod
+    def InitFromBuf(cls, buf, pos):
+        groundArray = GroundArray()
+        groundArray.Init(buf, pos)
+        return cls.InitFromObj(groundArray)
+
+    @classmethod
+    def InitFromPackedBuf(cls, buf, pos=0):
+        n = flatbuffers.encode.Get(flatbuffers.packer.uoffset, buf, pos)
+        return cls.InitFromBuf(buf, pos+n)
+
+    @classmethod
+    def InitFromObj(cls, groundArray):
+        x = GroundArrayT()
+        x._UnPack(groundArray)
+        return x
+
+    # GroundArrayT
+    def _UnPack(self, groundArray):
+        if groundArray is None:
+            return
+        self.g0 = groundArray.G0()
+        self.g1 = groundArray.G1()
+        self.g2 = groundArray.G2()
+        self.cliff0 = groundArray.Cliff0()
+        self.cliff1 = groundArray.Cliff1()
+
+    # GroundArrayT
+    def Pack(self, builder):
+        return CreateGroundArray(builder, self.g0, self.g1, self.g2, self.cliff0, self.cliff1)
+
+
+class GroundData(object):
+    __slots__ = ['_tab']
+
+    @classmethod
+    def SizeOf(cls):
+        return 22
+
+    # GroundData
+    def Init(self, buf, pos):
+        self._tab = flatbuffers.table.Table(buf, pos)
+
+    # GroundData
+    def Ambient(self, obj):
+        obj.Init(self._tab.Bytes, self._tab.Pos + 0)
+        return obj
+
+    # GroundData
+    def Delta(self, obj):
+        obj.Init(self._tab.Bytes, self._tab.Pos + 10)
+        return obj
+
+    # GroundData
+    def TimestampOffset(self): return self._tab.Get(flatbuffers.number_types.Uint16Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(20))
+
+def CreateGroundData(builder, ambient_g0, ambient_g1, ambient_g2, ambient_cliff0, ambient_cliff1, delta_g0, delta_g1, delta_g2, delta_cliff0, delta_cliff1, timestampOffset):
+    builder.Prep(2, 22)
+    builder.PrependUint16(timestampOffset)
+    builder.Prep(2, 10)
+    builder.PrependUint16(delta_cliff1)
+    builder.PrependUint16(delta_cliff0)
+    builder.PrependUint16(delta_g2)
+    builder.PrependUint16(delta_g1)
+    builder.PrependUint16(delta_g0)
+    builder.Prep(2, 10)
+    builder.PrependUint16(ambient_cliff1)
+    builder.PrependUint16(ambient_cliff0)
+    builder.PrependUint16(ambient_g2)
+    builder.PrependUint16(ambient_g1)
+    builder.PrependUint16(ambient_g0)
+    return builder.Offset()
+
+try:
+    from typing import Optional
+except:
+    pass
+
+class GroundDataT(object):
+
+    # GroundDataT
+    def __init__(
+        self,
+        ambient = None,
+        delta = None,
+        timestampOffset = 0,
+    ):
+        self.ambient = ambient  # type: Optional[GroundArrayT]
+        self.delta = delta  # type: Optional[GroundArrayT]
+        self.timestampOffset = timestampOffset  # type: int
+
+    @classmethod
+    def InitFromBuf(cls, buf, pos):
+        groundData = GroundData()
+        groundData.Init(buf, pos)
+        return cls.InitFromObj(groundData)
+
+    @classmethod
+    def InitFromPackedBuf(cls, buf, pos=0):
+        n = flatbuffers.encode.Get(flatbuffers.packer.uoffset, buf, pos)
+        return cls.InitFromBuf(buf, pos+n)
+
+    @classmethod
+    def InitFromObj(cls, groundData):
+        x = GroundDataT()
+        x._UnPack(groundData)
+        return x
+
+    # GroundDataT
+    def _UnPack(self, groundData):
+        if groundData is None:
+            return
+        if groundData.Ambient(GroundArray()) is not None:
+            self.ambient = GroundArrayT.InitFromObj(groundData.Ambient(GroundArray()))
+        if groundData.Delta(GroundArray()) is not None:
+            self.delta = GroundArrayT.InitFromObj(groundData.Delta(GroundArray()))
+        self.timestampOffset = groundData.TimestampOffset()
+
+    # GroundDataT
+    def Pack(self, builder):
+        return CreateGroundData(builder, self.ambient.g0, self.ambient.g1, self.ambient.g2, self.ambient.cliff0, self.ambient.cliff1, self.delta.g0, self.delta.g1, self.delta.g2, self.delta.cliff0, self.delta.cliff1, self.timestampOffset)
+
+
 class TofData(object):
     __slots__ = ['_tab']
 
@@ -887,8 +1059,31 @@ class SensorBatch(object):
         return o == 0
 
     # SensorBatch
-    def Tof(self, j):
+    def Ground(self, j):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(8))
+        if o != 0:
+            x = self._tab.Vector(o)
+            x += flatbuffers.number_types.UOffsetTFlags.py_type(j) * 22
+            obj = GroundData()
+            obj.Init(self._tab.Bytes, x)
+            return obj
+        return None
+
+    # SensorBatch
+    def GroundLength(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(8))
+        if o != 0:
+            return self._tab.VectorLen(o)
+        return 0
+
+    # SensorBatch
+    def GroundIsNone(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(8))
+        return o == 0
+
+    # SensorBatch
+    def Tof(self, j):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(10))
         if o != 0:
             x = self._tab.Vector(o)
             x += flatbuffers.number_types.UOffsetTFlags.py_type(j) * 4
@@ -899,19 +1094,19 @@ class SensorBatch(object):
 
     # SensorBatch
     def TofLength(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(8))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(10))
         if o != 0:
             return self._tab.VectorLen(o)
         return 0
 
     # SensorBatch
     def TofIsNone(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(8))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(10))
         return o == 0
 
     # SensorBatch
     def Battery(self, j):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(10))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(12))
         if o != 0:
             x = self._tab.Vector(o)
             x += flatbuffers.number_types.UOffsetTFlags.py_type(j) * 4
@@ -922,19 +1117,19 @@ class SensorBatch(object):
 
     # SensorBatch
     def BatteryLength(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(10))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(12))
         if o != 0:
             return self._tab.VectorLen(o)
         return 0
 
     # SensorBatch
     def BatteryIsNone(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(10))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(12))
         return o == 0
 
     # SensorBatch
     def Encoder(self, j):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(12))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(14))
         if o != 0:
             x = self._tab.Vector(o)
             x += flatbuffers.number_types.UOffsetTFlags.py_type(j) * 12
@@ -945,19 +1140,19 @@ class SensorBatch(object):
 
     # SensorBatch
     def EncoderLength(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(12))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(14))
         if o != 0:
             return self._tab.VectorLen(o)
         return 0
 
     # SensorBatch
     def EncoderIsNone(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(12))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(14))
         return o == 0
 
     # SensorBatch
     def Imu(self, j):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(14))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(16))
         if o != 0:
             x = self._tab.Vector(o)
             x += flatbuffers.number_types.UOffsetTFlags.py_type(j) * 44
@@ -968,19 +1163,19 @@ class SensorBatch(object):
 
     # SensorBatch
     def ImuLength(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(14))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(16))
         if o != 0:
             return self._tab.VectorLen(o)
         return 0
 
     # SensorBatch
     def ImuIsNone(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(14))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(16))
         return o == 0
 
     # SensorBatch
     def AudioBlob(self, j):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(16))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(18))
         if o != 0:
             a = self._tab.Vector(o)
             return self._tab.Get(flatbuffers.number_types.Uint8Flags, a + flatbuffers.number_types.UOffsetTFlags.py_type(j * 1))
@@ -988,26 +1183,26 @@ class SensorBatch(object):
 
     # SensorBatch
     def AudioBlobAsNumpy(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(16))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(18))
         if o != 0:
             return self._tab.GetVectorAsNumpy(flatbuffers.number_types.Uint8Flags, o)
         return 0
 
     # SensorBatch
     def AudioBlobLength(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(16))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(18))
         if o != 0:
             return self._tab.VectorLen(o)
         return 0
 
     # SensorBatch
     def AudioBlobIsNone(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(16))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(18))
         return o == 0
 
     # SensorBatch
     def AudioMetadata(self, j):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(18))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(20))
         if o != 0:
             x = self._tab.Vector(o)
             x += flatbuffers.number_types.UOffsetTFlags.py_type(j) * 8
@@ -1018,19 +1213,19 @@ class SensorBatch(object):
 
     # SensorBatch
     def AudioMetadataLength(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(18))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(20))
         if o != 0:
             return self._tab.VectorLen(o)
         return 0
 
     # SensorBatch
     def AudioMetadataIsNone(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(18))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(20))
         return o == 0
 
     # SensorBatch
     def VideoBlob(self, j):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(20))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(22))
         if o != 0:
             a = self._tab.Vector(o)
             return self._tab.Get(flatbuffers.number_types.Uint8Flags, a + flatbuffers.number_types.UOffsetTFlags.py_type(j * 1))
@@ -1038,26 +1233,26 @@ class SensorBatch(object):
 
     # SensorBatch
     def VideoBlobAsNumpy(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(20))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(22))
         if o != 0:
             return self._tab.GetVectorAsNumpy(flatbuffers.number_types.Uint8Flags, o)
         return 0
 
     # SensorBatch
     def VideoBlobLength(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(20))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(22))
         if o != 0:
             return self._tab.VectorLen(o)
         return 0
 
     # SensorBatch
     def VideoBlobIsNone(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(20))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(22))
         return o == 0
 
     # SensorBatch
     def VideoMetadata(self, j):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(22))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(24))
         if o != 0:
             x = self._tab.Vector(o)
             x += flatbuffers.number_types.UOffsetTFlags.py_type(j) * 16
@@ -1068,18 +1263,18 @@ class SensorBatch(object):
 
     # SensorBatch
     def VideoMetadataLength(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(22))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(24))
         if o != 0:
             return self._tab.VectorLen(o)
         return 0
 
     # SensorBatch
     def VideoMetadataIsNone(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(22))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(24))
         return o == 0
 
 def SensorBatchStart(builder):
-    builder.StartObject(10)
+    builder.StartObject(11)
 
 def SensorBatchAddBaseTimestamp(builder, baseTimestamp):
     builder.PrependUint64Slot(0, baseTimestamp, 0)
@@ -1097,8 +1292,21 @@ def SensorBatchCreateProximityVector(builder, data):
         item.Pack(builder)
     return builder.EndVector()
 
+def SensorBatchAddGround(builder, ground):
+    builder.PrependUOffsetTRelativeSlot(2, flatbuffers.number_types.UOffsetTFlags.py_type(ground), 0)
+
+def SensorBatchStartGroundVector(builder, numElems):
+    return builder.StartVector(22, numElems, 2)
+
+def SensorBatchCreateGroundVector(builder, data):
+    data = list(data)
+    builder.StartVector(22, len(data), 2)
+    for item in reversed(data):
+        item.Pack(builder)
+    return builder.EndVector()
+
 def SensorBatchAddTof(builder, tof):
-    builder.PrependUOffsetTRelativeSlot(2, flatbuffers.number_types.UOffsetTFlags.py_type(tof), 0)
+    builder.PrependUOffsetTRelativeSlot(3, flatbuffers.number_types.UOffsetTFlags.py_type(tof), 0)
 
 def SensorBatchStartTofVector(builder, numElems):
     return builder.StartVector(4, numElems, 2)
@@ -1111,7 +1319,7 @@ def SensorBatchCreateTofVector(builder, data):
     return builder.EndVector()
 
 def SensorBatchAddBattery(builder, battery):
-    builder.PrependUOffsetTRelativeSlot(3, flatbuffers.number_types.UOffsetTFlags.py_type(battery), 0)
+    builder.PrependUOffsetTRelativeSlot(4, flatbuffers.number_types.UOffsetTFlags.py_type(battery), 0)
 
 def SensorBatchStartBatteryVector(builder, numElems):
     return builder.StartVector(4, numElems, 2)
@@ -1124,7 +1332,7 @@ def SensorBatchCreateBatteryVector(builder, data):
     return builder.EndVector()
 
 def SensorBatchAddEncoder(builder, encoder):
-    builder.PrependUOffsetTRelativeSlot(4, flatbuffers.number_types.UOffsetTFlags.py_type(encoder), 0)
+    builder.PrependUOffsetTRelativeSlot(5, flatbuffers.number_types.UOffsetTFlags.py_type(encoder), 0)
 
 def SensorBatchStartEncoderVector(builder, numElems):
     return builder.StartVector(12, numElems, 4)
@@ -1137,7 +1345,7 @@ def SensorBatchCreateEncoderVector(builder, data):
     return builder.EndVector()
 
 def SensorBatchAddImu(builder, imu):
-    builder.PrependUOffsetTRelativeSlot(5, flatbuffers.number_types.UOffsetTFlags.py_type(imu), 0)
+    builder.PrependUOffsetTRelativeSlot(6, flatbuffers.number_types.UOffsetTFlags.py_type(imu), 0)
 
 def SensorBatchStartImuVector(builder, numElems):
     return builder.StartVector(44, numElems, 4)
@@ -1150,7 +1358,7 @@ def SensorBatchCreateImuVector(builder, data):
     return builder.EndVector()
 
 def SensorBatchAddAudioBlob(builder, audioBlob):
-    builder.PrependUOffsetTRelativeSlot(6, flatbuffers.number_types.UOffsetTFlags.py_type(audioBlob), 0)
+    builder.PrependUOffsetTRelativeSlot(7, flatbuffers.number_types.UOffsetTFlags.py_type(audioBlob), 0)
 
 def SensorBatchStartAudioBlobVector(builder, numElems):
     return builder.StartVector(1, numElems, 1)
@@ -1163,7 +1371,7 @@ def SensorBatchCreateAudioBlobVector(builder, data):
     return builder.EndVector()
 
 def SensorBatchAddAudioMetadata(builder, audioMetadata):
-    builder.PrependUOffsetTRelativeSlot(7, flatbuffers.number_types.UOffsetTFlags.py_type(audioMetadata), 0)
+    builder.PrependUOffsetTRelativeSlot(8, flatbuffers.number_types.UOffsetTFlags.py_type(audioMetadata), 0)
 
 def SensorBatchStartAudioMetadataVector(builder, numElems):
     return builder.StartVector(8, numElems, 2)
@@ -1176,7 +1384,7 @@ def SensorBatchCreateAudioMetadataVector(builder, data):
     return builder.EndVector()
 
 def SensorBatchAddVideoBlob(builder, videoBlob):
-    builder.PrependUOffsetTRelativeSlot(8, flatbuffers.number_types.UOffsetTFlags.py_type(videoBlob), 0)
+    builder.PrependUOffsetTRelativeSlot(9, flatbuffers.number_types.UOffsetTFlags.py_type(videoBlob), 0)
 
 def SensorBatchStartVideoBlobVector(builder, numElems):
     return builder.StartVector(1, numElems, 1)
@@ -1189,7 +1397,7 @@ def SensorBatchCreateVideoBlobVector(builder, data):
     return builder.EndVector()
 
 def SensorBatchAddVideoMetadata(builder, videoMetadata):
-    builder.PrependUOffsetTRelativeSlot(9, flatbuffers.number_types.UOffsetTFlags.py_type(videoMetadata), 0)
+    builder.PrependUOffsetTRelativeSlot(10, flatbuffers.number_types.UOffsetTFlags.py_type(videoMetadata), 0)
 
 def SensorBatchStartVideoMetadataVector(builder, numElems):
     return builder.StartVector(16, numElems, 4)
@@ -1217,6 +1425,7 @@ class SensorBatchT(object):
         self,
         baseTimestamp = 0,
         proximity = None,
+        ground = None,
         tof = None,
         battery = None,
         encoder = None,
@@ -1228,6 +1437,7 @@ class SensorBatchT(object):
     ):
         self.baseTimestamp = baseTimestamp  # type: int
         self.proximity = proximity  # type: Optional[List[ProximityDataT]]
+        self.ground = ground  # type: Optional[List[GroundDataT]]
         self.tof = tof  # type: Optional[List[TofDataT]]
         self.battery = battery  # type: Optional[List[BatteryDataT]]
         self.encoder = encoder  # type: Optional[List[EncoderDataT]]
@@ -1267,6 +1477,14 @@ class SensorBatchT(object):
                 else:
                     proximityData_ = ProximityDataT.InitFromObj(sensorBatch.Proximity(i))
                     self.proximity.append(proximityData_)
+        if not sensorBatch.GroundIsNone():
+            self.ground = []
+            for i in range(sensorBatch.GroundLength()):
+                if sensorBatch.Ground(i) is None:
+                    self.ground.append(None)
+                else:
+                    groundData_ = GroundDataT.InitFromObj(sensorBatch.Ground(i))
+                    self.ground.append(groundData_)
         if not sensorBatch.TofIsNone():
             self.tof = []
             for i in range(sensorBatch.TofLength()):
@@ -1337,6 +1555,11 @@ class SensorBatchT(object):
             for i in reversed(range(len(self.proximity))):
                 self.proximity[i].Pack(builder)
             proximity = builder.EndVector()
+        if self.ground is not None:
+            SensorBatchStartGroundVector(builder, len(self.ground))
+            for i in reversed(range(len(self.ground))):
+                self.ground[i].Pack(builder)
+            ground = builder.EndVector()
         if self.tof is not None:
             SensorBatchStartTofVector(builder, len(self.tof))
             for i in reversed(range(len(self.tof))):
@@ -1387,6 +1610,8 @@ class SensorBatchT(object):
         SensorBatchAddBaseTimestamp(builder, self.baseTimestamp)
         if self.proximity is not None:
             SensorBatchAddProximity(builder, proximity)
+        if self.ground is not None:
+            SensorBatchAddGround(builder, ground)
         if self.tof is not None:
             SensorBatchAddTof(builder, tof)
         if self.battery is not None:

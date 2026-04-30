@@ -26,6 +26,13 @@ static osMutexId_t tof_data_mutex;
 static uint32_t read_pointer = 0;
 static uint32_t write_pointer = 0;
 
+osThreadId_t tof_task_handle = NULL;
+const osThreadAttr_t tof_task_attributes = {
+    .name = "TOF_task",
+    .stack_size = 512 * 1,
+    .priority = (osPriority_t)osPriorityNormal,
+};
+
 void tof_task(void *argument)
 {
     uint32_t millisecond_delay = (uint32_t)argument / 1000; // convert microseconds to milliseconds
@@ -41,6 +48,11 @@ void tof_task(void *argument)
         osMutexRelease(tof_data_mutex);
         osDelay(pdMS_TO_TICKS(millisecond_delay));
     }
+}
+
+void tof_start_task(void *argument)
+{
+    tof_task_handle = osThreadNew(tof_task, (void *)TOF_HIGH_SPEED, &tof_task_attributes);
 }
 
 void pack_tof_to_vector(flatcc_builder_t *builder)

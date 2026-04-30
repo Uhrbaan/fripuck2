@@ -9,11 +9,11 @@
 #include <cmsis_os.h>
 #include "sensors_builder.h"
 
-#define MAX_IMU_SAMPLES 200
+#define MAX_SAMPLES 30
 static TaskHandle_t imu_task_handle = NULL;
 
 static osMutexId_t imu_data_mutex = NULL;
-static FripuckProtocol_Sensors_ImuData_t imu_buffer[MAX_IMU_SAMPLES] = {0};
+static FripuckProtocol_Sensors_ImuData_t imu_buffer[MAX_SAMPLES] = {0};
 static uint32_t write_pointer = 0;
 static uint32_t read_pointer = 0;
 
@@ -31,7 +31,7 @@ void imu_task(void *argument)
 	static int8_t status = 0;
 	while (1)
 	{
-		FripuckProtocol_Sensors_ImuData_t *p = &imu_buffer[write_pointer % MAX_IMU_SAMPLES];
+		FripuckProtocol_Sensors_ImuData_t *p = &imu_buffer[write_pointer % MAX_SAMPLES];
 		osMutexAcquire(imu_data_mutex, osWaitForever);
 		mpu9250_read(
 			(float *)&p->gyroscope,
@@ -60,10 +60,10 @@ void pack_imu_to_vector(flatcc_builder_t *builder)
 	uint32_t count = current_write - current_read;
 
 	// if we read to slowly, maybe there are more than that missing.
-	if (count > MAX_IMU_SAMPLES)
+	if (count > MAX_SAMPLES)
 	{
-		count = MAX_IMU_SAMPLES;
-		current_read = current_write - MAX_IMU_SAMPLES;
+		count = MAX_SAMPLES;
+		current_read = current_write - MAX_SAMPLES;
 	}
 
 	if (count <= 0)
@@ -74,8 +74,8 @@ void pack_imu_to_vector(flatcc_builder_t *builder)
 
 	FripuckProtocol_Sensors_ImuData_vec_start(builder);
 
-	uint32_t start_idx = current_read % MAX_IMU_SAMPLES;
-	uint32_t end_idx = current_write % MAX_IMU_SAMPLES;
+	uint32_t start_idx = current_read % MAX_SAMPLES;
+	uint32_t end_idx = current_write % MAX_SAMPLES;
 
 	if (start_idx < end_idx)
 	{
@@ -88,7 +88,7 @@ void pack_imu_to_vector(flatcc_builder_t *builder)
 		// Wrapped case: Data is split across the array boundary
 		// Part A: From read_pointer to the very end of the array
 		FripuckProtocol_Sensors_ImuData_vec_append(builder,
-												   (const FripuckProtocol_Sensors_ImuData_t *)&imu_buffer[start_idx], MAX_IMU_SAMPLES - start_idx);
+												   (const FripuckProtocol_Sensors_ImuData_t *)&imu_buffer[start_idx], MAX_SAMPLES - start_idx);
 		// Part B: From the start of the array to the write_pointer
 		FripuckProtocol_Sensors_ImuData_vec_append(builder,
 												   (const FripuckProtocol_Sensors_ImuData_t *)&imu_buffer[0], end_idx);

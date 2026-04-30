@@ -43,7 +43,6 @@ void spi_recieve_cb(uint8_t *data, uint16_t length) {
     FripuckProtocol_Sensors_TofData_vec_t tof_vec = FripuckProtocol_Sensors_SensorBatch_tof(batch);
     size_t tof_count = FripuckProtocol_Sensors_TofData_vec_len(tof_vec);
     if (tof_vec == NULL || tof_count == 0) {
-        ESP_LOGW(TAG, "No TOF data found in this batch.");
     } else {
         FripuckProtocol_Sensors_TofData_struct_t first_tof = FripuckProtocol_Sensors_TofData_vec_at(tof_vec, 0);
         uint16_t dist = FripuckProtocol_Sensors_TofData_distance(first_tof);
@@ -55,7 +54,6 @@ void spi_recieve_cb(uint8_t *data, uint16_t length) {
     FripuckProtocol_Sensors_ProximityData_vec_t prox_vec = FripuckProtocol_Sensors_SensorBatch_proximity(batch);
     size_t prox_count = FripuckProtocol_Sensors_ProximityData_vec_len(prox_vec);
     if (prox_vec == NULL || prox_count == 0) {
-        ESP_LOGE(TAG, "Proximity vector is empty...");
     } else {
         FripuckProtocol_Sensors_ProximityData_struct_t prox_data =
             FripuckProtocol_Sensors_ProximityData_vec_at(prox_vec, 0);
@@ -68,11 +66,20 @@ void spi_recieve_cb(uint8_t *data, uint16_t length) {
     FripuckProtocol_Sensors_ImuData_vec_t imu_vec = FripuckProtocol_Sensors_SensorBatch_imu(batch);
     size_t imu_count = FripuckProtocol_Sensors_ImuData_vec_len(imu_vec);
     if (imu_vec == NULL || imu_count == 0) {
-        ESP_LOGE(TAG, "IMU vector is empty...");
     } else {
         FripuckProtocol_Sensors_ImuData_struct_t imu_data = FripuckProtocol_Sensors_ImuData_vec_at(imu_vec, 0);
         ESP_LOGI(TAG, "IMU data came, sample temperature is: %.2f. It contains %d elements.", imu_data->temperature,
                  imu_count);
+    }
+
+    // Log Ground
+    FripuckProtocol_Sensors_GroundData_vec_t ground_vec = FripuckProtocol_Sensors_SensorBatch_ground(batch);
+    size_t ground_count = FripuckProtocol_Sensors_GroundData_vec_len(ground_vec);
+    if (ground_vec == NULL || ground_count == 0) {
+    } else {
+        FripuckProtocol_Sensors_GroundData_struct_t ground_data =
+            FripuckProtocol_Sensors_GroundData_vec_at(ground_vec, 0);
+        ESP_LOGI(TAG, "Ground data. First sensor is %d", ground_data->delta.g0, imu_count);
     }
 
     if (spi_to_udp_queue) {

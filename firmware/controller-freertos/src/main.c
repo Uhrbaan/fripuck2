@@ -25,9 +25,11 @@
 #include <strings.h>
 #include <stdio.h>
 
+#include "telemetry/telemetry.h"
 #include "tof/tof.h"
 #include "prox/prox.h"
 #include "imu/imu.h"
+#include "ground/ground.h"
 
 int init_hardware(void)
 {
@@ -46,54 +48,9 @@ int init_hardware(void)
     MX_I2C1_Init();
     MX_ADC1_Init();
 
+    // Give time to the system to settle.
+    HAL_Delay(100);
     return 0;
-}
-
-#define BATCH_THRESHOLD 1000 // Leave some "slack" for the root table and headers
-#define MAX_ENTRIES_PER_BATCH 50
-
-osThreadId_t telemetryTaskHandle;
-const osThreadAttr_t telemetryTask_attributes = {
-    .name = "telemetryTask",
-    .stack_size = 1024 * 1,
-    .priority = (osPriority_t)osPriorityNormal,
-};
-
-#include "flatcc/flatcc.h"
-#include "sensors_builder.h"
-
-void TelemetryTask(void *argument)
-{
-    static flatcc_builder_t builder;
-    flatcc_builder_init(&builder);
-
-    for (;;)
-    {
-        FripuckProtocol_Sensors_SensorBatch_start_as_root(&builder);
-        FripuckProtocol_Sensors_SensorBatch_base_timestamp_add(&builder, 0);
-
-        // pack_tof_to_vector(&builder);
-        // pack_prox_to_vector(&builder);
-        pack_imu_to_vector(&builder);
-
-        FripuckProtocol_Sensors_SensorBatch_end_as_root(&builder);
-
-        // Get the final buffer
-        size_t final_size;
-        void *buf = flatcc_builder_get_direct_buffer(&builder, &final_size);
-        if (buf && final_size <= RADIO_MAX_PACKET_SIZE)
-        {
-            spi_radio_send((uint8_t *)buf, (uint16_t)final_size);
-        }
-        else if (final_size > RADIO_MAX_PACKET_SIZE)
-        {
-        }
-
-        flatcc_builder_reset(&builder);
-        osDelay(pdMS_TO_TICKS(500)); // 30 fps
-    }
-
-    flatcc_builder_clear(&builder);
 }
 
 osThreadId_t defaultTaskHandle;
@@ -105,11 +62,11 @@ const osThreadAttr_t defaultTask_attributes = {
 
 void StartDefaultTask(void *argument)
 {
-    tofTask_attributes.stack_size = 512;
-    tofTaskHandle = osThreadNew(tof_task, (void *)TOF_HIGH_SPEED, &tofTask_attributes);
-    telemetryTaskHandle = osThreadNew(TelemetryTask, NULL, &telemetryTask_attributes);
     proximity_start(&htim5, &hadc1);
     imu_start();
+    ground_start(NULL);
+    tof_start_task(NULL);
+    telemetry_start_task(NULL);
 
     while (1)
     {

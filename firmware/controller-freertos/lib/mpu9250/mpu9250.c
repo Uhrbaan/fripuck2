@@ -1,16 +1,13 @@
 /**
  * File mostly authored by GCtronic with adaptations to work on FreeRTOS
  */
-#include "stm32f4xx_hal.h"
-#include "stm32f4xx_hal_conf.h"
-
+#include <stm32f4xx_hal.h>
+#include <stm32f4xx_hal_conf.h>
 #include <stdint.h>
 #include <math.h>
 #include <stdbool.h>
-#include "mpu9250.h"
-#include "i2c.h"
-#include "imu.h"
-#include "cmsis_os.h"
+#include <mpu9250.h>
+#include <cmsis_os.h>
 
 #define RES_2G 2.0f
 #define RES_250DPS 250.0f
@@ -19,6 +16,10 @@
 #define RAW16BITS_TO_TESLA (4912.0 / 32760.0) // Measurement range of each axis is [-32760..32760] in 16-bit output, with magnetic flux ranging from 4912 to -4912 (see "mpu9250 register map").
 #define ACC_RAW2G (RES_2G / MAX_INT16)        // 2G scale for int16 raw value
 #define GYRO_RAW2DPS (RES_250DPS / MAX_INT16) // 250DPS (degrees per second) scale for int16 raw value
+
+#define RAD2DEG(rad) (rad / M_PI * 180.0)
+#define DEG2RAD(deg) (deg / 180.0 * M_PI)
+#define STANDARD_GRAVITY 9.80665f
 
 static uint8_t imu_addr = MPU9250_ADDRESS_AD1_0;
 

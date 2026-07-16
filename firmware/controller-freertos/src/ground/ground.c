@@ -11,7 +11,7 @@
 #include <stdbool.h>
 #include <cmsis_os.h>
 #include "sensors_builder.h"
-#include "i2c.h"
+#include "i2c/i2c.h"
 
 #define GROUND_ADDR 0x60
 

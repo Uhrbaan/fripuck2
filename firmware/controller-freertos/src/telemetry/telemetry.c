@@ -15,13 +15,11 @@ static struct sensor_entry sensor_list[SENSOR_LIST_SIZE] = {0};
 
 int register_sensor(float priority, float age_step, pack_fn pack_fn)
 {
-    struct sensor_entry entry =
-    {
+    struct sensor_entry entry = {
         .priority = priority,
         .age = 0,
         .age_step = age_step,
-        .pack_f = pack_fn
-    }
+        .pack_f = pack_fn};
 
     int i = 0;
     for (; i < SENSOR_LIST_SIZE; i++)
@@ -53,7 +51,7 @@ int unregister_sensor(int sensor_index)
         for (; i >= 0; i--)
         {
             if (sensor_list[i].pack_f != NULL)
-                break
+                break;
         }
         last_sensor_index = i;
     }
@@ -84,7 +82,7 @@ pack_fn pick_sensor_pack_fn(void)
 
     // reset age of the selected sensor
     *best_age_p = 0.0;
-    return pack_fn;
+    return best_fn;
 }
 
 osThreadId_t telemetryTaskHandle;

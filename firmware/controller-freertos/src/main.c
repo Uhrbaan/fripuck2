@@ -15,12 +15,11 @@
 #include "stm32f4xx_hal_tim.h"
 #include "stm32f4xx_hal_spi.h"
 
-#include "leds.h"
-#include "motors.h"
-#include "uart.h"
-#include "spi.h"
-#include "time_of_flight.h"
-#include "i2c.h"
+#include "leds/leds.h"
+#include "motors/motors.h"
+#include "uart/uart.h"
+#include "spi/spi.h"
+#include "i2c/i2c.h"
 #include <spi_conf.h>
 #include <strings.h>
 #include <stdio.h>
@@ -30,6 +29,8 @@
 #include "prox/prox.h"
 #include "imu/imu.h"
 #include "ground/ground.h"
+
+#include "telemetry/telemetry.h"
 
 int init_hardware(void)
 {

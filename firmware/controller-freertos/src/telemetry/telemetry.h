@@ -8,7 +8,8 @@
  */
 
 #include <inttypes.h>
-#include <flatbuffers_common_builder.h>
+#include <flatcc/flatcc.h>
+#include <sensors_builder.h>
 #include <cmsis_os.h>
 
 /** @brief Function signature sensors must implement to pack data.

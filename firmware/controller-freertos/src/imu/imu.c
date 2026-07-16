@@ -8,6 +8,7 @@
 #include <stdbool.h>
 #include <cmsis_os.h>
 #include "sensors_builder.h"
+#include "telemetry/telemetry.h"
 
 #define MAX_SAMPLES 30
 static TaskHandle_t imu_task_handle = NULL;
@@ -52,54 +53,55 @@ void imu_task(void *argument)
 	}
 }
 
-void pack_imu_to_vector(flatcc_builder_t *builder)
-{
-	osMutexAcquire(imu_data_mutex, osWaitForever);
-	uint32_t current_read = read_pointer;
-	uint32_t current_write = write_pointer;
-	uint32_t count = current_write - current_read;
+DEFINE_PACK_SENSOR_VECTOR(imu, ImuData, imu_buffer, imu_data_mutex, MAX_SAMPLES, read_pointer, write_pointer)
+// void pack_imu_to_vector(flatcc_builder_t *builder)
+// {
+// 	osMutexAcquire(imu_data_mutex, osWaitForever);
+// 	uint32_t current_read = read_pointer;
+// 	uint32_t current_write = write_pointer;
+// 	uint32_t count = current_write - current_read;
 
-	// if we read to slowly, maybe there are more than that missing.
-	if (count > MAX_SAMPLES)
-	{
-		count = MAX_SAMPLES;
-		current_read = current_write - MAX_SAMPLES;
-	}
+// 	// if we read to slowly, maybe there are more than that missing.
+// 	if (count > MAX_SAMPLES)
+// 	{
+// 		count = MAX_SAMPLES;
+// 		current_read = current_write - MAX_SAMPLES;
+// 	}
 
-	if (count <= 0)
-	{
-		osMutexRelease(imu_data_mutex);
-		return;
-	}
+// 	if (count <= 0)
+// 	{
+// 		osMutexRelease(imu_data_mutex);
+// 		return;
+// 	}
 
-	FripuckProtocol_Sensors_ImuData_vec_start(builder);
+// 	FripuckProtocol_Sensors_ImuData_vec_start(builder);
 
-	uint32_t start_idx = current_read % MAX_SAMPLES;
-	uint32_t end_idx = current_write % MAX_SAMPLES;
+// 	uint32_t start_idx = current_read % MAX_SAMPLES;
+// 	uint32_t end_idx = current_write % MAX_SAMPLES;
 
-	if (start_idx < end_idx)
-	{
-		// Linear case: Data is in one continuous block
-		FripuckProtocol_Sensors_ImuData_vec_append(builder,
-												   (const FripuckProtocol_Sensors_ImuData_t *)&imu_buffer[start_idx], end_idx - start_idx);
-	}
-	else
-	{
-		// Wrapped case: Data is split across the array boundary
-		// Part A: From read_pointer to the very end of the array
-		FripuckProtocol_Sensors_ImuData_vec_append(builder,
-												   (const FripuckProtocol_Sensors_ImuData_t *)&imu_buffer[start_idx], MAX_SAMPLES - start_idx);
-		// Part B: From the start of the array to the write_pointer
-		FripuckProtocol_Sensors_ImuData_vec_append(builder,
-												   (const FripuckProtocol_Sensors_ImuData_t *)&imu_buffer[0], end_idx);
-	}
+// 	if (start_idx < end_idx)
+// 	{
+// 		// Linear case: Data is in one continuous block
+// 		FripuckProtocol_Sensors_ImuData_vec_append(builder,
+// 												   (const FripuckProtocol_Sensors_ImuData_t *)&imu_buffer[start_idx], end_idx - start_idx);
+// 	}
+// 	else
+// 	{
+// 		// Wrapped case: Data is split across the array boundary
+// 		// Part A: From read_pointer to the very end of the array
+// 		FripuckProtocol_Sensors_ImuData_vec_append(builder,
+// 												   (const FripuckProtocol_Sensors_ImuData_t *)&imu_buffer[start_idx], MAX_SAMPLES - start_idx);
+// 		// Part B: From the start of the array to the write_pointer
+// 		FripuckProtocol_Sensors_ImuData_vec_append(builder,
+// 												   (const FripuckProtocol_Sensors_ImuData_t *)&imu_buffer[0], end_idx);
+// 	}
 
-	// Add what was added
-	FripuckProtocol_Sensors_SensorBatch_imu_add(builder, FripuckProtocol_Sensors_ImuData_vec_end(builder));
+// 	// Add what was added
+// 	FripuckProtocol_Sensors_SensorBatch_imu_add(builder, FripuckProtocol_Sensors_ImuData_vec_end(builder));
 
-	read_pointer = current_write;
-	osMutexRelease(imu_data_mutex);
-}
+// 	read_pointer = current_write;
+// 	osMutexRelease(imu_data_mutex);
+// }
 
 /** Starts polling the IMU unit
  * You need to start the i2c bus before starting the IMU.

@@ -26,5 +26,5 @@ esp_err_t spi1_init() {
     gpio_set_pull_mode(PIN_NUM_CLK, GPIO_PULLUP_ONLY);
     gpio_set_pull_mode(PIN_NUM_CS, GPIO_PULLUP_ONLY);
 
-    return spi_slave_initialize(VSPI_HOST, &spi_bus_config, &spi_slave_config, SPI_DMA_CH_AUTO);
+    return spi_slave_initialize(SPI3_HOST, &spi_bus_config, &spi_slave_config, SPI_DMA_CH_AUTO);
 }

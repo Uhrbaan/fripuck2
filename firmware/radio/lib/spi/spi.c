@@ -66,7 +66,7 @@ void spi_receiver(void *pvParameters) {
         memset(spi_receive_buffer, 0, SPI_PACKET_MAX_SIZE);
 
         // This blocks until the Master (STM32) pulls CS low and sends clock pulses
-        err = spi_slave_transmit(VSPI_HOST, &transaction, portMAX_DELAY);
+        err = spi_slave_transmit(SPI3_HOST, &transaction, portMAX_DELAY);
 
         if (err == ESP_OK) {
             // trans_len is the number of bits actually clocked by the master

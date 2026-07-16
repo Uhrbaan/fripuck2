@@ -1,8 +1,28 @@
-#ifndef TELEMETRY_SRC_H
-#define TELEMETRY_SRC_H
+#ifndef TELEMETRY_LIB_H
+#define TELEMETRY_LIB_H
+
+#define MAX_TELEMETRY_DELAY_MS 100 // we want at least 10 fps
 
 /**
- * Macro generating a pack function adaptable to Flatbuffers data types
+ * This helper library gives the primitives necessary for sensors to register to the telemetry service so they can send their data over SPI later.
+ */
+
+#include <inttypes.h>
+#include <flatbuffers_common_builder.h>
+#include <cmsis_os.h>
+
+/** @brief Function signature sensors must implement to pack data.
+ * Function signature implemented by the sensors to pack data into the flatbuffer.
+ *
+ * @param fb_builder Pointer to the active flatbuffer builder
+ * @param limit Maximum number of bytes the sensor is allowed to send (used to prevent overflows)
+ * @return Remaining
+ */
+typedef uint32_t (*pack_fn)(flatcc_builder_t *, uint32_t);
+
+/** @brief Autogenerate pack function.
+ * Macro generating a pack function adaptable to Flatbuffers data types. Implments the `pack_fn` function signature.
+ *
  * @param name Name of the function
  * @param type_name Name of the data type the function will be acting unpon
  * @param buffer_name Name of the global buffer that stores the data in the background
@@ -55,6 +75,21 @@
         return count;                                                                                                                                        \
     }
 
+/** @brief Adds the sensor to the list of sensors to be packaged.
+ * Adds the sensor to the list of sensor data that needs to be packaged in a flatbuffer.
+ *
+ * @param priority This number has an effect on which packet gets priority when too much data is packaged. Higher means a higher priority.
+ * @param age_step To prevent starvation, older processes gain higher total priority. `age_step` controls the speed with which the priority increases.
+ *
+ * @return Index of the sensor in the list.
+ */
+int register_sensor(float priority, float age_step, pack_fn pack_fn);
+
+/** @brief Removes a sensor from the list of sensors to be packed.
+ */
+int unregister_sensor(int sensor_index);
+
+/** @brief Start the telemetry thread that packages sensor data in the background. */
 void telemetry_start_task(void *argument);
 
 #endif

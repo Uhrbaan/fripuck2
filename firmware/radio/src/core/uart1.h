@@ -4,6 +4,6 @@
 #include "esp_err.h"
 #include <freertos/queue.h>
 
-QueueHandle_t *uart1_init(void);
+QueueHandle_t* uart1_init(void);
 
 #endif

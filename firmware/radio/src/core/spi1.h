@@ -5,4 +5,4 @@
 
 esp_err_t spi1_init(void);
 
-#endif // SPI1_H
+#endif  // SPI1_H

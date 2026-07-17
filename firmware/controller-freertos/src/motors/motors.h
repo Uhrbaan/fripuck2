@@ -4,15 +4,13 @@
 #include <stdbool.h>
 #include <stm32f4xx_hal.h>
 
-enum motor_name
-{
+enum motor_name {
     MOTOR_LEFT,
     MOTOR_RIGHT,
     NUM_MOTORS,
 };
 
-enum microstep_name
-{
+enum microstep_name {
     MICROSTEP_0,
     MICROSTEP_1,
     MICROSTEP_2,
@@ -29,4 +27,4 @@ void motor_set_speed(enum motor_name motor_number, uint16_t steps_per_second);
 void motor_set_direction(enum motor_name motor_number, bool reversed);
 int32_t motor_get_steps(enum motor_name motor_number);
 
-#endif // MOTORS_H
+#endif  // MOTORS_H

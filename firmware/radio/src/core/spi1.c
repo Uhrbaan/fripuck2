@@ -12,9 +12,9 @@ static spi_bus_config_t spi_bus_config = {
     .miso_io_num = PIN_NUM_MISO, .mosi_io_num = PIN_NUM_MOSI, .sclk_io_num = PIN_NUM_CLK};
 
 static spi_slave_interface_config_t spi_slave_config = {
-    .mode = 0,                  // SPI mode0: CPOL=0, CPHA=0.
-    .spics_io_num = PIN_NUM_CS, // CS pin.
-    .queue_size = 8,            // We want to be able to queue 8 transactions at a time.
+    .mode = 0,                   // SPI mode0: CPOL=0, CPHA=0.
+    .spics_io_num = PIN_NUM_CS,  // CS pin.
+    .queue_size = 8,             // We want to be able to queue 8 transactions at a time.
     .flags = 0,
     //.post_setup_cb=my_post_setup_cb,
     //.post_trans_cb=my_post_trans_cb

@@ -37,28 +37,24 @@ extern osMutexId_t i2c_mutex;
 
 uint8_t _I2CBuffer[64];
 
-int _I2CWrite(VL53L0X_DEV Dev, uint8_t *pdata, uint32_t count)
-{
+int _I2CWrite(VL53L0X_DEV Dev, uint8_t* pdata, uint32_t count) {
     int status;
     int i2c_time_out = I2C_TIME_OUT_BASE + count * I2C_TIME_OUT_BYTE;
 
     status = HAL_I2C_Master_Transmit(Dev->I2cHandle, Dev->I2cDevAddr, pdata, count, i2c_time_out);
-    if (status)
-    {
+    if (status) {
         // VL6180x_ErrLog("I2C error 0x%x %d len", dev->I2cAddr, len);
         // XNUCLEO6180XA1_I2C1_Init(&hi2c1);
     }
     return status;
 }
 
-int _I2CRead(VL53L0X_DEV Dev, uint8_t *pdata, uint32_t count)
-{
+int _I2CRead(VL53L0X_DEV Dev, uint8_t* pdata, uint32_t count) {
     int status;
     int i2c_time_out = I2C_TIME_OUT_BASE + count * I2C_TIME_OUT_BYTE;
 
     status = HAL_I2C_Master_Receive(Dev->I2cHandle, Dev->I2cDevAddr | 1, pdata, count, i2c_time_out);
-    if (status)
-    {
+    if (status) {
         // VL6180x_ErrLog("I2C error 0x%x %d len", dev->I2cAddr, len);
         // XNUCLEO6180XA1_I2C1_Init(&hi2c1);
     }
@@ -66,20 +62,17 @@ int _I2CRead(VL53L0X_DEV Dev, uint8_t *pdata, uint32_t count)
 }
 
 // the ranging_sensor_comms.dll will take care of the page selection
-VL53L0X_Error VL53L0X_WriteMulti(VL53L0X_DEV Dev, uint8_t index, uint8_t *pdata, uint32_t count)
-{
+VL53L0X_Error VL53L0X_WriteMulti(VL53L0X_DEV Dev, uint8_t index, uint8_t* pdata, uint32_t count) {
     int status_int;
     VL53L0X_Error Status = VL53L0X_ERROR_NONE;
-    if (count > sizeof(_I2CBuffer) - 1)
-    {
+    if (count > sizeof(_I2CBuffer) - 1) {
         return VL53L0X_ERROR_INVALID_PARAMS;
     }
     _I2CBuffer[0] = index;
     memcpy(&_I2CBuffer[1], pdata, count);
     VL53L0X_GetI2cBus();
     status_int = _I2CWrite(Dev, _I2CBuffer, count + 1);
-    if (status_int != 0)
-    {
+    if (status_int != 0) {
         Status = VL53L0X_ERROR_CONTROL_INTERFACE;
     }
     VL53L0X_PutI2cBus();
@@ -87,20 +80,17 @@ VL53L0X_Error VL53L0X_WriteMulti(VL53L0X_DEV Dev, uint8_t index, uint8_t *pdata,
 }
 
 // the ranging_sensor_comms.dll will take care of the page selection
-VL53L0X_Error VL53L0X_ReadMulti(VL53L0X_DEV Dev, uint8_t index, uint8_t *pdata, uint32_t count)
-{
+VL53L0X_Error VL53L0X_ReadMulti(VL53L0X_DEV Dev, uint8_t index, uint8_t* pdata, uint32_t count) {
     VL53L0X_Error Status = VL53L0X_ERROR_NONE;
     int32_t status_int;
     VL53L0X_GetI2cBus();
     status_int = _I2CWrite(Dev, &index, 1);
-    if (status_int != 0)
-    {
+    if (status_int != 0) {
         Status = VL53L0X_ERROR_CONTROL_INTERFACE;
         goto done;
     }
     status_int = _I2CRead(Dev, pdata, count);
-    if (status_int != 0)
-    {
+    if (status_int != 0) {
         Status = VL53L0X_ERROR_CONTROL_INTERFACE;
     }
 done:
@@ -108,8 +98,7 @@ done:
     return Status;
 }
 
-VL53L0X_Error VL53L0X_WrByte(VL53L0X_DEV Dev, uint8_t index, uint8_t data)
-{
+VL53L0X_Error VL53L0X_WrByte(VL53L0X_DEV Dev, uint8_t index, uint8_t data) {
     VL53L0X_Error Status = VL53L0X_ERROR_NONE;
     int32_t status_int;
 
@@ -118,16 +107,14 @@ VL53L0X_Error VL53L0X_WrByte(VL53L0X_DEV Dev, uint8_t index, uint8_t data)
 
     VL53L0X_GetI2cBus();
     status_int = _I2CWrite(Dev, _I2CBuffer, 2);
-    if (status_int != 0)
-    {
+    if (status_int != 0) {
         Status = VL53L0X_ERROR_CONTROL_INTERFACE;
     }
     VL53L0X_PutI2cBus();
     return Status;
 }
 
-VL53L0X_Error VL53L0X_WrWord(VL53L0X_DEV Dev, uint8_t index, uint16_t data)
-{
+VL53L0X_Error VL53L0X_WrWord(VL53L0X_DEV Dev, uint8_t index, uint16_t data) {
     VL53L0X_Error Status = VL53L0X_ERROR_NONE;
     int32_t status_int;
 
@@ -137,16 +124,14 @@ VL53L0X_Error VL53L0X_WrWord(VL53L0X_DEV Dev, uint8_t index, uint16_t data)
 
     VL53L0X_GetI2cBus();
     status_int = _I2CWrite(Dev, _I2CBuffer, 3);
-    if (status_int != 0)
-    {
+    if (status_int != 0) {
         Status = VL53L0X_ERROR_CONTROL_INTERFACE;
     }
     VL53L0X_PutI2cBus();
     return Status;
 }
 
-VL53L0X_Error VL53L0X_WrDWord(VL53L0X_DEV Dev, uint8_t index, uint32_t data)
-{
+VL53L0X_Error VL53L0X_WrDWord(VL53L0X_DEV Dev, uint8_t index, uint32_t data) {
     VL53L0X_Error Status = VL53L0X_ERROR_NONE;
     int32_t status_int;
     _I2CBuffer[0] = index;
@@ -156,22 +141,19 @@ VL53L0X_Error VL53L0X_WrDWord(VL53L0X_DEV Dev, uint8_t index, uint32_t data)
     _I2CBuffer[4] = (data >> 0) & 0xFF;
     VL53L0X_GetI2cBus();
     status_int = _I2CWrite(Dev, _I2CBuffer, 5);
-    if (status_int != 0)
-    {
+    if (status_int != 0) {
         Status = VL53L0X_ERROR_CONTROL_INTERFACE;
     }
     VL53L0X_PutI2cBus();
     return Status;
 }
 
-VL53L0X_Error VL53L0X_UpdateByte(VL53L0X_DEV Dev, uint8_t index, uint8_t AndData, uint8_t OrData)
-{
+VL53L0X_Error VL53L0X_UpdateByte(VL53L0X_DEV Dev, uint8_t index, uint8_t AndData, uint8_t OrData) {
     VL53L0X_Error Status = VL53L0X_ERROR_NONE;
     uint8_t data;
 
     Status = VL53L0X_RdByte(Dev, index, &data);
-    if (Status)
-    {
+    if (Status) {
         goto done;
     }
     data = (data & AndData) | OrData;
@@ -180,21 +162,18 @@ done:
     return Status;
 }
 
-VL53L0X_Error VL53L0X_RdByte(VL53L0X_DEV Dev, uint8_t index, uint8_t *data)
-{
+VL53L0X_Error VL53L0X_RdByte(VL53L0X_DEV Dev, uint8_t index, uint8_t* data) {
     VL53L0X_Error Status = VL53L0X_ERROR_NONE;
     int32_t status_int;
 
     VL53L0X_GetI2cBus();
     status_int = _I2CWrite(Dev, &index, 1);
-    if (status_int)
-    {
+    if (status_int) {
         Status = VL53L0X_ERROR_CONTROL_INTERFACE;
         goto done;
     }
     status_int = _I2CRead(Dev, data, 1);
-    if (status_int != 0)
-    {
+    if (status_int != 0) {
         Status = VL53L0X_ERROR_CONTROL_INTERFACE;
     }
 done:
@@ -202,22 +181,19 @@ done:
     return Status;
 }
 
-VL53L0X_Error VL53L0X_RdWord(VL53L0X_DEV Dev, uint8_t index, uint16_t *data)
-{
+VL53L0X_Error VL53L0X_RdWord(VL53L0X_DEV Dev, uint8_t index, uint16_t* data) {
     VL53L0X_Error Status = VL53L0X_ERROR_NONE;
     int32_t status_int;
 
     VL53L0X_GetI2cBus();
     status_int = _I2CWrite(Dev, &index, 1);
 
-    if (status_int)
-    {
+    if (status_int) {
         Status = VL53L0X_ERROR_CONTROL_INTERFACE;
         goto done;
     }
     status_int = _I2CRead(Dev, _I2CBuffer, 2);
-    if (status_int != 0)
-    {
+    if (status_int != 0) {
         Status = VL53L0X_ERROR_CONTROL_INTERFACE;
         goto done;
     }
@@ -228,34 +204,31 @@ done:
     return Status;
 }
 
-VL53L0X_Error VL53L0X_RdDWord(VL53L0X_DEV Dev, uint8_t index, uint32_t *data)
-{
+VL53L0X_Error VL53L0X_RdDWord(VL53L0X_DEV Dev, uint8_t index, uint32_t* data) {
     VL53L0X_Error Status = VL53L0X_ERROR_NONE;
     int32_t status_int;
 
     VL53L0X_GetI2cBus();
     status_int = _I2CWrite(Dev, &index, 1);
-    if (status_int != 0)
-    {
+    if (status_int != 0) {
         Status = VL53L0X_ERROR_CONTROL_INTERFACE;
         goto done;
     }
     status_int = _I2CRead(Dev, _I2CBuffer, 4);
-    if (status_int != 0)
-    {
+    if (status_int != 0) {
         Status = VL53L0X_ERROR_CONTROL_INTERFACE;
         goto done;
     }
 
-    *data = ((uint32_t)_I2CBuffer[0] << 24) + ((uint32_t)_I2CBuffer[1] << 16) + ((uint32_t)_I2CBuffer[2] << 8) + (uint32_t)_I2CBuffer[3];
+    *data = ((uint32_t)_I2CBuffer[0] << 24) + ((uint32_t)_I2CBuffer[1] << 16) + ((uint32_t)_I2CBuffer[2] << 8) +
+            (uint32_t)_I2CBuffer[3];
 
 done:
     VL53L0X_PutI2cBus();
     return Status;
 }
 
-VL53L0X_Error VL53L0X_PollingDelay(VL53L0X_DEV Dev)
-{
+VL53L0X_Error VL53L0X_PollingDelay(VL53L0X_DEV Dev) {
     VL53L0X_Error status = VL53L0X_ERROR_NONE;
 
     // do nothing

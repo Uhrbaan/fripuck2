@@ -29,7 +29,7 @@ volatile uint32_t total_bytes_received = 0;
 #include <sys/socket.h>
 
 extern QueueHandle_t spi_to_udp_queue;
-void spi_recieve_cb(uint8_t *data, uint16_t length) {
+void spi_recieve_cb(uint8_t* data, uint16_t length) {
     static const char TAG[] = "SPI RX CB";
     static telemetry_packet_t packet = {0};
     // Process your data here...
@@ -92,9 +92,9 @@ void spi_recieve_cb(uint8_t *data, uint16_t length) {
     }
 }
 
-void throughput_monitor_task(void *pvParameters) {
+void throughput_monitor_task(void* pvParameters) {
     uint32_t last_bytes = 0;
-    const uint32_t interval_ms = 2000; // 2 seconds
+    const uint32_t interval_ms = 2000;  // 2 seconds
 
     while (1) {
         vTaskDelay(pdMS_TO_TICKS(interval_ms));

@@ -32,8 +32,7 @@
 
 #include "telemetry/telemetry.h"
 
-int init_hardware(void)
-{
+int init_hardware(void) {
     HAL_Init();
     SystemClock_Config();
     MX_GPIO_Init();
@@ -61,22 +60,19 @@ const osThreadAttr_t defaultTask_attributes = {
     .priority = (osPriority_t)osPriorityNormal,
 };
 
-void StartDefaultTask(void *argument)
-{
+void StartDefaultTask(void* argument) {
     proximity_start(&htim5, &hadc1);
     imu_start();
     ground_start(NULL);
     tof_start_task(NULL);
     telemetry_start_task(NULL);
 
-    while (1)
-    {
+    while (1) {
         osDelay(100);
     }
 }
 
-int main(void)
-{
+int main(void) {
     init_hardware();
 
     /* Init scheduler */
@@ -88,8 +84,7 @@ int main(void)
     defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
     osKernelStart();
-    while (1)
-    {
+    while (1) {
         osDelay(pdMS_TO_TICKS(5000));
     }
 }

@@ -20,37 +20,27 @@ static uint32_t read_pointer = 0;
 
 static bool configured = false;
 
-void imu_task(void *argument)
-{
-	static int16_t dummy_raw_gyro[3] = {0};
-	static int16_t dummy_raw_gyro_offset[3] = {0};
-	static int16_t dummy_raw_acc[3] = {0};
-	static int16_t dummy_raw_acc_offset[3] = {0};
-	static int16_t dummy_raw_mag[3] = {0};
-	static int16_t dummy_roll = 0;
-	static int16_t dummy_pitch = 0;
-	static int8_t status = 0;
-	while (1)
-	{
-		FripuckProtocol_Sensors_ImuData_t *p = &imu_buffer[write_pointer % MAX_SAMPLES];
-		osMutexAcquire(imu_data_mutex, osWaitForever);
-		mpu9250_read(
-			(float *)&p->gyroscope,
-			(float *)&p->accelerometer,
-			(float *)&p->temperature,
-			(float *)&p->magnetometer,
-			(int16_t *)&dummy_raw_gyro,
-			(int16_t *)&dummy_raw_acc,
-			(int16_t *)&dummy_raw_gyro_offset,
-			(int16_t *)&dummy_raw_acc_offset,
-			(int8_t *)&status,
-			(float *)&dummy_roll,
-			(float *)&dummy_pitch);
-		osMutexRelease(imu_data_mutex);
+void imu_task(void* argument) {
+    static int16_t dummy_raw_gyro[3] = {0};
+    static int16_t dummy_raw_gyro_offset[3] = {0};
+    static int16_t dummy_raw_acc[3] = {0};
+    static int16_t dummy_raw_acc_offset[3] = {0};
+    static int16_t dummy_raw_mag[3] = {0};
+    static int16_t dummy_roll = 0;
+    static int16_t dummy_pitch = 0;
+    static int8_t status = 0;
+    while (1) {
+        FripuckProtocol_Sensors_ImuData_t* p = &imu_buffer[write_pointer % MAX_SAMPLES];
+        osMutexAcquire(imu_data_mutex, osWaitForever);
+        mpu9250_read((float*)&p->gyroscope, (float*)&p->accelerometer, (float*)&p->temperature,
+                     (float*)&p->magnetometer, (int16_t*)&dummy_raw_gyro, (int16_t*)&dummy_raw_acc,
+                     (int16_t*)&dummy_raw_gyro_offset, (int16_t*)&dummy_raw_acc_offset, (int8_t*)&status,
+                     (float*)&dummy_roll, (float*)&dummy_pitch);
+        osMutexRelease(imu_data_mutex);
 
-		write_pointer++;
-		vTaskDelay(pdMS_TO_TICKS(40)); // FIXME: lower it
-	}
+        write_pointer++;
+        vTaskDelay(pdMS_TO_TICKS(40));  // FIXME: lower it
+    }
 }
 
 DEFINE_PACK_SENSOR_VECTOR(imu, ImuData, imu_buffer, imu_data_mutex, MAX_SAMPLES, read_pointer, write_pointer)
@@ -83,17 +73,20 @@ DEFINE_PACK_SENSOR_VECTOR(imu, ImuData, imu_buffer, imu_data_mutex, MAX_SAMPLES,
 // 	{
 // 		// Linear case: Data is in one continuous block
 // 		FripuckProtocol_Sensors_ImuData_vec_append(builder,
-// 												   (const FripuckProtocol_Sensors_ImuData_t *)&imu_buffer[start_idx], end_idx - start_idx);
+// 												   (const
+// FripuckProtocol_Sensors_ImuData_t *)&imu_buffer[start_idx], end_idx - start_idx);
 // 	}
 // 	else
 // 	{
 // 		// Wrapped case: Data is split across the array boundary
 // 		// Part A: From read_pointer to the very end of the array
 // 		FripuckProtocol_Sensors_ImuData_vec_append(builder,
-// 												   (const FripuckProtocol_Sensors_ImuData_t *)&imu_buffer[start_idx], MAX_SAMPLES - start_idx);
+// 												   (const
+// FripuckProtocol_Sensors_ImuData_t *)&imu_buffer[start_idx], MAX_SAMPLES - start_idx);
 // 		// Part B: From the start of the array to the write_pointer
 // 		FripuckProtocol_Sensors_ImuData_vec_append(builder,
-// 												   (const FripuckProtocol_Sensors_ImuData_t *)&imu_buffer[0], end_idx);
+// 												   (const
+// FripuckProtocol_Sensors_ImuData_t *)&imu_buffer[0], end_idx);
 // 	}
 
 // 	// Add what was added
@@ -106,34 +99,28 @@ DEFINE_PACK_SENSOR_VECTOR(imu, ImuData, imu_buffer, imu_data_mutex, MAX_SAMPLES,
 /** Starts polling the IMU unit
  * You need to start the i2c bus before starting the IMU.
  */
-int imu_start(void)
-{
-	if (configured)
-		return HAL_OK;
+int imu_start(void) {
+    if (configured) return HAL_OK;
 
-	static const osMutexAttr_t mutex_attributes = {"imu_data_mutex", osMutexRecursive | osMutexPrioInherit, NULL, 0};
-	imu_data_mutex = osMutexNew(&mutex_attributes);
+    static const osMutexAttr_t mutex_attributes = {"imu_data_mutex", osMutexRecursive | osMutexPrioInherit, NULL, 0};
+    imu_data_mutex = osMutexNew(&mutex_attributes);
 
-	// Wait for the IMU sensor to start up (safe margin)
-	while (pdTICKS_TO_MS(HAL_GetTick()) < 100)
-		osDelay(100 - pdTICKS_TO_MS(HAL_GetTick()));
+    // Wait for the IMU sensor to start up (safe margin)
+    while (pdTICKS_TO_MS(HAL_GetTick()) < 100) osDelay(100 - pdTICKS_TO_MS(HAL_GetTick()));
 
-	// Check if reachable and configure
-	if (mpu9250_ping() && mpu9250_setup(MPU9250_ACC_FULL_RANGE_2G | MPU9250_GYRO_FULL_RANGE_250DPS | MPU9250_SAMPLE_RATE_DIV(100)) == HAL_OK)
-	{
-		BaseType_t status = xTaskCreate(imu_task, "IMU_task", 512, NULL, osPriorityNormal, &imu_task_handle);
-		if (status != pdPASS)
-			return HAL_ERROR;
-	}
-	else
-		return HAL_ERROR;
+    // Check if reachable and configure
+    if (mpu9250_ping() && mpu9250_setup(MPU9250_ACC_FULL_RANGE_2G | MPU9250_GYRO_FULL_RANGE_250DPS |
+                                        MPU9250_SAMPLE_RATE_DIV(100)) == HAL_OK) {
+        BaseType_t status = xTaskCreate(imu_task, "IMU_task", 512, NULL, osPriorityNormal, &imu_task_handle);
+        if (status != pdPASS) return HAL_ERROR;
+    } else
+        return HAL_ERROR;
 
-	return HAL_OK;
+    return HAL_OK;
 }
 
-void imu_stop(void)
-{
-	vTaskDelete(imu_task_handle);
-	imu_task_handle = NULL;
-	configured = false;
+void imu_stop(void) {
+    vTaskDelete(imu_task_handle);
+    imu_task_handle = NULL;
+    configured = false;
 }

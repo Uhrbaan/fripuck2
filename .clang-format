@@ -1,0 +1,6 @@
+---
+BasedOnStyle: Google
+IndentWidth: 4
+ColumnLimit: 120
+SortIncludes: false # some includes (like flatbuffers) are order sensitive. Added to prevent breakage.
+---

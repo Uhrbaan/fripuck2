@@ -32,14 +32,12 @@ static uint32_t read_pointer = 0;
 
 static bool configured = false;
 
-void ground_task(void *argument)
-{
-    while (1)
-    {
+void ground_task(void* argument) {
+    while (1) {
         i2c_read_reg(GROUND_ADDR, 0, temp_buffer, sizeof(temp_buffer));
 
         osMutexAcquire(data_mutex, osWaitForever);
-        FripuckProtocol_Sensors_GroundData_t *p = &buffer[write_pointer % MAX_SAMPLES];
+        FripuckProtocol_Sensors_GroundData_t* p = &buffer[write_pointer % MAX_SAMPLES];
 
         // Ground
         p->delta.g0 = (uint16_t)(temp_buffer[1] & 0xff) + ((uint16_t)temp_buffer[0] << 8);
@@ -62,22 +60,19 @@ void ground_task(void *argument)
     }
 }
 
-void pack_ground_to_vector(flatcc_builder_t *builder)
-{
+void pack_ground_to_vector(flatcc_builder_t* builder) {
     osMutexAcquire(data_mutex, osWaitForever);
     uint32_t current_read = read_pointer;
     uint32_t current_write = write_pointer;
     uint32_t count = current_write - current_read;
 
     // if we read to slowly, maybe there are more than that missing.
-    if (count > MAX_SAMPLES)
-    {
+    if (count > MAX_SAMPLES) {
         count = MAX_SAMPLES;
         current_read = current_write - MAX_SAMPLES;
     }
 
-    if (count <= 0)
-    {
+    if (count <= 0) {
         osMutexRelease(data_mutex);
         return;
     }
@@ -87,21 +82,18 @@ void pack_ground_to_vector(flatcc_builder_t *builder)
     uint32_t start_idx = current_read % MAX_SAMPLES;
     uint32_t end_idx = current_write % MAX_SAMPLES;
 
-    if (start_idx < end_idx)
-    {
+    if (start_idx < end_idx) {
         // Linear case: Data is in one continuous block
-        FripuckProtocol_Sensors_GroundData_vec_append(builder,
-                                                      (const FripuckProtocol_Sensors_GroundData_t *)&buffer[start_idx], end_idx - start_idx);
-    }
-    else
-    {
+        FripuckProtocol_Sensors_GroundData_vec_append(
+            builder, (const FripuckProtocol_Sensors_GroundData_t*)&buffer[start_idx], end_idx - start_idx);
+    } else {
         // Wrapped case: Data is split across the array boundary
         // Part A: From read_pointer to the very end of the array
-        FripuckProtocol_Sensors_GroundData_vec_append(builder,
-                                                      (const FripuckProtocol_Sensors_GroundData_t *)&buffer[start_idx], MAX_SAMPLES - start_idx);
+        FripuckProtocol_Sensors_GroundData_vec_append(
+            builder, (const FripuckProtocol_Sensors_GroundData_t*)&buffer[start_idx], MAX_SAMPLES - start_idx);
         // Part B: From the start of the array to the write_pointer
-        FripuckProtocol_Sensors_GroundData_vec_append(builder,
-                                                      (const FripuckProtocol_Sensors_GroundData_t *)&buffer[0], end_idx);
+        FripuckProtocol_Sensors_GroundData_vec_append(builder, (const FripuckProtocol_Sensors_GroundData_t*)&buffer[0],
+                                                      end_idx);
     }
 
     // Add what was added
@@ -111,26 +103,21 @@ void pack_ground_to_vector(flatcc_builder_t *builder)
     osMutexRelease(data_mutex);
 }
 
-int ground_start(void *argument)
-{
-    if (configured)
-        return HAL_OK;
+int ground_start(void* argument) {
+    if (configured) return HAL_OK;
 
     static const osMutexAttr_t mutex_attributes = {"GROUND_data_mutex", osMutexRecursive | osMutexPrioInherit, NULL, 0};
     data_mutex = osMutexNew(&mutex_attributes);
 
-    if (i2c_read_reg(GROUND_ADDR, 0, temp_buffer, sizeof(temp_buffer)) != HAL_OK)
-        return HAL_ERROR;
+    if (i2c_read_reg(GROUND_ADDR, 0, temp_buffer, sizeof(temp_buffer)) != HAL_OK) return HAL_ERROR;
 
-    if ((task_handle = osThreadNew(ground_task, argument, &task_attributes)) == NULL)
-        return HAL_ERROR;
+    if ((task_handle = osThreadNew(ground_task, argument, &task_attributes)) == NULL) return HAL_ERROR;
 
     configured = true;
     return HAL_OK;
 }
 
-void ground_stop(void)
-{
+void ground_stop(void) {
     vTaskDelete(task_handle);
     task_handle = NULL;
     configured = false;

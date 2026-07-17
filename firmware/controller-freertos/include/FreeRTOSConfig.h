@@ -151,13 +151,11 @@ See http://www.FreeRTOS.org/RTOS-Cortex-M3-M4.html. */
 /* Normal assert() semantics without relying on the provision of an assert.h
 header file. */
 /* USER CODE BEGIN 1 */
-#define configASSERT(x)       \
-  if ((x) == 0)               \
-  {                           \
-    taskDISABLE_INTERRUPTS(); \
-    for (;;)                  \
-      ;                       \
-  }
+#define configASSERT(x)           \
+    if ((x) == 0) {               \
+        taskDISABLE_INTERRUPTS(); \
+        for (;;);                 \
+    }
 /* USER CODE END 1 */
 
 /* Definitions that map the FreeRTOS port interrupt handlers to their CMSIS
@@ -165,7 +163,8 @@ standard names. */
 #define vPortSVCHandler SVC_Handler
 #define xPortPendSVHandler PendSV_Handler
 
-/* IMPORTANT: After 10.3.1 update, Systick_Handler comes from NVIC (if SYS timebase = systick), otherwise from cmsis_os2.c */
+/* IMPORTANT: After 10.3.1 update, Systick_Handler comes from NVIC (if SYS timebase = systick), otherwise from
+ * cmsis_os2.c */
 
 #define USE_CUSTOM_SYSTICK_HANDLER_IMPLEMENTATION 0
 
@@ -173,7 +172,8 @@ standard names. */
 /* Section where parameter definitions can be added (for instance, to override default ones in FreeRTOS.h) */
 /* USER CODE END Defines */
 
-#ifndef pdTICKS_TO_MS // Added manually from <https://sourcevu.sysprogs.com/espressif/lib/freertos/macros/pdTICKS_TO_MS>
+#ifndef pdTICKS_TO_MS  // Added manually from
+                       // <https://sourcevu.sysprogs.com/espressif/lib/freertos/macros/pdTICKS_TO_MS>
 #define pdTICKS_TO_MS(xTicks) ((TickType_t)((uint64_t)(xTicks) * 1000 / configTICK_RATE_HZ))
 #endif
 

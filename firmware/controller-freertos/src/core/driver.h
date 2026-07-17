@@ -4,4 +4,4 @@
 void SystemClock_Config(void);
 void MX_FREERTOS_Init(void);
 
-#endif // __DRIVER_H
+#endif  // __DRIVER_H

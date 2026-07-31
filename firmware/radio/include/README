@@ -35,3 +35,16 @@ Read more about using header files in official GCC documentation:
 * Computed Includes
 
 https://gcc.gnu.org/onlinedocs/cpp/Header-Files.html
+
+
+# Wifi configuration
+Please define `network_config.h` with the following definitions:
+```c 
+// Example
+#define config_WIFI_SSID "Hello, world !"
+#define config_WIFI_PASSWORD "p@ssword."
+#define config_TCP_PORT 65430
+#define config_UDP_PORT 65431
+```
+
+This is used to statically include the password.

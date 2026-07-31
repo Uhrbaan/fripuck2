@@ -5,7 +5,7 @@
 #include "hal/spi_hal.h"
 #include <inttypes.h>
 
-typedef void (*spi_callback_fn)(uint8_t *data, uint16_t length);
+typedef void (*spi_callback_fn)(uint8_t* data, uint16_t length);
 
 /**
  * Initializes the spi API with the controller chip.
@@ -15,4 +15,4 @@ typedef void (*spi_callback_fn)(uint8_t *data, uint16_t length);
  */
 esp_err_t spi_init(spi_host_device_t host_device, spi_callback_fn callback);
 
-#endif // SPI_LIB_H
+#endif  // SPI_LIB_H

@@ -3,6 +3,6 @@
 build
 secrets.*
 main
-network_config.c
+network_config.*
 sdkconfig.*
 !sdkconfig.board

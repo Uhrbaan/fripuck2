@@ -4,7 +4,7 @@
 #include "driver/uart.h"
 #include <inttypes.h>
 
-typedef void (*uart_callback_fn)(uint8_t *data, uint16_t length);
+typedef void (*uart_callback_fn)(uint8_t* data, uint16_t length);
 
 /**
  * Initialize the UART communication bridge with the controller chip.
@@ -14,7 +14,7 @@ typedef void (*uart_callback_fn)(uint8_t *data, uint16_t length);
  * @param callback The callback function that will be called when the robot recieves a message on UART from the
  * controller.
  */
-esp_err_t uart_init(uart_port_t uart_num, QueueHandle_t *uart_queue, uart_callback_fn callback);
+esp_err_t uart_init(uart_port_t uart_num, QueueHandle_t* uart_queue, uart_callback_fn callback);
 
 /**
  * @brief Send data over UART to the controller chip.
@@ -24,6 +24,8 @@ esp_err_t uart_init(uart_port_t uart_num, QueueHandle_t *uart_queue, uart_callba
  * @param data Pointer to the data you want to send
  * @param length Length in bytes of the data you want to send.
  */
-void uart_send(uint8_t *data, uint16_t length);
+void uart_send(uint8_t* data, uint16_t length);
 
-#endif // UART_H
+QueueHandle_t* uart1_init(void);
+
+#endif  // UART_H

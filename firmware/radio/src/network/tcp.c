@@ -17,9 +17,9 @@ QueueHandle_t tcp_transmit_queue;
 
 EventGroupHandle_t tcp_event_group;
 
-struct sockaddr_storage client_address; // Large enough to store both IPv4 and IPv6
+struct sockaddr_storage client_address;  // Large enough to store both IPv4 and IPv6
 
-void tcp_receiver(void *pvParameters) {
+void tcp_receiver(void* pvParameters) {
     const int socket = (int)pvParameters;
     int length;
     int offset = 0;
@@ -42,7 +42,7 @@ void tcp_receiver(void *pvParameters) {
     } while (length > 0);
 }
 
-void tcp_transmitter(void *pvParameters) {
+void tcp_transmitter(void* pvParameters) {
     const int socket = (int)pvParameters;
     static request_queue_item item;
     static const char TAG[] = "TCP TRANSMITTER";
@@ -78,17 +78,17 @@ int tcp_init_(void) {
 }
 
 // Cette fonction bloque jusqu'à ce qu'un client se connecte
-esp_err_t wait_for_tcp_client(struct sockaddr_in *out_client_addr, int *out_socket) {
-    static const char *TAG = "WAIT TCP CLIENT";
+esp_err_t wait_for_tcp_client(struct sockaddr_in* out_client_addr, int* out_socket) {
+    static const char* TAG = "WAIT TCP CLIENT";
 
     struct sockaddr_in server_addr = {
-        .sin_addr.s_addr = htonl(INADDR_ANY), .sin_family = AF_INET, .sin_port = htons(tcp_port)};
+        .sin_addr.s_addr = htonl(INADDR_ANY), .sin_family = AF_INET, .sin_port = htons(config_TCP_PORT)};
 
     int listen_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
     int opt = 1;
     setsockopt(listen_sock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
-    if (bind(listen_sock, (struct sockaddr *)&server_addr, sizeof(server_addr)) != 0) {
+    if (bind(listen_sock, (struct sockaddr*)&server_addr, sizeof(server_addr)) != 0) {
         ESP_LOGE(TAG, "Unable to bind listen_sock: %s:%s", __FILE__, __LINE__);
         close(listen_sock);
         return ESP_FAIL;
@@ -103,20 +103,19 @@ esp_err_t wait_for_tcp_client(struct sockaddr_in *out_client_addr, int *out_sock
     ESP_LOGI(TAG, "Listning to listen_sock.");
 
     socklen_t addr_len = sizeof(struct sockaddr_in);
-    int sock = accept(listen_sock, (struct sockaddr *)out_client_addr, &addr_len); // Bloque ici
+    int sock = accept(listen_sock, (struct sockaddr*)out_client_addr, &addr_len);  // Bloque ici
     ESP_LOGI("TCP CLIENT ACCEPT", "Incoming client connection accepted.");
 
     // On n'a plus besoin du socket d'écoute une fois le client accepté
     close(listen_sock);
 
-    if (sock < 0)
-        return ESP_FAIL;
+    if (sock < 0) return ESP_FAIL;
 
     *out_socket = sock;
     return ESP_OK;
 }
 
-void tcp_connection_manager(void *pvParameters) {
+void tcp_connection_manager(void* pvParameters) {
     static struct sockaddr_in client_addr = {0};
     static int client_socket_fd = 0;
     static const char TAG[] = "TCP MANAGER";
@@ -125,12 +124,12 @@ void tcp_connection_manager(void *pvParameters) {
 
 retry:
     ESP_LOGI(TAG, "Waiting for a client to connect.");
-    wait_for_tcp_client(&client_addr, &client_socket_fd); // Waiting for incoming connection (blocking)
+    wait_for_tcp_client(&client_addr, &client_socket_fd);  // Waiting for incoming connection (blocking)
 
-    xTaskCreate(tcp_transmitter, "tcp_transmitter", 1024 * 2, (void *)client_socket_fd, 1, &xTCPTransmitterHandle);
-    xTaskCreate(tcp_receiver, "tcp_receiver", 1024 * 2, (void *)client_socket_fd, 1, &xTCPRecieverHandle);
-    xTaskCreate(udp_transmitter, "udp_transmitter", 1024 * 4, (void *)&client_addr, 1,
-                &xUDPTransmitterHandle); // also close the UDP connection if we lose connection.
+    xTaskCreate(tcp_transmitter, "tcp_transmitter", 1024 * 2, (void*)client_socket_fd, 1, &xTCPTransmitterHandle);
+    xTaskCreate(tcp_receiver, "tcp_receiver", 1024 * 2, (void*)client_socket_fd, 1, &xTCPRecieverHandle);
+    xTaskCreate(udp_transmitter, "udp_transmitter", 1024 * 4, (void*)&client_addr, 1,
+                &xUDPTransmitterHandle);  // also close the UDP connection if we lose connection.
 
     ESP_LOGI(TAG, "Client connected, started TCP services.");
 

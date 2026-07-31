@@ -56,14 +56,16 @@ int init_hardware(void) {
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
     .name = "defaultTask",
-    .stack_size = 1024 * 1,
     .priority = (osPriority_t)osPriorityNormal,
 };
 
 void StartDefaultTask(void* argument) {
-    proximity_start(&htim5, &hadc1);
-    imu_start();
-    ground_start(NULL);
+    int err = 0;
+    // proximity_start(&htim5, &hadc1);
+    err = imu_start();
+    if (err != 0) set_led(4, true);
+    err = ground_start(NULL);
+    if (err != 0) set_led(5, true);
     tof_start_task(NULL);
     telemetry_start_task(NULL);
 

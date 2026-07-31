@@ -4,6 +4,5 @@
 #include "sensors_builder.h"
 
 int ground_start(void* argument);
-void pack_ground_to_vector(flatcc_builder_t* builder);
 
 #endif

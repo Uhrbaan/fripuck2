@@ -12,21 +12,22 @@
 #include <cmsis_os.h>
 #include "sensors_builder.h"
 #include "i2c/i2c.h"
+#include "telemetry/telemetry.h"
 
 #define GROUND_ADDR 0x60
 
-#define MAX_SAMPLES 10
 static osThreadId_t task_handle;
 static const osThreadAttr_t task_attributes = {
     .name = "ground task",
     .stack_size = 512,
     .priority = (osPriority_t)osPriorityNormal,
 };
+#define MAX_GND_SAMPLES 10
 
 static uint8_t temp_buffer[21] = {0};
 
 static osMutexId_t data_mutex = NULL;
-static FripuckProtocol_Sensors_GroundData_t buffer[MAX_SAMPLES] = {0};
+static FripuckProtocol_Sensors_GroundData_t buffer[MAX_GND_SAMPLES] = {0};
 static uint32_t write_pointer = 0;
 static uint32_t read_pointer = 0;
 
@@ -37,7 +38,7 @@ void ground_task(void* argument) {
         i2c_read_reg(GROUND_ADDR, 0, temp_buffer, sizeof(temp_buffer));
 
         osMutexAcquire(data_mutex, osWaitForever);
-        FripuckProtocol_Sensors_GroundData_t* p = &buffer[write_pointer % MAX_SAMPLES];
+        FripuckProtocol_Sensors_GroundData_t* p = &buffer[write_pointer % MAX_GND_SAMPLES];
 
         // Ground
         p->delta.g0 = (uint16_t)(temp_buffer[1] & 0xff) + ((uint16_t)temp_buffer[0] << 8);
@@ -60,49 +61,6 @@ void ground_task(void* argument) {
     }
 }
 
-void pack_ground_to_vector(flatcc_builder_t* builder) {
-    osMutexAcquire(data_mutex, osWaitForever);
-    uint32_t current_read = read_pointer;
-    uint32_t current_write = write_pointer;
-    uint32_t count = current_write - current_read;
-
-    // if we read to slowly, maybe there are more than that missing.
-    if (count > MAX_SAMPLES) {
-        count = MAX_SAMPLES;
-        current_read = current_write - MAX_SAMPLES;
-    }
-
-    if (count <= 0) {
-        osMutexRelease(data_mutex);
-        return;
-    }
-
-    FripuckProtocol_Sensors_GroundData_vec_start(builder);
-
-    uint32_t start_idx = current_read % MAX_SAMPLES;
-    uint32_t end_idx = current_write % MAX_SAMPLES;
-
-    if (start_idx < end_idx) {
-        // Linear case: Data is in one continuous block
-        FripuckProtocol_Sensors_GroundData_vec_append(
-            builder, (const FripuckProtocol_Sensors_GroundData_t*)&buffer[start_idx], end_idx - start_idx);
-    } else {
-        // Wrapped case: Data is split across the array boundary
-        // Part A: From read_pointer to the very end of the array
-        FripuckProtocol_Sensors_GroundData_vec_append(
-            builder, (const FripuckProtocol_Sensors_GroundData_t*)&buffer[start_idx], MAX_SAMPLES - start_idx);
-        // Part B: From the start of the array to the write_pointer
-        FripuckProtocol_Sensors_GroundData_vec_append(builder, (const FripuckProtocol_Sensors_GroundData_t*)&buffer[0],
-                                                      end_idx);
-    }
-
-    // Add what was added
-    FripuckProtocol_Sensors_SensorBatch_imu_add(builder, FripuckProtocol_Sensors_GroundData_vec_end(builder));
-
-    read_pointer = current_write;
-    osMutexRelease(data_mutex);
-}
-
 int ground_start(void* argument) {
     if (configured) return HAL_OK;
 
@@ -114,6 +72,21 @@ int ground_start(void* argument) {
     if ((task_handle = osThreadNew(ground_task, argument, &task_attributes)) == NULL) return HAL_ERROR;
 
     configured = true;
+
+    int err = register_sensor(5.0, 0.1,
+                              (struct sensor_fb_data){
+                                  .align = 2,
+                                  .elem_size = sizeof(FripuckProtocol_Sensors_GroundData_t),
+                                  .buffer = &buffer,
+                                  .max_elem = MAX_GND_SAMPLES,
+                                  .read_pointer = &read_pointer,
+                                  .write_pointer = &write_pointer,
+                                  .data_mutex_id = data_mutex,
+                                  .id = 2,
+                              });
+    if (err < 0) {
+        return HAL_ERROR;
+    }
     return HAL_OK;
 }
 

@@ -1,0 +1,1 @@
+#define MAX_TELEMETRY_DELAY_MS (100)  // we want at least 10 fps

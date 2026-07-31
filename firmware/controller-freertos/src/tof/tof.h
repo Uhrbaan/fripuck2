@@ -7,7 +7,7 @@
 #include "sensors_builder.h"
 #include <cmsis_os.h>
 
-void pack_tof_to_vector(flatcc_builder_t* builder);
+uint32_t pack_tof_to_vector(flatcc_builder_t* builder, uint32_t limit);
 void tof_start_task(void* argument);
 
 /** @brief Possible accuracy configurations of the TOF.

@@ -2,6 +2,7 @@
 #include "tof/tof.h"
 #include "i2c/i2c.h"
 #include "leds/leds.h"
+#include "telemetry/telemetry.h"
 
 #include "flatcc/flatcc.h"
 #include "sensors_builder.h"
@@ -13,15 +14,15 @@
 #include <stdio.h>
 #include <FreeRTOS.h>
 
-typedef struct {
+struct tof_reading_t {
     uint16_t distance;
     uint16_t timestamp_offset;
-} tof_reading_t;
+};
 
-#define MAX_TOF_SAMPLES 30
+#define MAX_GND_SAMPLES 30
 #define VL53L0X_ADDR 0x52
 
-static tof_reading_t tof_buffer[MAX_TOF_SAMPLES];
+static struct tof_reading_t tof_buffer[MAX_GND_SAMPLES];
 static osMutexId_t tof_data_mutex;
 
 static uint32_t read_pointer = 0;
@@ -48,13 +49,11 @@ extern osMutexId_t i2c_mutex;
 
 void tof_task(void* argument) {
     uint32_t millisecond_delay = (uint32_t)argument / 1000;  // convert microseconds to milliseconds
-    static const osMutexAttr_t mutex_attributes = {"tof_data_mutex", osMutexRecursive | osMutexPrioInherit, NULL, 0};
-    tof_data_mutex = osMutexNew(&mutex_attributes);
 
     for (;;) {
         osMutexAcquire(tof_data_mutex, osWaitForever);
-        tof_buffer[write_pointer % MAX_TOF_SAMPLES].timestamp_offset = (uint16_t)pdTICKS_TO_MS(HAL_GetTick());
-        tof_buffer[write_pointer % MAX_TOF_SAMPLES].distance = tof_get_last_distance();
+        tof_buffer[write_pointer % MAX_GND_SAMPLES].timestamp_offset = (uint16_t)pdTICKS_TO_MS(HAL_GetTick());
+        tof_buffer[write_pointer % MAX_GND_SAMPLES].distance = tof_get_last_distance();
         write_pointer++;
         osMutexRelease(tof_data_mutex);
         osDelay(pdMS_TO_TICKS(millisecond_delay));
@@ -62,50 +61,20 @@ void tof_task(void* argument) {
 }
 
 void tof_start_task(void* argument) {
+    static const osMutexAttr_t mutex_attributes = {"tof_data_mutex", osMutexRecursive | osMutexPrioInherit, NULL, 0};
+    tof_data_mutex = osMutexNew(&mutex_attributes);
     tof_task_handle = osThreadNew(tof_task, (void*)TOF_HIGH_SPEED, &tof_task_attributes);
-}
 
-void pack_tof_to_vector(flatcc_builder_t* builder) {
-    osMutexAcquire(tof_data_mutex, osWaitForever);
-    uint32_t current_read = read_pointer;
-    uint32_t current_write = write_pointer;
-    uint32_t count = current_write - current_read;
-
-    // if we read to slowly, maybe there are more than that missing.
-    if (count > MAX_TOF_SAMPLES) {
-        count = MAX_TOF_SAMPLES;
-        current_read = current_write - MAX_TOF_SAMPLES;
-    }
-
-    if (count <= 0) {
-        osMutexRelease(tof_data_mutex);
-        return;
-    }
-
-    FripuckProtocol_Sensors_TofData_vec_start(builder);
-
-    uint32_t start_idx = current_read % MAX_TOF_SAMPLES;
-    uint32_t end_idx = current_write % MAX_TOF_SAMPLES;
-
-    if (start_idx < end_idx) {
-        // Linear case: Data is in one continuous block
-        FripuckProtocol_Sensors_TofData_vec_append(
-            builder, (const FripuckProtocol_Sensors_TofData_t*)&tof_buffer[start_idx], end_idx - start_idx);
-    } else {
-        // Wrapped case: Data is split across the array boundary
-        // Part A: From read_pointer to the very end of the array
-        FripuckProtocol_Sensors_TofData_vec_append(
-            builder, (const FripuckProtocol_Sensors_TofData_t*)&tof_buffer[start_idx], MAX_TOF_SAMPLES - start_idx);
-        // Part B: From the start of the array to the write_pointer
-        FripuckProtocol_Sensors_TofData_vec_append(builder, (const FripuckProtocol_Sensors_TofData_t*)&tof_buffer[0],
-                                                   end_idx);
-    }
-
-    // Add what was added
-    FripuckProtocol_Sensors_SensorBatch_tof_add(builder, FripuckProtocol_Sensors_TofData_vec_end(builder));
-
-    read_pointer = current_write;
-    osMutexRelease(tof_data_mutex);
+    register_sensor(5.0, 0.1,
+                    (struct sensor_fb_data){.align = 2,
+                                            .elem_size = sizeof(FripuckProtocol_Sensors_TofData_t),
+                                            .max_elem = MAX_GND_SAMPLES,
+                                            .data_mutex_id = tof_data_mutex,
+                                            .buffer = &tof_buffer,
+                                            .read_pointer = &read_pointer,
+                                            .write_pointer = &write_pointer,
+                                            .id = 3});
+    // TODO: explain where the magic numbers (align, id, size) come from, and look into if they can be evaluated
 }
 
 /** Initialize the time of flight sensor on the chip.

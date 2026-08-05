@@ -6,7 +6,7 @@
 #include "sensors_builder.h"
 
 void pack_prox_to_vector(flatcc_builder_t* builder);
-void proximity_start(TIM_HandleTypeDef* tim5_handle, ADC_HandleTypeDef* adc1_handle);
+int proximity_start(TIM_HandleTypeDef* tim5_handle, ADC_HandleTypeDef* adc1_handle);
 void proximity_stop();
 
 #endif

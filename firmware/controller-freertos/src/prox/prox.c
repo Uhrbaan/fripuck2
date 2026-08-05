@@ -5,6 +5,8 @@
 #include "flatcc/flatcc.h"
 #include "sensors_builder.h"
 
+#include "telemetry/telemetry.h"
+
 struct port_pin_pair {
     GPIO_TypeDef* port;
     uint16_t pin;
@@ -23,7 +25,13 @@ enum pulse_state {
 
 TIM_HandleTypeDef* timer_handle = NULL;
 ADC_HandleTypeDef* adc_handle = NULL;
-TaskHandle_t proximity_task_handle = NULL;
+
+osThreadId_t proximity_task_handle = NULL;
+const osThreadAttr_t proximity_task_attributes = {
+    .name = "proximity_task",
+    .priority = (osPriority_t)osPriorityNormal,
+};
+
 int pulse_state = 0;
 
 /** Buffer filled by DMA containing the ambient and absolute distance values.
@@ -76,75 +84,58 @@ void ProximityTask(void* argument) {
     }
 }
 
-void pack_prox_to_vector(flatcc_builder_t* builder) {
-    osMutexAcquire(prox_data_mutex, osWaitForever);
-    uint32_t current_read = read_pointer;
-    uint32_t current_write = write_pointer;
-    uint32_t count = current_write - current_read;
-
-    // if we read to slowly, maybe there are more than that missing.
-    if (count > MAX_PROXIMITY_SAMPLES) {
-        count = MAX_PROXIMITY_SAMPLES;
-        current_read = current_write - MAX_PROXIMITY_SAMPLES;
-    }
-
-    if (count <= 0) {
-        osMutexRelease(prox_data_mutex);
-        return;
-    }
-
-    FripuckProtocol_Sensors_ProximityData_vec_start(builder);
-
-    uint32_t start_idx = current_read % MAX_PROXIMITY_SAMPLES;
-    uint32_t end_idx = current_write % MAX_PROXIMITY_SAMPLES;
-
-    if (start_idx < end_idx) {
-        // Linear case: Data is in one continuous block
-        FripuckProtocol_Sensors_ProximityData_vec_append(
-            builder, (const FripuckProtocol_Sensors_ProximityData_t*)&proximity_buffer[start_idx], end_idx - start_idx);
-    } else {
-        // Wrapped case: Data is split across the array boundary
-        // Part A: From read_pointer to the very end of the array
-        FripuckProtocol_Sensors_ProximityData_vec_append(
-            builder, (const FripuckProtocol_Sensors_ProximityData_t*)&proximity_buffer[start_idx],
-            MAX_PROXIMITY_SAMPLES - start_idx);
-        // Part B: From the start of the array to the write_pointer
-        FripuckProtocol_Sensors_ProximityData_vec_append(
-            builder, (const FripuckProtocol_Sensors_ProximityData_t*)&proximity_buffer[0], end_idx);
-    }
-
-    // Add what was added
-    FripuckProtocol_Sensors_SensorBatch_proximity_add(builder, FripuckProtocol_Sensors_ProximityData_vec_end(builder));
-
-    read_pointer = current_write;
-    osMutexRelease(prox_data_mutex);
-}
-
-void proximity_start(TIM_HandleTypeDef* tim5_handle, ADC_HandleTypeDef* adc1_handle) {
-    timer_handle = tim5_handle;
+int proximity_start(TIM_HandleTypeDef* tim2_handle, ADC_HandleTypeDef* adc1_handle) {
+    timer_handle = tim2_handle;
     adc_handle = adc1_handle;
     pulse_state = 0;
 
-    HAL_TIM_RegisterCallback(timer_handle, HAL_TIM_PERIOD_ELAPSED_CB_ID, proximity_timer_elapsed_cb);
-    HAL_TIM_RegisterCallback(timer_handle, HAL_TIM_OC_DELAY_ELAPSED_CB_ID, proximity_timer_channel1_disable_ir_cb);
+    int err = HAL_OK;
+
+    err = HAL_TIM_RegisterCallback(timer_handle, HAL_TIM_PERIOD_ELAPSED_CB_ID, proximity_timer_elapsed_cb);
+    if (err != HAL_OK) return HAL_ERROR;
+    err =
+        HAL_TIM_RegisterCallback(timer_handle, HAL_TIM_OC_DELAY_ELAPSED_CB_ID, proximity_timer_channel1_disable_ir_cb);
+    if (err != HAL_OK) return HAL_ERROR;
 
     // Create a mutex so we can't read/modify the data while it is being updated
     static const osMutexAttr_t mutex_attributes = {"prox_data_mutex", osMutexRecursive | osMutexPrioInherit, NULL, 0};
     prox_data_mutex = osMutexNew(&mutex_attributes);
 
     // Start ADC with DMA
-    HAL_ADC_Start_DMA(adc_handle, (uint32_t*)adc_buffer, 16);
+    err = HAL_ADC_Start_DMA(adc_handle, (uint32_t*)adc_buffer, 16);
+    if (err != HAL_OK) return HAL_ERROR;
 
     // Start TIM5 (Base, CH1 Interrupt, and CH2 PWM for ADC Trigger)
-    HAL_TIM_Base_Start_IT(timer_handle);
-    HAL_TIM_OC_Start_IT(timer_handle, TIM_CHANNEL_1);
-    HAL_TIM_PWM_Start(timer_handle, TIM_CHANNEL_2);
+    err = HAL_TIM_Base_Start_IT(timer_handle);
+    if (err != HAL_OK) return HAL_ERROR;
+    err = HAL_TIM_OC_Start_IT(timer_handle, TIM_CHANNEL_1);
+    if (err != HAL_OK) return HAL_ERROR;
+    err = HAL_TIM_PWM_Start(timer_handle, TIM_CHANNEL_2);
+    if (err != HAL_OK) return HAL_ERROR;
 
-    BaseType_t status =
-        xTaskCreate(ProximityTask, "proximity_task", 256, NULL, osPriorityNormal, &proximity_task_handle);
-    if (status != pdPASS) {
-        while (1);  // Task creation failed (likely out of Heap memory)
+    proximity_task_handle = osThreadNew(ProximityTask, NULL, &proximity_task_attributes);
+    if (proximity_task_handle == NULL) {
+        return HAL_ERROR;
     }
+
+    int id = 0;
+    err = register_sensor(&id, 5.0, 0.1,
+                          (struct sensor_fb_data){
+                              .align = 2,
+                              .id = 1,
+                              .elem_size = sizeof(FripuckProtocol_Sensors_ProximityData_t),
+                              .buffer = &proximity_buffer,
+                              .max_elem = MAX_PROXIMITY_SAMPLES,
+                              .read_pointer = &read_pointer,
+                              .write_pointer = &write_pointer,
+                              .data_mutex_id = prox_data_mutex,
+                          });
+    if (err < 0) {
+        return HAL_ERROR;
+    }
+    return HAL_OK;
+
+    return HAL_OK;
 }
 
 void proximity_stop() {
@@ -169,7 +160,7 @@ The data is read twice (two cycles) for each pin, but in the first cycle, the ir
 the ir light is off (reads the ambient light).
  */
 void proximity_timer_elapsed_cb(TIM_HandleTypeDef* htim) {
-    if (htim->Instance == TIM5) {
+    if (htim->Instance == TIM2) {
         // Only turn LEDs on during odd states (Reflected). Even states are Ambient (leave off).
         switch (pulse_state) {
             case CYCLE0_ON:
@@ -195,8 +186,9 @@ void proximity_timer_elapsed_cb(TIM_HandleTypeDef* htim) {
 }
 
 // Gets called 300µs after TIM5 has elapsed to turn off all ir lights.
+// FIXME: it is currently possible to provide a htim handle that will fail here.
 void proximity_timer_channel1_disable_ir_cb(TIM_HandleTypeDef* htim) {
-    if (htim->Instance == TIM5 && htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1) {
+    if (htim->Instance == TIM2 && htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1) {
         // Disable all IR lights
         HAL_GPIO_WritePin(GPIOB, PROX4_Pin | PROX5_Pin, GPIO_PIN_RESET);                                      // B
         HAL_GPIO_WritePin(GPIOC, PROX0_Pin | PROX2_Pin | PROX3_Pin | PROX6_Pin | PROX7_Pin, GPIO_PIN_RESET);  // C

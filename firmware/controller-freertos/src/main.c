@@ -44,11 +44,12 @@ int init_hardware(void) {
     MX_TIM3_Init();
     MX_TIM4_Init();
     MX_TIM5_Init();
+    HAL_TIM_PWM_Start(&htim5, TIM_CHANNEL_1);
+    HAL_Delay(1000);
     MX_USART3_UART_Init();
     MX_SPI1_Init();
     MX_CAN1_Init();
     MX_I2C1_Init();
-    MX_ADC1_Init();
 
     // Give time to the system to settle.
     HAL_Delay(500);
@@ -94,7 +95,6 @@ int main(void) {
     osKernelInitialize(); /* Call init function for freertos objects (in cmsis_os2.c) */
 
     i2c_init(&hi2c1);
-    camera_init_hal(&htim5);
     tof_init(&hi2c1, TOF_HIGH_SPEED);
     spi_bus_init(&hspi1);
 

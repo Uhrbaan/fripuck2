@@ -127,7 +127,7 @@ struct sensor_info {
 #define TELEMETRY_SENSOR_LIST_SIZE 10
 struct sensor_info registered_sensors[TELEMETRY_SENSOR_LIST_SIZE] = {0};
 
-telemetry_sensor_id register_sensor(float priority, float age_step, struct sensor_fb_data fb_data) {
+int register_sensor(telemetry_sensor_id* out, float priority, float age_step, struct sensor_fb_data fb_data) {
     int i = 0;
     for (; i < TELEMETRY_SENSOR_LIST_SIZE; i++) {
         if (registered_sensors[i].fb_data.read_pointer == NULL) {  // cannot be null so empty
@@ -140,10 +140,11 @@ telemetry_sensor_id register_sensor(float priority, float age_step, struct senso
     }
 
     if (i == TELEMETRY_SENSOR_LIST_SIZE) {
-        return -1;  // Error, did not find place to put the sensor in.
+        return HAL_ERROR;  // Error, did not find place to put the sensor in.
     }
 
-    return i;
+    if (out != NULL) *out = i;
+    return HAL_OK;
 }
 
 void unregister_sensor(telemetry_sensor_id id) { memset(&registered_sensors[id], 0, sizeof(struct sensor_info)); }

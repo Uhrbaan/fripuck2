@@ -73,7 +73,7 @@ int ground_start(void* argument) {
 
     configured = true;
 
-    int err = register_sensor(5.0, 0.1,
+    int err = register_sensor(NULL, 5.0, 0.1,
                               (struct sensor_fb_data){
                                   .align = 2,
                                   .elem_size = sizeof(FripuckProtocol_Sensors_GroundData_t),

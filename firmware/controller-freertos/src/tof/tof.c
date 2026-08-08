@@ -49,12 +49,18 @@ extern osMutexId_t i2c_mutex;
 
 void tof_task(void* argument) {
     uint32_t millisecond_delay = (uint32_t)argument / 1000;  // convert microseconds to milliseconds
+    int err = 0;
+    uint16_t distance = 0;
 
     for (;;) {
         osMutexAcquire(tof_data_mutex, osWaitForever);
-        tof_buffer[write_pointer % MAX_GND_SAMPLES].timestamp_offset = (uint16_t)pdTICKS_TO_MS(HAL_GetTick());
-        tof_buffer[write_pointer % MAX_GND_SAMPLES].distance = tof_get_last_distance();
-        write_pointer++;
+        err = tof_get_last_distance(&distance);
+        if (err == 0) {
+            // Only publish distance if measurement is valid. Error check could also be ignored.
+            tof_buffer[write_pointer % MAX_GND_SAMPLES].timestamp_offset = (uint16_t)pdTICKS_TO_MS(HAL_GetTick());
+            tof_buffer[write_pointer % MAX_GND_SAMPLES].distance = distance;
+            write_pointer++;
+        }
         osMutexRelease(tof_data_mutex);
         osDelay(pdMS_TO_TICKS(millisecond_delay));
     }
@@ -65,7 +71,7 @@ void tof_start_task(void* argument) {
     tof_data_mutex = osMutexNew(&mutex_attributes);
     tof_task_handle = osThreadNew(tof_task, (void*)TOF_HIGH_SPEED, &tof_task_attributes);
 
-    register_sensor(5.0, 0.1,
+    register_sensor(NULL, 5.0, 0.1,
                     (struct sensor_fb_data){.align = 2,
                                             .elem_size = sizeof(FripuckProtocol_Sensors_TofData_t),
                                             .max_elem = MAX_GND_SAMPLES,
@@ -167,23 +173,23 @@ cleanup:
     return -1;
 }
 
-uint16_t tof_get_last_distance(void) {
+/**
+ * @param out_distance_mm Returns the distance to the nearest object in mmm.
+ * @return 0 if the object was in range (precise measurement), or something else (probably 2) if the object is out of
+ * range (value cannot be trusted).
+ */
+int tof_get_last_distance(uint16_t* out_distance_mm) {
     VL53L0X_RangingMeasurementData_t measure;
-    uint16_t dist = 8190;  // Default "nothing found" value
+    int err = HAL_OK;
 
     osMutexAcquire(i2c_mutex, osWaitForever);
     // This grabs the most recent completed measurement without starting a new one
 
-    // Cheating a bit to not get erros: blocking execution until it is ready
-    uint8_t ready = 0;
-    while (VL53L0X_GetMeasurementDataReady(&device, &ready) || !ready) osDelay(1);
-
     if (VL53L0X_GetRangingMeasurementData(&device, &measure) == VL53L0X_ERROR_NONE) {
-        if (measure.RangeStatus == 0) {  // 0 = Valid data
-            dist = measure.RangeMilliMeter;
-        }
+        *out_distance_mm = measure.RangeMilliMeter;
+        err = measure.RangeStatus;
     }
     osMutexRelease(i2c_mutex);
 
-    return dist;
+    return err;
 }

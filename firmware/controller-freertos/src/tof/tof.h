@@ -18,6 +18,6 @@ void tof_start_task(void* argument);
 enum tof_accuracy { TOF_LONG_RANGE = 33000, TOF_HIGH_ACCURACY = 200000, TOF_HIGH_SPEED = 20000 };
 
 int tof_init(I2C_HandleTypeDef* i2c_handle, enum tof_accuracy accuracy);
-uint16_t tof_get_last_distance(void);
+int tof_get_last_distance(uint16_t* out_distance_mm);
 
 #endif

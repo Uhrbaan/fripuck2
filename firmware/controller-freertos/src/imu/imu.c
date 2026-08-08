@@ -71,7 +71,7 @@ int imu_start(void) {
     } else
         return HAL_ERROR;
 
-    int err = register_sensor(6.0, 0.2,
+    int err = register_sensor(NULL, 6.0, 0.2,
                               (struct sensor_fb_data){
                                   .align = 4,
                                   .elem_size = sizeof(FripuckProtocol_Sensors_ImuData_t),

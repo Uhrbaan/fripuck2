@@ -18,7 +18,7 @@ struct sensor_fb_data {
 
 typedef int telemetry_sensor_id;
 
-telemetry_sensor_id register_sensor(float priority, float age_step, struct sensor_fb_data fb_data);
+int register_sensor(telemetry_sensor_id* out, float priority, float age_step, struct sensor_fb_data fb_data);
 void unregister_sensor(telemetry_sensor_id id);
 
 /** @brief Start the telemetry thread that packages sensor data in the background. */

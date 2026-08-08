@@ -23,16 +23,16 @@ enum pulse_state {
     CYCLE3_ON,
 };
 
-TIM_HandleTypeDef* timer_handle = NULL;
-ADC_HandleTypeDef* adc_handle = NULL;
+static TIM_HandleTypeDef* timer_handle = NULL;
+static ADC_HandleTypeDef* adc_handle = NULL;
 
 osThreadId_t proximity_task_handle = NULL;
-const osThreadAttr_t proximity_task_attributes = {
+static const osThreadAttr_t proximity_task_attributes = {
     .name = "proximity_task",
     .priority = (osPriority_t)osPriorityNormal,
 };
 
-int pulse_state = 0;
+static int pulse_state = 0;
 
 /** Buffer filled by DMA containing the ambient and absolute distance values.
  * Structured in pairs: [0:1] contain pairs for sensor PROX0 IR ON, IR OFF and so on.

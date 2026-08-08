@@ -55,7 +55,7 @@
  * to fail.
  */
 
-#define STATIC_FB_BUFFER_SIZE (2 * 1024)                       // 4KB static payload buffer
+#define STATIC_FB_BUFFER_SIZE (2 * 1024)                       // 2KB static payload buffer
 #define FB_BUFFER_OFFSET_ZERO (STATIC_FB_BUFFER_SIZE * 3 / 4)  // Index of offset 0
 static uint8_t fb_buffer[STATIC_FB_BUFFER_SIZE] = {0};
 

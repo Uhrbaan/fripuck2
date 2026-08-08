@@ -1,0 +1,16 @@
+LICENSE
+README.md
+pyproject.toml
+src/fripuck2/__init__.py
+src/fripuck2/connection_manager.py
+src/fripuck2/robot.py
+src/fripuck2.egg-info/PKG-INFO
+src/fripuck2.egg-info/SOURCES.txt
+src/fripuck2.egg-info/dependency_links.txt
+src/fripuck2.egg-info/requires.txt
+src/fripuck2.egg-info/top_level.txt
+src/fripuck2/_generated/commands_generated.py
+src/fripuck2/_generated/sensors_generated.py
+src/fripuck2/sensors/__init__.py
+src/fripuck2/sensors/base.py
+src/fripuck2/sensors/sensors.py

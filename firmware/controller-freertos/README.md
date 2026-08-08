@@ -87,3 +87,16 @@ mappings corretly from the numbers. Code is then generated through STM32CubeMX.
 
 - Time of flight (vl53l0x): 
   <https://www.st.com/resource/en/datasheet/vl53l0x.pdf>
+- ov2640 2.0 megapixel camera: <https://datasheet4u.com/pdf/548838/OV2640.pdf>
+- ov7670 640x480 camera <https://datasheet4u.com/pdf/555220/OV7670.pdf>
+- po6030 640x480 camera <https://datasheet4u.com/pdf/1549576/PO6030K.pdf>
+- po8030 640x480 camera <https://datasheet4u.com/pdf/1549575/PO8030D.pdf>
+
+# Timers
+List of timers typically allocated to which usecase
+
+- Motors
+  - Left motor: `htim3`
+  - Right motor: `htim4`
+- Proximity sensors: `htim5` ⚠️ conflict with camera -> **should use timer 2**
+- Camera: `htim5`: There is physical wiring 

@@ -34,18 +34,17 @@ int i2c_scan_bus(uint8_t** out_device_list, uint8_t* out_device_num, I2C_HandleT
         }
     }
 
-    uint8_t pid = 0;
+    uint8_t test_pairs[][2] = {{0x6E, 0x00}, {0xDC, 0x00}, {0x3C, 0x00}, {0x78, 0x00},
+                               {0x21, 0x0A}, {0x42, 0x0A}, {0x30, 0x0A}, {0x60, 0x0A}};
     // Test OV7670 (7-bit 0x21 -> 8-bit 0x42, PID reg 0x0A)
-    if (HAL_I2C_Mem_Read(hi2c, 0x42, 0x0A, I2C_MEMADD_SIZE_8BIT, &pid, 1, 100) == HAL_OK) {
-        printf("OV7670 detected! PID: 0x%02X\r\n", pid);
-        i2c_device_list[devicesFound++] = 0x21;
+    for (int i = 0; i < sizeof(test_pairs); i++) {
+        HAL_StatusTypeDef status = HAL_I2C_Master_Transmit(hi2c, test_pairs[i][0], &test_pairs[i][0], 1, 100);
+        if (status == HAL_OK) {
+            printf("Camera ACK received at 8-bit address: 0x%02X\r\n", test_pairs[i][0]);
+            i2c_device_list[devicesFound++] = test_pairs[i][0];
+            break;
+        }
     }
-    // Test PO6030 / PO8030 (7-bit 0x6E -> 8-bit 0xDC, PID reg 0x00)
-    else if (HAL_I2C_Mem_Read(hi2c, 0xDC, 0x00, I2C_MEMADD_SIZE_8BIT, &pid, 1, 100) == HAL_OK) {
-        printf("PixelPlus camera detected! PID: 0x%02X\r\n", pid);
-        i2c_device_list[devicesFound++] = 0x6E;
-    }
-
     i2c_device_num = devicesFound;
 
     *out_device_list = i2c_device_list;
@@ -84,6 +83,7 @@ HAL_StatusTypeDef i2c_read_reg(uint8_t dev_addr, uint8_t reg, uint8_t* buffer, u
         int err = HAL_I2C_GetError(i2c_handle);
         // TODO: some errors may be solvable by re-initializing the i2c driver with the unstucking sequence. have to
         // implement that.
+        // i2c_reset(i2c_handle);
         if (err != HAL_OK) {
             __BKPT(0);
         }

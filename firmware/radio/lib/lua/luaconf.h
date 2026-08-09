@@ -18,7 +18,6 @@
 ** ===================================================================
 */
 
-
 /*
 @@ LUA_ANSI controls the use of non-ansi features.
 ** CHANGE it (define it) if you want Lua to avoid the use of any
@@ -612,8 +611,8 @@ union luai_Cast { double l_d; long l_l; };
 
 #elif defined(LUA_USE_ULONGJMP)
 /* in Unix, try _longjmp/_setjmp (more efficient) */
-#define LUAI_THROW(L,c)	_longjmp((c)->b, 1)
-#define LUAI_TRY(L,c,a)	if (_setjmp((c)->b) == 0) { a }
+#define LUAI_THROW(L,c)	longjmp((c)->b, 1)
+#define LUAI_TRY(L,c,a)	if (setjmp((c)->b) == 0) { a }
 #define luai_jmpbuf	jmp_buf
 
 #else
@@ -667,8 +666,8 @@ union luai_Cast { double l_d; long l_l; };
 */
 #if defined(LUA_USE_POPEN)
 
-#define lua_popen(L,c,m)	((void)L, fflush(NULL), popen(c,m))
-#define lua_pclose(L,file)	((void)L, (pclose(file) != -1))
+#define lua_popen(L,c,m)	((void)L, (void)c, (void)m, (FILE*)0)
+#define lua_pclose(L,file)	((void)L, (void)file, 0)
 
 #elif defined(LUA_WIN)
 

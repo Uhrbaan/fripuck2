@@ -25,6 +25,9 @@ volatile uint32_t total_bytes_received = 0;
 #include "sensors_verifier.h"
 #include <sys/socket.h>
 
+#include "luavm/vm.h"
+#include "luavm/hooks.h"
+
 extern QueueHandle_t spi_to_udp_queue;
 void spi_recieve_cb(uint8_t* data, uint16_t length) {
     static const char TAG[] = "SPI RX CB";
@@ -46,6 +49,7 @@ void spi_recieve_cb(uint8_t* data, uint16_t length) {
         FripuckProtocol_Sensors_TofData_struct_t first_tof = FripuckProtocol_Sensors_TofData_vec_at(tof_vec, 0);
         uint16_t dist = FripuckProtocol_Sensors_TofData_distance(first_tof);
         uint16_t timestamp = FripuckProtocol_Sensors_TofData_timestamp_offset(first_tof);
+        trigger_hook(HOOK_TELEMETRY_TOF, (float)dist);
         ESP_LOGI(TAG, "[%u] First TOF Distance: %u mm", timestamp, dist);
     }
 #endif
@@ -140,6 +144,8 @@ void app_main(void) {
     spi_init(SPI1_HOST, spi_recieve_cb);
     ESP_LOGI(TAG, "Finished SPI1 HW initialization");
     udp_init_();
+
+    lua_vm_start();
 
     // Start TCP tasks
     xTaskCreate(tcp_connection_manager, "tcp connection manager", 1024 * 4, NULL, 1, NULL);

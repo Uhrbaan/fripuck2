@@ -84,9 +84,9 @@ HAL_StatusTypeDef i2c_read_reg(uint8_t dev_addr, uint8_t reg, uint8_t* buffer, u
         // TODO: some errors may be solvable by re-initializing the i2c driver with the unstucking sequence. have to
         // implement that.
         // i2c_reset(i2c_handle);
-        if (err != HAL_OK) {
-            __BKPT(0);
-        }
+        // if (err != HAL_OK) {
+        //     __BKPT(0);
+        // }
     }
 #endif
 

@@ -191,11 +191,9 @@ void pack_loop(flatcc_builder_t* builder, uint32_t budget) {
         generic_pack(builder, &s->fb_data, budget, &bytes_written);
         budget -= bytes_written;
 
-        if (bytes_written > 0) {
-            // FIXME: smarter age adjustment
-            s->age = 0;
-            s->ended = true;
-        }
+        // FIXME: smarter age adjustment
+        s->age = 0;
+        s->ended = true;
 
         // osThreadYield();
         osDelay(pdMS_TO_TICKS(10));  // wait a little to let other processes run.

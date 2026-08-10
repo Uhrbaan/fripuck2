@@ -1,11 +1,29 @@
 local speed = 0
+local last_side = "center"
+local side = "center"
 
 function init()
     print("Robot initialized!")
     speed = 100
 
-    robot.on("telemetry:tof", function(distance)
-        print("Nearest object: " .. distance .. "mm")
+    robot.on("telemetry:ground", function(ground)
+        -- lua arrays start at 1
+        local difference = ground[1] - ground[3]
+        
+        if math.abs(difference) > 20 then 
+            if difference < 0 then side = "left"
+            else side = "right" end 
+        else side = "center" end
+
+        if side ~= last_side then 
+            print("Black line on the " .. side .. " side.") 
+        end
+
+        last_side = side
+    end)
+
+    robot.on("telemetry:tof", function(distance) 
+        if distance < 50 then print("Caution !!") end
     end)
 
 end

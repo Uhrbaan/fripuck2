@@ -1,7 +1,41 @@
 #include "esp_log.h"
 
 #include "robot_api.h"
-#include "hooks.h"
+
+#include "all_lua_types.h"
+
+typedef void (*hook_register_fn)(lua_State*, int);
+
+enum hooks {
+    HOOK_TELEMETRY_PROXIMITY,
+    HOOK_TELEMETRY_GROUND,
+    HOOK_TELEMETRY_TOF,
+    HOOK_TELEMETRY_BATTERY,
+    HOOK_TELEMETRY_ENCODER,
+    HOOK_TELEMETRY_IMU,
+    HOOK_TELEMETRY_VOLUME,
+    // TODO: commands
+    HOOK_NUM,
+};
+
+static const char* hook_names[] = {
+    [HOOK_TELEMETRY_PROXIMITY] = "telemetry:proximity",
+    [HOOK_TELEMETRY_GROUND] = "telemetry:ground",
+    [HOOK_TELEMETRY_TOF] = "telemetry:tof",
+    [HOOK_TELEMETRY_BATTERY] = "telemetry:battery",
+    [HOOK_TELEMETRY_ENCODER] = "telemetry:encoder",
+    [HOOK_TELEMETRY_IMU] = "telemetry:imu",
+    [HOOK_TELEMETRY_VOLUME] = "telemetry:volume",
+    // TODO: commands
+};
+
+static const hook_register_fn hook_register_functions[] = {
+    [HOOK_TELEMETRY_PROXIMITY] = NULL,        [HOOK_TELEMETRY_GROUND] = register_ground_hook,
+    [HOOK_TELEMETRY_TOF] = register_tof_hook, [HOOK_TELEMETRY_BATTERY] = NULL,
+    [HOOK_TELEMETRY_ENCODER] = NULL,          [HOOK_TELEMETRY_IMU] = NULL,
+    [HOOK_TELEMETRY_VOLUME] = NULL,
+    // TODO: commands
+};
 
 /**
  * This function register a hook to the lua VM. If the hook is created, as soon as a data piece is detected, the
@@ -13,34 +47,21 @@
 int L_robot_on(lua_State* L) {
     const char* hook_name = luaL_checkstring(L, 1);
 
-    // If the funciton is nil, dereference the function from hooks
-    if (lua_type(L, 2) == LUA_TNIL) {
-        int ref = get_lua_hook_ref(hook_name);
-        unregister_hook(hook_name);
-        luaL_unref(L, LUA_REGISTRYINDEX, ref);
-
-        lua_pushboolean(L, true);
-        return 1;
+    enum hooks hook_id = -1;
+    for (int i = 0; i < HOOK_NUM; i++) {
+        if (strncmp(hook_name, hook_names[i], 40) == 0) {
+            hook_id = i;
+            break;
+        }
+    }
+    if (hook_id == -1) {
+        return luaL_error(L, "Invalid hook !");
     }
 
-    // Fail here if no function is given.
-    luaL_checktype(L, 2, LUA_TFUNCTION);
+    // Takes care of the function argument (argument 2)
+    hook_register_functions[hook_id](L, 2);
 
-    // Push the function (argument #2) to the top of the stack so luaL_ref can pop it
-    lua_pushvalue(L, 2);
-
-    // Storing the function in LUA_REGISTRYINDEX prevents it from being garbage collected
-    int ref = luaL_ref(L, LUA_REGISTRYINDEX);
-
-    if (register_hook(hook_name, ref) != 0) {
-        // There was not enough space in the registry, remove it.
-        luaL_unref(L, LUA_REGISTRYINDEX, ref);
-        return luaL_error(L, "Invalid hook!");
-    }
-
-    lua_pushboolean(L, true);
-
-    return 1;  // 0 return values
+    return 0;
 }
 
 const luaL_Reg robot_lib[] = {{"on", L_robot_on}, {NULL, NULL}};

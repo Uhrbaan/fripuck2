@@ -26,7 +26,7 @@ volatile uint32_t total_bytes_received = 0;
 #include <sys/socket.h>
 
 #include "luavm/vm.h"
-#include "luavm/hooks.h"
+#include "luavm/all_lua_types.h"
 
 extern QueueHandle_t spi_to_udp_queue;
 void spi_recieve_cb(uint8_t* data, uint16_t length) {
@@ -42,58 +42,32 @@ void spi_recieve_cb(uint8_t* data, uint16_t length) {
     // Log the first TOF element for logging purposes
     FripuckProtocol_Sensors_TofData_vec_t tof_vec = FripuckProtocol_Sensors_SensorBatch_tof(batch);
     size_t tof_count = FripuckProtocol_Sensors_TofData_vec_len(tof_vec);
-    if (tof_vec == NULL || tof_count == 0) {
+    if (tof_vec != NULL && tof_count > 0) {
+        FripuckProtocol_Sensors_TofData_struct_t latest_tof =
+            FripuckProtocol_Sensors_TofData_vec_at(tof_vec, tof_count - 1);
+
+        trigger_tof_hook(latest_tof);
     }
-#ifdef DEBUG
-    else {
-        FripuckProtocol_Sensors_TofData_struct_t first_tof = FripuckProtocol_Sensors_TofData_vec_at(tof_vec, 0);
-        uint16_t dist = FripuckProtocol_Sensors_TofData_distance(first_tof);
-        uint16_t timestamp = FripuckProtocol_Sensors_TofData_timestamp_offset(first_tof);
-        trigger_hook(HOOK_TELEMETRY_TOF, (float)dist);
-        ESP_LOGI(TAG, "[%u] First TOF Distance: %u mm", timestamp, dist);
-    }
-#endif
 
     // Log proximity
     FripuckProtocol_Sensors_ProximityData_vec_t prox_vec = FripuckProtocol_Sensors_SensorBatch_proximity(batch);
     size_t prox_count = FripuckProtocol_Sensors_ProximityData_vec_len(prox_vec);
-    if (prox_vec == NULL || prox_count == 0) {
+    if (prox_vec != NULL && prox_count > 0) {
     }
-#ifdef DEBUG
-    else {
-        FripuckProtocol_Sensors_ProximityData_struct_t prox_data =
-            FripuckProtocol_Sensors_ProximityData_vec_at(prox_vec, 0);
-        FripuckProtocol_Sensors_Uint16Array8_t proximities = prox_data->proximity;
-        ESP_LOGI(TAG, "Proximities: %d, %d, %d, %d, %d, %d, %d, %d", proximities.a0, proximities.a1, proximities.a2,
-                 proximities.a3, proximities.a4, proximities.a5, proximities.a6, proximities.a7);
-    }
-#endif
 
     // Log IMU
     FripuckProtocol_Sensors_ImuData_vec_t imu_vec = FripuckProtocol_Sensors_SensorBatch_imu(batch);
     size_t imu_count = FripuckProtocol_Sensors_ImuData_vec_len(imu_vec);
-    if (imu_vec == NULL || imu_count == 0) {
+    if (imu_vec != NULL && imu_count > 0) {
     }
-#ifdef DEBUG
-    else {
-        FripuckProtocol_Sensors_ImuData_struct_t imu_data = FripuckProtocol_Sensors_ImuData_vec_at(imu_vec, 0);
-        ESP_LOGI(TAG, "IMU data came, sample temperature is: %.2f. It contains %d elements.", imu_data->temperature,
-                 imu_count);
-    }
-#endif
 
-    // Log Ground
     FripuckProtocol_Sensors_GroundData_vec_t ground_vec = FripuckProtocol_Sensors_SensorBatch_ground(batch);
     size_t ground_count = FripuckProtocol_Sensors_GroundData_vec_len(ground_vec);
-    if (ground_vec == NULL || ground_count == 0) {
-    }
-#ifdef DEBUG
-    else {
+    if (ground_vec != NULL && ground_count > 0) {
         FripuckProtocol_Sensors_GroundData_struct_t ground_data =
-            FripuckProtocol_Sensors_GroundData_vec_at(ground_vec, 0);
-        ESP_LOGI(TAG, "Ground data. First sensor is %d", ground_data->delta.g0, imu_count);
+            FripuckProtocol_Sensors_GroundData_vec_at(ground_vec, ground_count - 1);
+        trigger_ground_hook(ground_data);
     }
-#endif
 
     if (spi_to_udp_queue) {
         packet.length = length;

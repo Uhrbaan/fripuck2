@@ -1,5 +1,10 @@
 namespace FripuckProtocol.Commands;
 
+table Custom {
+    topic: string; // MQTT inspired, like foo/bar
+    payload: string; // anything but text, optional
+}
+
 // Notify simply sends back the same message through a notify struct. 
 // Can be used in a sequence to notify the client when a sequence is finished.
 table Notify{
@@ -24,8 +29,8 @@ table AbortSequence {
 union Instruction {
     Notify,
     SetLed,
-    Sequence, 
     AbortSequence,
+    Custom,
 }
 
 // Needed since flatbuffers doesn't support vectors of unions.

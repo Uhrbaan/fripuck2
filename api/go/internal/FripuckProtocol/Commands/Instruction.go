@@ -13,24 +13,24 @@ const (
 	InstructionNONE          Instruction = 0
 	InstructionNotify        Instruction = 1
 	InstructionSetLed        Instruction = 2
-	InstructionSequence      Instruction = 3
-	InstructionAbortSequence Instruction = 4
+	InstructionAbortSequence Instruction = 3
+	InstructionCustom        Instruction = 4
 )
 
 var EnumNamesInstruction = map[Instruction]string{
 	InstructionNONE:          "NONE",
 	InstructionNotify:        "Notify",
 	InstructionSetLed:        "SetLed",
-	InstructionSequence:      "Sequence",
 	InstructionAbortSequence: "AbortSequence",
+	InstructionCustom:        "Custom",
 }
 
 var EnumValuesInstruction = map[string]Instruction{
 	"NONE":          InstructionNONE,
 	"Notify":        InstructionNotify,
 	"SetLed":        InstructionSetLed,
-	"Sequence":      InstructionSequence,
 	"AbortSequence": InstructionAbortSequence,
+	"Custom":        InstructionCustom,
 }
 
 func (v Instruction) String() string {
@@ -54,10 +54,10 @@ func (t *InstructionT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 		return t.Value.(*NotifyT).Pack(builder)
 	case InstructionSetLed:
 		return t.Value.(*SetLedT).Pack(builder)
-	case InstructionSequence:
-		return t.Value.(*SequenceT).Pack(builder)
 	case InstructionAbortSequence:
 		return t.Value.(*AbortSequenceT).Pack(builder)
+	case InstructionCustom:
+		return t.Value.(*CustomT).Pack(builder)
 	}
 	return 0
 }
@@ -72,14 +72,14 @@ func (rcv Instruction) UnPack(table flatbuffers.Table) *InstructionT {
 		var x SetLed
 		x.Init(table.Bytes, table.Pos)
 		return &InstructionT{Type: InstructionSetLed, Value: x.UnPack()}
-	case InstructionSequence:
-		var x Sequence
-		x.Init(table.Bytes, table.Pos)
-		return &InstructionT{Type: InstructionSequence, Value: x.UnPack()}
 	case InstructionAbortSequence:
 		var x AbortSequence
 		x.Init(table.Bytes, table.Pos)
 		return &InstructionT{Type: InstructionAbortSequence, Value: x.UnPack()}
+	case InstructionCustom:
+		var x Custom
+		x.Init(table.Bytes, table.Pos)
+		return &InstructionT{Type: InstructionCustom, Value: x.UnPack()}
 	}
 	return nil
 }

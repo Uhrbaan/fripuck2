@@ -10,8 +10,8 @@ class Instruction(object):
     NONE = 0
     Notify = 1
     SetLed = 2
-    Sequence = 3
-    AbortSequence = 4
+    AbortSequence = 3
+    Custom = 4
 
 def InstructionCreator(unionType, table):
     from flatbuffers.table import Table
@@ -21,11 +21,111 @@ def InstructionCreator(unionType, table):
         return NotifyT.InitFromBuf(table.Bytes, table.Pos)
     if unionType == Instruction.SetLed:
         return SetLedT.InitFromBuf(table.Bytes, table.Pos)
-    if unionType == Instruction.Sequence:
-        return SequenceT.InitFromBuf(table.Bytes, table.Pos)
     if unionType == Instruction.AbortSequence:
         return AbortSequenceT.InitFromBuf(table.Bytes, table.Pos)
+    if unionType == Instruction.Custom:
+        return CustomT.InitFromBuf(table.Bytes, table.Pos)
     return None
+
+
+class Custom(object):
+    __slots__ = ['_tab']
+
+    @classmethod
+    def GetRootAs(cls, buf, offset=0):
+        n = flatbuffers.encode.Get(flatbuffers.packer.uoffset, buf, offset)
+        x = Custom()
+        x.Init(buf, n + offset)
+        return x
+
+    @classmethod
+    def GetRootAsCustom(cls, buf, offset=0):
+        """This method is deprecated. Please switch to GetRootAs."""
+        return cls.GetRootAs(buf, offset)
+    @classmethod
+    def CustomBufferHasIdentifier(cls, buf, offset, size_prefixed=False):
+        return flatbuffers.util.BufferHasIdentifier(buf, offset, b"\x43\x4D\x4E\x44", size_prefixed=size_prefixed)
+
+    # Custom
+    def Init(self, buf, pos):
+        self._tab = flatbuffers.table.Table(buf, pos)
+
+    # Custom
+    def Topic(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(4))
+        if o != 0:
+            return self._tab.String(o + self._tab.Pos)
+        return None
+
+    # Custom
+    def Payload(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(6))
+        if o != 0:
+            return self._tab.String(o + self._tab.Pos)
+        return None
+
+def CustomStart(builder):
+    builder.StartObject(2)
+
+def CustomAddTopic(builder, topic):
+    builder.PrependUOffsetTRelativeSlot(0, flatbuffers.number_types.UOffsetTFlags.py_type(topic), 0)
+
+def CustomAddPayload(builder, payload):
+    builder.PrependUOffsetTRelativeSlot(1, flatbuffers.number_types.UOffsetTFlags.py_type(payload), 0)
+
+def CustomEnd(builder):
+    return builder.EndObject()
+
+
+
+class CustomT(object):
+
+    # CustomT
+    def __init__(
+        self,
+        topic = None,
+        payload = None,
+    ):
+        self.topic = topic  # type: Optional[str]
+        self.payload = payload  # type: Optional[str]
+
+    @classmethod
+    def InitFromBuf(cls, buf, pos):
+        custom = Custom()
+        custom.Init(buf, pos)
+        return cls.InitFromObj(custom)
+
+    @classmethod
+    def InitFromPackedBuf(cls, buf, pos=0):
+        n = flatbuffers.encode.Get(flatbuffers.packer.uoffset, buf, pos)
+        return cls.InitFromBuf(buf, pos+n)
+
+    @classmethod
+    def InitFromObj(cls, custom):
+        x = CustomT()
+        x._UnPack(custom)
+        return x
+
+    # CustomT
+    def _UnPack(self, custom):
+        if custom is None:
+            return
+        self.topic = custom.Topic()
+        self.payload = custom.Payload()
+
+    # CustomT
+    def Pack(self, builder):
+        if self.topic is not None:
+            topic = builder.CreateString(self.topic)
+        if self.payload is not None:
+            payload = builder.CreateString(self.payload)
+        CustomStart(builder)
+        if self.topic is not None:
+            CustomAddTopic(builder, topic)
+        if self.payload is not None:
+            CustomAddPayload(builder, payload)
+        custom = CustomEnd(builder)
+        return custom
 
 
 class Notify(object):
@@ -502,7 +602,7 @@ class CommandT(object):
         command = None,
     ):
         self.commandType = commandType  # type: int
-        self.command = command  # type: Union[None, 'NotifyT', 'SetLedT', 'SequenceT', 'AbortSequenceT']
+        self.command = command  # type: Union[None, 'NotifyT', 'SetLedT', 'AbortSequenceT', 'CustomT']
 
     @classmethod
     def InitFromBuf(cls, buf, pos):

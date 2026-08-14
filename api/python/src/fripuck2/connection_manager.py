@@ -4,8 +4,6 @@ import socket
 from collections.abc import Callable
 import queue
 
-from .robot import Robot
-
 class ConnectionManager:
     def __init__(self, tcp_port:int = 65430, udp_port: int=65431):
         self.tcp_port = tcp_port
@@ -31,31 +29,23 @@ class ConnectionManager:
         self.thread.start()
 
     # TODO: Add option to automatically try to run register_robot again if the connection is lost.
-    def register_robot(self, iprobot, callback: Callable[[bytes], None] = None) -> Callable[[bytes], int]:
+    def register_ip(self, ip: str, callback: Callable[[bytes], None]) -> Callable[[bytes | str], None]:
         """Registers the robot to the connection manager. 
 
         You may provide an IP address AND a callback function, OR a single instance of Robot.
         
-        :param iprobot: IPv4 address of the robot we want to connect to OR the robot instance iteself.
+        :param ip: IPv4 address of the robot we want to connect to.
         :param callback: Callback function that will be called when we recieve a udp or tcp packet from that robot. It contains the data being sent as a parameter.
         :param tcp_port: Optional. Should only be changed if you use other firmware that does not use the port 65430.
         :return: A function that can be used to send data to the robot.
         """
-        ip = ""
-        cb = None
-        if type(iprobot) is str: 
-            ip = iprobot 
-            cb = callback
-        if isinstance(iprobot, Robot):
-            ip = iprobot.ip
-            cb = iprobot._receive_packet
-        else:
-            # raise a type error if the 
-            raise TypeError
 
         # Add the robot to the reconnect queue so it gets connected shortly.
-        self.reconnect_queue.put((ip, cb))
+        self.reconnect_queue.put((ip, callback))
         print(f"Registered robot {ip}")
+
+        # Return the function so the robot can send tcp data
+        return lambda data: self.send_tcp(ip=ip, data=data)
 
     def _reconnect_pending(self):
         """Function that will try to reconnect a robot."""
@@ -84,7 +74,7 @@ class ConnectionManager:
         sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPCNT, 3)
 
         try: 
-            sock.connect_ex((ipv4addr, self.tcp_port)) 
+            sock.connect((ipv4addr, self.tcp_port)) 
             print(f"Successfully connected robot {ipv4addr}!")
         except Exception as e:
             print(f"Could not connect to {ipv4addr} because of: {e}")
@@ -136,6 +126,29 @@ class ConnectionManager:
                 except Exception as e:
                     print(f"Error while receiving data: {e}")
                     self._unregister(ip, sock)
+
+    def send_tcp(self, ip: str, data: bytes | str) -> bool:
+        """
+        Sends binary data to a registered robot over TCP.
+        Returns True if successful, False if the robot is disconnected or the send failed.
+        """
+        sock = None
+        
+        with self.lock:
+            if ip in self.registry:
+                sock, _ = self.registry[ip]
+                
+        if not sock:
+            print(f"Cannot send: Robot {ip} is not currently connected.")
+            return False
+
+        try:
+            sock.sendall(data) # ensure the entire payload is sent
+            return True
+        except Exception as e:
+            print(f"Failed to send data to {ip}: {e}")
+            self._unregister(ip, sock)
+            return False
     
     def _unregister(self, ip: str, sock: socket.socket):
         with self.lock:

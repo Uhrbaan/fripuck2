@@ -1,4 +1,5 @@
-#include "types/ground.h"
-#include "types/tof.h"
+#include "ground.h"
+#include "tof.h"
+#include "custom.h"
 
 // TODO: Change filename

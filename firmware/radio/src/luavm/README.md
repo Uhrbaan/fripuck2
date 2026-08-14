@@ -30,6 +30,17 @@ function update(dt)
 end
 ```
 
+## Available hooks
+Most FB schema types should be available, where the `telemetry:` prefix is for the the data types in the `sensors.fbs` and `command:` for the data types in the `commands.fbs` schema.
+
+On top of that, the user can extend the communication protocol with the VM using the `Custom` data type. 
+This data type features a `.topic` field. A Lua script can hook into `custom:topic` where topic is the custom topic defined in the `Custom.topic` field. This gives access to either a custom object with `.payload` and `.message` fields, or one argument for each if two arguments are provided in the function.
+The `custom:` target is only available through hooks.
+
+Similarily, the user can also hook into the repl. In that case, the default repl functionality is diabled, and instead the user direclty communicates with the scripts function until it "un-hooks" from the `repl` target.
+
+For this, a json module is also provided (lua-cjson).
+
 ## REPL
 If students have access to a REPL over the wifi on their laptop, it can simplify the exploration of the capabilities of the robot.
 However, it poses some problems when managing the order of events.

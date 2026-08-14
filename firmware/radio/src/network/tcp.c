@@ -7,6 +7,9 @@
 #include <freertos/queue.h>
 #include <sys/socket.h>
 
+#include "commands_reader.h"
+#include "commands/commands.h"
+
 TaskHandle_t xTCPTransmitterHandle = NULL;
 TaskHandle_t xTCPRecieverHandle = NULL;
 TaskHandle_t xTCPConnectionManagerHandle = NULL;
@@ -21,25 +24,54 @@ struct sockaddr_storage client_address;  // Large enough to store both IPv4 and 
 
 void tcp_receiver(void* pvParameters) {
     const int socket = (int)pvParameters;
-    int length;
-    int offset = 0;
-    static request_queue_item item;
     static const char TAG[] = "TCP RECEIVER";
+    alignas(4) static uint8_t buffer[1024 * 2] = {0};
 
-    ESP_LOGI("TCP RECEIVER", "Starting tcp_transmitter.");
-    do {
-        length = recv(socket, &item.buffer[offset], sizeof(item), 0);
-        offset += length;
-        if (length <= 0) {
-            // Error. Send notification and wait to be deleted by manager.
-            ESP_LOGE(TAG, "Error: %d", length);
-            xTaskNotify(xTCPConnectionManagerHandle, (uint32_t)length, eSetValueWithOverwrite);
+    ESP_LOGI("TCP RECEIVER", "Starting tcp_receiver.");
+    for (;;) {
+        int bytes_read = 0;
+        int offset = 0;
+
+        while (offset < 4) {
+            bytes_read = recv(socket, &buffer[offset], 4 - offset, 0);
+            if (bytes_read <= 0) {
+                ESP_LOGE(TAG, "Error: %d", bytes_read);
+                xTaskNotify(xTCPConnectionManagerHandle, (uint32_t)bytes_read << 16, eSetValueWithOverwrite);
+                vTaskDelay(portMAX_DELAY);
+            }
+            offset += bytes_read;
+        }
+
+        ESP_LOGI(TAG, "Raw header bytes: %02X %02X %02X %02X", buffer[0], buffer[1], buffer[2], buffer[3]);
+        size_t size = 0;
+        // Note: this is safe, because flatbuffers specifies in the docs that it is always little endian:
+        // https://flatbuffers.dev/white_paper/#:~:text=and-,endianness However, you need to finishe the instructions
+        // with FinishSizePrefixed so it adds the size.
+        memcpy(&size, buffer, sizeof(size));
+        ESP_LOGI(TAG, "Received packet indicates a length of %lu (BE: %)");
+
+        if (size == 0 || size > (sizeof(buffer) - 4)) {
+            ESP_LOGE(TAG, "Invalid payload size: %lu", (unsigned long)size);
+            xTaskNotify(xTCPConnectionManagerHandle, (uint32_t)bytes_read << 16, eSetValueWithOverwrite);
             vTaskDelay(portMAX_DELAY);
         }
-        item.size = length;
-        // xQueueSendToBack(uart_request_queue, &item, portMAX_DELAY);
-        ESP_LOGI("TCP RECEIVER", "Received %zu bytes over tcp: %.20s...", length, item.buffer);
-    } while (length > 0);
+
+        offset = 4;  // write after the header
+        int target = 4 + size;
+
+        while (offset < target) {
+            bytes_read = recv(socket, &buffer[offset], sizeof(buffer) - offset, 0);
+            if (bytes_read <= 0) {
+                ESP_LOGE(TAG, "Error: %d", bytes_read);
+                xTaskNotify(xTCPConnectionManagerHandle, (uint32_t)bytes_read << 16, eSetValueWithOverwrite);
+                vTaskDelay(portMAX_DELAY);
+            }
+            offset += bytes_read;
+        }
+
+        ESP_LOGI(TAG, "Received full FB packet.");
+        command_receive(&buffer[4], size);  // remove size header
+    }
 }
 
 void tcp_transmitter(void* pvParameters) {

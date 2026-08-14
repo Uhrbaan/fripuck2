@@ -43,10 +43,6 @@ void spi_recieve_cb(uint8_t* data, uint16_t length) {
     FripuckProtocol_Sensors_TofData_vec_t tof_vec = FripuckProtocol_Sensors_SensorBatch_tof(batch);
     size_t tof_count = FripuckProtocol_Sensors_TofData_vec_len(tof_vec);
     if (tof_vec != NULL && tof_count > 0) {
-        FripuckProtocol_Sensors_TofData_struct_t latest_tof =
-            FripuckProtocol_Sensors_TofData_vec_at(tof_vec, tof_count - 1);
-
-        trigger_tof_hook(latest_tof);
     }
 
     // Log proximity
@@ -110,6 +106,9 @@ void app_main(void) {
     // Initialize non-volatile memory
     nvs_flash_init();
 
+    // Initialize and start the Lua VM
+    lua_vm_start();
+
     // Net communication
     wifi_init();
     ESP_LOGI(TAG, "Finished Wi-Fi initialization.");
@@ -118,8 +117,6 @@ void app_main(void) {
     spi_init(SPI1_HOST, spi_recieve_cb);
     ESP_LOGI(TAG, "Finished SPI1 HW initialization");
     udp_init_();
-
-    lua_vm_start();
 
     // Start TCP tasks
     xTaskCreate(tcp_connection_manager, "tcp connection manager", 1024 * 4, NULL, 1, NULL);

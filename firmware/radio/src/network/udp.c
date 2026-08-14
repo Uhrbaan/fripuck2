@@ -47,9 +47,7 @@ void udp_transmitter(void* pvParameters) {
             ESP_LOGE("UDP TRANSMITTER", "Error while sending data: %s (%d).", strerror(errno), errno);
             // break; // can technically ignore error
         }
-#ifdef DEBUG
-        ESP_LOGI("UDP TRANSMITTER", "Sent %d bytes over udp.", bytes);
-#endif
+
         // vTaskDelay(pdMS_TO_TICKS(1000));
     }
 

@@ -27,7 +27,7 @@ static lua_State* L = NULL;  // store locally so hooks don't need to manage lua 
  * Call this function after having parsed arguemnt 1 (the hook name), meaning the lua function is in argument 2.
  * If the funciton is instead nil, it unregisters the function.
  */
-void register_tof_hook(lua_State* Lstate, int narg) {
+int register_tof_hook(lua_State* Lstate, int narg) {
     L = Lstate;
 
     if (lua_type(L, narg) == LUA_TNIL) {
@@ -36,11 +36,16 @@ void register_tof_hook(lua_State* Lstate, int narg) {
         ESP_LOGI(TAG, "Unregistered ground hook successfully !");
     }
 
-    luaL_checktype(L, narg, LUA_TFUNCTION);  // must be a function
+    if (lua_type(L, narg) != LUA_TFUNCTION) {
+        ESP_LOGE(TAG, "Passed argument isn't nil nor function.");
+        return 1;
+    }
+
     lua_pushvalue(L, narg);
 
     tof_lua_func_ref = luaL_ref(L, LUA_REGISTRYINDEX);
     ESP_LOGI(TAG, "Registered tof hook successfully !");
+    return 0;
 }
 
 void trigger_tof_hook(const FripuckProtocol_Sensors_TofData_t* new_value) {

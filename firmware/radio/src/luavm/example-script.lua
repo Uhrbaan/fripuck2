@@ -3,7 +3,14 @@ local last_side = "center"
 local side = "center"
 
 function init()
-    print("Robot initialized!")
+    print([[
+       Welcome to the E-puck lua interface !
+       
+       You can write standard programs with the `init()` and `update()` functions, or you can react to sensor data by subscribing to a sensor, ex: 
+        `robot.on(telemetry:tof, function(distance) print(distance) end)
+       
+       Have fun ! 
+    ]])
     speed = 100
 
     robot.on("telemetry:ground", function(ground)
@@ -24,6 +31,10 @@ function init()
 
     robot.on("telemetry:tof", function(distance) 
         if distance < 50 then print("Caution !!") end
+    end)
+
+    robot.on("custom:test", function(payload)
+        print("Custom Dummy data sent:" .. payload)
     end)
 
 end

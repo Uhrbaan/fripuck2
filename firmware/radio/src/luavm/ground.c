@@ -1,23 +1,39 @@
 #include "esp_log.h"
+#include <freertos/FreeRTOS.h>
+
+#include "vm.h"
+#include "ground.h"
 
 static const char* TAG = "GROUND LTYPE";
 
-#include "ground.h"
+// TODO: track how many parameters the provided lua function has. If it is one, then the signature should simply be
+// (data). Else, we should return two objects: (delta, ambient)
 
 /**
  * This file creates the lua datatype for ground sensors. If `ground` is the data returned from the hook, it can be
  * accessed as follows:
  *
  * ground[1-3] -> ground values of FripuckProtocol_Sensors_GroundData.delta.g0-2
- * ground.ground[1-3] -> identical
- * ground.ambient[1-8] -> ground values of FripuckProtocol_Sensors_ĜroundData.ambient.g0-2
+ * ground.vm_ground[1-3] -> identical
+ * vm_ground.ambient[1-8] -> vm_ground values of FripuckProtocol_Sensors_ĜroundData.ambient.g0-2
  */
 
 typedef FripuckProtocol_Sensors_GroundData_t GroundData;
-static GroundData* ground = NULL;
+static GroundData* vm_ground = NULL;
 typedef struct {
     uint16_t* base;
 } GroundArrayView;
+
+static GroundData double_ground_buffers[2] = {0};
+static volatile int active_ground_buffer = 0;
+
+void update_ground_c_state(const FripuckProtocol_Sensors_GroundData_t* new_data) {
+    int inactive_ground_buffer = 1 - active_ground_buffer;
+    double_ground_buffers[inactive_ground_buffer] = *new_data;
+    active_ground_buffer = inactive_ground_buffer;
+}
+
+const GroundData* get_current_ground_data(void) { return &double_ground_buffers[active_ground_buffer]; }
 
 static int l_ground_array_index(lua_State* L) {
     GroundArrayView* view = (GroundArrayView*)luaL_checkudata(L, 1, "GroundArray");
@@ -98,7 +114,7 @@ void ground_type_init(lua_State* L) {
     luaL_getmetatable(L, "GroundData");
     lua_setmetatable(L, -2);
     ground_data_ref = luaL_ref(L, LUA_REGISTRYINDEX);
-    ground = g;
+    vm_ground = g;
     ESP_LOGI(TAG, "Created GroundData in lua registry..");
 
     GroundArrayView* gvd = (GroundArrayView*)lua_newuserdata(L, sizeof(GroundArrayView));
@@ -117,44 +133,56 @@ void ground_type_init(lua_State* L) {
 }
 
 static int ground_lua_func_ref = LUA_NOREF;
-static lua_State* L = NULL;  // store locally so hooks don't need to manage lua state.
 
 /**
  * Call this function after having parsed arguemnt 1 (the hook name), meaning the lua function is in argument 2.
  * If the funciton is instead nil, it unregisters the function.
  */
-void register_ground_hook(lua_State* Lstate, int narg) {
-    L = Lstate;
-
+int register_ground_hook(lua_State* L, int narg) {
     // Unregister function if is nil.
     if (lua_type(L, narg) == LUA_TNIL) {
         luaL_unref(L, LUA_REGISTRYINDEX, ground_lua_func_ref);
         ground_lua_func_ref = LUA_NOREF;
-        ESP_LOGI(TAG, "Unregistered ground hook successfully.");
+        ESP_LOGI(TAG, "Unregistered vm_ground hook successfully.");
+        return 0;
     }
 
-    luaL_checktype(L, narg, LUA_TFUNCTION);
+    if (lua_type(L, narg) != LUA_TFUNCTION) {
+        return 1;
+    }
+
     lua_pushvalue(L, narg);
 
     // Store the function in the registry and get reference
     ground_lua_func_ref = luaL_ref(L, LUA_REGISTRYINDEX);
-    ESP_LOGI(TAG, "Registered ground hook successfully.");
+    ESP_LOGI(TAG, "Registered vm_ground hook successfully.");
+    return 0;
 }
 
+extern QueueHandle_t lua_event_queue;
+
 void trigger_ground_hook(const FripuckProtocol_Sensors_GroundData_t* new_value) {
-    if (ground == NULL) {
-        // The lua vm was not initialized
-        return;
-    }
+    if (vm_ground == NULL) return;  // VM was not initialized, prevent useless work.
 
-    memcpy(ground, new_value, sizeof(*ground));
+    update_ground_c_state(new_value);
 
-    if (ground_lua_func_ref == LUA_NOREF) return;
+    if (lua_event_queue == NULL) return;
+
+    lua_event_t evt = {.type = HOOK_TELEMETRY_GROUND, .data = NULL};
+    xQueueSend(lua_event_queue, &evt, 0);
+}
+
+void execute_ground_hook(lua_State* L) {
+    // Here, we are sure that the lua vm is not currently reading data. We can safely update the internal value.
+    *vm_ground = *get_current_ground_data();
+
+    if (ground_lua_func_ref == LUA_NOREF) return;  // don't execute if no function was saved
 
     lua_rawgeti(L, LUA_REGISTRYINDEX, ground_lua_func_ref);  // push the function to the stack
-    lua_rawgeti(L, LUA_REGISTRYINDEX, ground_data_ref);      // push the argument, the ground data, to the stack
+    lua_rawgeti(L, LUA_REGISTRYINDEX, ground_data_ref);      // push the argument, the vm_ground data, to the stack
+
     if (lua_pcall(L, 1, 0, 0) != 0) {
-        ESP_LOGE(TAG, "Error executing ground hook: %s\n", lua_tostring(L, -1));
+        ESP_LOGE(TAG, "Error executing vm_ground hook: %s\n", lua_tostring(L, -1));
         lua_pop(L, 1);  // Pop error message
     }
 }

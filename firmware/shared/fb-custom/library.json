@@ -1,0 +1,10 @@
+{
+    "name": "FB custom emitter",
+    "version": "0.0.1",
+    "description": "Custom emitter implementation that uses a static 2kb buffer.",
+    "frameworks": "*",
+    "platforms": "*",
+    "build": {
+        "srcDir": "."
+    }
+}

@@ -3,6 +3,7 @@
 #include "robot_api.h"
 
 #include "all_lua_types.h"
+#include "commands/commands.h"
 
 static const char* TAG = "ROBOT API";
 
@@ -69,4 +70,72 @@ int L_robot_on(lua_State* L) {
     return 0;
 }
 
-const luaL_Reg robot_lib[] = {{"on", L_robot_on}, {NULL, NULL}};
+int L_robot_set_modules(lua_State* L) {
+    ESP_LOGI(TAG, "robot_set-Modules");
+    // 1. Ensure the first argument is a table
+    luaL_checktype(L, 1, LUA_TTABLE);
+
+    struct enable_modules_params params = {0};
+
+    // 2. Iterate through the table key-value pairs
+    lua_pushnil(L);  // First key for lua_next
+    while (lua_next(L, 1) != 0) {
+        // Stack layout: table at 1, key at -2, value at -1
+
+        // Ensure key is a string
+        if (lua_type(L, -2) != LUA_TSTRING) {
+            return luaL_error(L, "Invalid table key: keys must be strings");
+        }
+
+        const char* key = lua_tostring(L, -2);
+        bool value = lua_toboolean(L, -1);
+
+        ESP_LOGI(TAG, "Checking for key %s:%s", key, (value ? "true" : "false"));
+
+        // 3. Map keys to struct members
+        if (strcmp(key, "mode_selector") == 0) {
+            params.enable_mode_selector = value;
+        } else if (strcmp(key, "ir_receiver") == 0) {
+            params.enable_ir_receiver = value;
+        } else if (strcmp(key, "battery") == 0) {
+            params.enable_battery = value;
+        } else if (strcmp(key, "proximity") == 0) {
+            params.enable_proximity = value;
+        } else if (strcmp(key, "ring_led_1") == 0) {
+            params.enable_ring_led_1 = value;
+        } else if (strcmp(key, "ring_led_3") == 0) {
+            params.enable_ring_led_3 = value;
+        } else if (strcmp(key, "ring_led_5") == 0) {
+            params.enable_ring_led_5 = value;
+        } else if (strcmp(key, "ring_led_7") == 0) {
+            params.enable_ring_led_7 = value;
+        } else if (strcmp(key, "body_led") == 0) {
+            params.enable_body_led = value;
+        } else if (strcmp(key, "front_led") == 0) {
+            params.enable_front_led = value;
+        } else if (strcmp(key, "tof") == 0) {
+            params.enable_tof = value;
+        } else if (strcmp(key, "imu") == 0) {
+            params.enable_imu = value;
+        } else if (strcmp(key, "camera") == 0) {
+            params.enable_camera = value;
+        } else if (strcmp(key, "motors") == 0) {
+            params.enable_motors = value;
+        } else if (strcmp(key, "ground") == 0) {
+            params.enable_ground = value;
+        } else {
+            // Error out on unexpected/invalid key names
+            return luaL_error(L, "Unknown module option: '%s'", key);
+        }
+
+        // Pop the value, leave key for the next lua_next call
+        lua_pop(L, 1);
+    }
+
+    command_enable_modules(params);
+
+    // Return 0 for no return values, or return luaL_error / nil on logic failure
+    return 0;
+}
+
+const luaL_Reg robot_lib[] = {{"on", L_robot_on}, {"set_modules", L_robot_set_modules}, {NULL, NULL}};

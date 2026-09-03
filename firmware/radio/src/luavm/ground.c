@@ -168,7 +168,7 @@ void trigger_ground_hook(const FripuckProtocol_Sensors_GroundData_t* new_value) 
 
     if (lua_event_queue == NULL) return;
 
-    lua_event_t evt = {.type = HOOK_TELEMETRY_GROUND, .data = NULL};
+    lua_event_t evt = {.type = HOOK_TELEMETRY_GROUND};
     xQueueSend(lua_event_queue, &evt, 0);
 }
 

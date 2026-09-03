@@ -3,6 +3,9 @@
 #include "esp_log.h"
 #include "custom.h"
 
+#include "vm.h"
+#include "robot_api.h"
+
 static const char* TAG = "CUSTOM LTYPE";
 
 struct topic_lfn_pair {
@@ -96,20 +99,27 @@ int register_custom_hook(lua_State* Lstate, int narg) {
     return 1;
 }
 
+#define CUSTOM_PAYLOAD_BUFFER_SZ 1024
+static char payload_buffer[2 * 512];
+static size_t payload_buffer_index = 0;
+
 void trigger_custom_hook(const char* topic, const char* payload, size_t payload_length) {
     for (int i = 0; i < MAX_CUSTOM_HOOKS; i++) {
         if (topic_function_pairs[i].topic != NULL && topic_function_pairs[i].lua_func_ref != LUA_NOREF &&
             strcmp(topic_function_pairs[i].topic, topic) == 0) {
-            if (payload != NULL) {
+            if (payload != NULL && payload_length > 0) {
+                // If there is space left,
+
+                lua_event_t event = {.type = HOOK_COMMAND_CUSTOM};
+
                 lua_rawgeti(L, LUA_REGISTRYINDEX, topic_function_pairs[i].lua_func_ref);
                 lua_pushlstring(L, payload, payload_length);
                 if (lua_pcall(L, 1, 0, 0) != 0) {
                     ESP_LOGE(TAG, "Error executing ground hook: %s\n", lua_tostring(L, -1));
                     lua_pop(L, 1);  // Pop error message
                 }
-            } else {
-                ESP_LOGE(TAG, "Failed to allocate memory for payload");
             }
         }
     }
+    ESP_LOGE(TAG, "Could not find a hook for the topic %s.", topic);
 }

@@ -2,6 +2,35 @@ local speed = 0
 local last_side = "center"
 local side = "center"
 
+local tostr_mt = {
+    __tostring = function(self)
+        local str = "{\n"
+        for k, v in pairs(self) do
+            str = str .. "\t" .. tostring(k) .. " = " .. tostring(v) .. "\n"
+        end
+        return str .. "}"
+    end
+}
+
+local enabled_modules = setmetatable({
+    mode_selector=false,
+    ir_receiver=false,
+    battery=false,
+    proximity=false,
+    ring_led_1=false,
+    ring_led_3=false,
+    ring_led_5=false,
+    ring_led_7=false,
+    body_led=false,
+    front_led=false,
+    tof=true,
+    imu=false,
+    camera=false,
+    motors=false,
+    ground=true,
+}, tostr_mt)
+
+
 function init()
     print([[
        Welcome to the E-puck lua interface !
@@ -12,6 +41,9 @@ function init()
        Have fun ! 
     ]])
     speed = 100
+
+    print("Enabeling the following modules: ", enabled_modules)
+    robot.set_modules(enabled_modules)
 
     robot.on("telemetry:ground", function(ground)
         -- lua arrays start at 1
@@ -36,7 +68,6 @@ function init()
     robot.on("custom:test", function(payload)
         print("Custom Dummy data sent:" .. payload)
     end)
-
 end
 
 local counter = 0

@@ -8,6 +8,9 @@
 #include "commands_verifier.h"
 
 #include "../luavm/all_lua_types.h"
+#include "opcodes.h"
+#include "commands.h"
+#include "esp2stm.h"
 
 static const char* TAG = "COMMANDS";
 
@@ -77,4 +80,33 @@ void command_receive(const uint8_t* data, uint32_t length) {
     }
 
     // TODO: manage sequences.
+}
+
+void command_enable_modules(struct enable_modules_params p) {
+    size_t mask = 0x00;
+
+    mask |= MASK_MODE_SELECTOR & -(uint32_t)p.enable_mode_selector;
+    mask |= MASK_IR_RECEIVER & -(uint32_t)p.enable_ir_receiver;
+    mask |= MASK_BATTERY & -(uint32_t)p.enable_battery;
+    mask |= MASK_PROXIMITY & -(uint32_t)p.enable_proximity;
+
+    // Individual LEDs
+    mask |= MASK_LED_1 & -(uint32_t)p.enable_ring_led_1;
+    mask |= MASK_LED_3 & -(uint32_t)p.enable_ring_led_3;
+    mask |= MASK_LED_5 & -(uint32_t)p.enable_ring_led_5;
+    mask |= MASK_LED_7 & -(uint32_t)p.enable_ring_led_7;
+    mask |= MASK_BODY_LED & -(uint32_t)p.enable_body_led;
+    mask |= MASK_FRONT_LED & -(uint32_t)p.enable_front_led;
+
+    mask |= MASK_TOF & -(uint32_t)p.enable_tof;
+    mask |= MASK_IMU & -(uint32_t)p.enable_imu;
+    mask |= MASK_CAMERA & -(uint32_t)p.enable_camera;
+    mask |= MASK_MOTORS & -(uint32_t)p.enable_motors;
+    mask |= MASK_GROUND & -(uint32_t)p.enable_ground;
+
+    ESP_LOGI(TAG, "Created mask: %X", mask);
+    enable_command_payload_t payload = {.opcode = ENABLE_ENABLE_OPCODE, .mask = mask};
+
+    esp2stm_payload_append((uint8_t*)(&payload), sizeof(payload));
+    esp2stm_buffer_append();
 }

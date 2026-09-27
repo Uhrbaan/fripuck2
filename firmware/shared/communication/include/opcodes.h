@@ -10,19 +10,12 @@ typedef enum {
     ENABLE_ENABLE_OPCODE = 0x01,
 } command_opcodes;
 
-// Packed struct matching EXACT SPI wire layout (3 bytes)
 #pragma pack(push, 1)
-typedef struct {
-    uint8_t sync;           // 0xA5
-    uint8_t packet_len;     // Header (3) + Body length
-    uint8_t command_count;  // Total opcodes appended
-} command_header_t;
-#pragma pack(pop)
-
 typedef struct {
     uint8_t opcode;
     uint32_t mask;
 } enable_command_payload_t;
+#pragma pack(pop)
 
 // Use explicit bitmasks instead of C bitfields for cross-compiler safety
 #define MASK_MODE_SELECTOR (1UL << 0)

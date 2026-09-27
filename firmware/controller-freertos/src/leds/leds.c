@@ -21,7 +21,7 @@ void set_led(led_name_t led_number, bool value) {
     if (led_number < 0 || led_number >= NUM_LED) return;
 
     struct port_pin_pair pair = led_port_pin_table[led_number];
-    HAL_GPIO_WritePin(pair.port, pair.pin, (value == true) ? GPIO_PIN_SET : GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(pair.port, pair.pin, !value);
 }
 
 void toggle_led(led_name_t led_number) {

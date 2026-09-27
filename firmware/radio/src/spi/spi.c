@@ -9,7 +9,6 @@
 #include <freertos/task.h>
 
 #include "commands/commands.h"
-#include "commands/esp2stm.h"
 
 static const char TAG[] = "SPI";
 
@@ -24,8 +23,6 @@ static uint8_t* spi_receive_buffer;
 static spi_callback_fn user_callback = NULL;
 
 void spi_receiver(void* pvParameters);
-
-static SemaphoreHandle_t spi_tx_buffer_mutex = NULL;
 
 #define PIN_NUM_MOSI 23
 #define PIN_NUM_MISO 19
@@ -78,9 +75,6 @@ esp_err_t spi_init(spi_host_device_t host_device, spi_callback_fn callback) {
         return ESP_FAIL;
     }
 
-    spi_tx_buffer_mutex = xSemaphoreCreateBinary();
-    esp2stm_init(spi_transmit_buffer, SPI_PACKET_MAX_SIZE, spi_tx_buffer_mutex);
-
     ESP_LOGI(TAG, "Susccessfully initialized SPI reception.");
     return ESP_OK;
 }
@@ -103,11 +97,7 @@ void spi_receiver(void* pvParameters) {
         // Clear buffer before next use
         memset(spi_receive_buffer, 0, SPI_PACKET_MAX_SIZE);
 
-        xSemaphoreTake(spi_tx_buffer_mutex, portMAX_DELAY);  // Critical: don't update payload.
         err = spi_slave_transmit(SPI3_HOST, &transaction, portMAX_DELAY);
-        size_t bytes_sent = transaction.trans_len / 8;
-        esp2stm_buffer_write_reset(bytes_sent);
-        xSemaphoreGive(spi_tx_buffer_mutex);  // Exit critical
 
         if (err == ESP_OK) {
             // trans_len is the number of bits actually clocked by the master

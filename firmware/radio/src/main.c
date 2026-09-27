@@ -28,6 +28,8 @@ volatile uint32_t total_bytes_received = 0;
 #include "luavm/vm.h"
 #include "luavm/all_lua_types.h"
 
+#include "commands/commands.h"
+
 extern QueueHandle_t spi_to_udp_queue;
 void spi_recieve_cb(uint8_t* data, uint16_t length) {
     static const char TAG[] = "SPI RX CB";
@@ -102,24 +104,32 @@ void throughput_monitor_task(void* pvParameters) {
 }
 
 void app_main(void) {
+    int err;
     static const char TAG[] = "MAIN";
     // Initialize non-volatile memory
     nvs_flash_init();
 
     // Initialize and start the Lua VM
-    lua_vm_start();
+    err = lua_vm_start();
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to initialize Lua VM");
+    }
 
     // Net communication
-    wifi_init();
-    ESP_LOGI(TAG, "Finished Wi-Fi initialization.");
-    tcp_init_();
-    ESP_LOGI(TAG, "Finished TCP initialization");
-    spi_init(SPI1_HOST, spi_recieve_cb);
+    // wifi_init();
+    // ESP_LOGI(TAG, "Finished Wi-Fi initialization.");
+    // tcp_init_();
+    // ESP_LOGI(TAG, "Finished TCP initialization");
+    // udp_init_();
+    QueueHandle_t instruction_send_handle = NULL;
+    err = uart_init(NULL);
+    if (err != ESP_OK) ESP_LOGE(TAG, "Failed to initilize UART bridge");
+    ESP_LOGI(TAG, "Initialized UART communication. Send instructions into the ");
+    // spi_init(SPI1_HOST, spi_recieve_cb);
     ESP_LOGI(TAG, "Finished SPI1 HW initialization");
-    udp_init_();
 
     // Start TCP tasks
-    xTaskCreate(tcp_connection_manager, "tcp connection manager", 1024 * 4, NULL, 1, NULL);
+    // xTaskCreate(tcp_connection_manager, "tcp connection manager", 1024 * 4, NULL, 1, NULL);
 
     while (1) {
         vTaskDelay(pdMS_TO_TICKS(5000));

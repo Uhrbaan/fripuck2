@@ -10,7 +10,7 @@
 #include "../luavm/all_lua_types.h"
 #include "opcodes.h"
 #include "commands.h"
-#include "esp2stm.h"
+#include "uart/uart.h"
 
 static const char* TAG = "COMMANDS";
 
@@ -105,8 +105,8 @@ void command_enable_modules(struct enable_modules_params p) {
     mask |= MASK_GROUND & -(uint32_t)p.enable_ground;
 
     ESP_LOGI(TAG, "Created mask: %X", mask);
+    // TODO: add crc
     enable_command_payload_t payload = {.opcode = ENABLE_ENABLE_OPCODE, .mask = mask};
-
-    esp2stm_payload_append((uint8_t*)(&payload), sizeof(payload));
-    esp2stm_buffer_append();
+    uart_send((void*)&payload, sizeof(payload));
+    ESP_LOGI(TAG, "Sent length=%d, opcode=%x, mask=%x", sizeof(payload), payload.opcode, payload.mask);
 }

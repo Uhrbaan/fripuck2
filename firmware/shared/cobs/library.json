@@ -1,0 +1,10 @@
+{
+    "name": "cmacqueen/cobs-c",
+    "version": "0.0.1",
+    "description": "COBS implementation.",
+    "frameworks": "*",
+    "platforms": "*",
+    "build": {
+        "srcDir": "."
+    }
+}

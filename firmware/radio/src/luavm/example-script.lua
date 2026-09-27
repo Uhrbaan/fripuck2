@@ -81,5 +81,11 @@ function update(dt)
         print("Over 100 iterations, the average dt is: " .. dt .. "s.")
         counter = 0
         total_dt = 0
+
+        -- blink first led.
+        enabled_modules.ring_led_1 = not enabled_modules.ring_led_1
+        enabled_modules.body_led = not enabled_modules.body_led
+        robot.set_modules(enabled_modules)
+        print("Led 1 is now " .. tostring(enabled_modules.ring_led_1))
     end
 end

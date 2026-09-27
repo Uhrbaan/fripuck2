@@ -2,19 +2,21 @@
 #define UART_H
 
 #include "driver/uart.h"
+#include "uart_conf.h"
 #include <inttypes.h>
+
+#define UART_MAX_MSGS_NUM 5
+
+struct uart_packet {
+    uint16_t length;                                     // Actual size of payload inside array
+    uint8_t payload[RADIO2CONTROLLER_MAX_COMMAND_SIZE];  // Raw bytes (struct + CRC)
+};
 
 typedef void (*uart_callback_fn)(uint8_t* data, uint16_t length);
 
-/**
- * Initialize the UART communication bridge with the controller chip.
- * @param uart_num Is the number of the uart port that is connected to the controller. The hardware has to be already
- * initialized.
- * @param uart_queue Is the handle to the generated queue when installing the drivers.
- * @param callback The callback function that will be called when the robot recieves a message on UART from the
- * controller.
- */
-esp_err_t uart_init(uart_port_t uart_num, QueueHandle_t* uart_queue, uart_callback_fn callback);
+esp_err_t uart_init(uart_callback_fn callback);
+
+int uart_send(uint8_t* data, uint16_t length);
 
 /**
  * @brief Send data over UART to the controller chip.
@@ -24,7 +26,9 @@ esp_err_t uart_init(uart_port_t uart_num, QueueHandle_t* uart_queue, uart_callba
  * @param data Pointer to the data you want to send
  * @param length Length in bytes of the data you want to send.
  */
-void uart_send(uint8_t* data, uint16_t length);
+void uart_send_raw(uint8_t* data, uint16_t length);
+
+bool uart_send_async(const void* data, uint16_t length, TickType_t timeout_ticks);
 
 QueueHandle_t* uart1_init(void);
 

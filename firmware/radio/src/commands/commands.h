@@ -1,6 +1,8 @@
 #ifndef SRC_COMMANDS_H
 #define SRC_COMMANDS_H
 
+#include <freertos/FreeRTOS.h>
+
 struct enable_modules_params {
     bool enable_mode_selector;
     bool enable_ir_receiver;
@@ -21,4 +23,5 @@ struct enable_modules_params {
 
 void command_receive(const uint8_t* data, uint32_t length);
 void command_enable_modules(struct enable_modules_params p);
+void init_commands(QueueHandle_t instruction_queue);
 #endif

@@ -32,6 +32,7 @@
 #include "ground/ground.h"
 
 #include "telemetry/telemetry.h"
+#include "instructions/instructions.h"
 
 int init_hardware(void) {
     HAL_Init();
@@ -72,16 +73,7 @@ void StartDefaultTask(void* argument) {
     tof_start_task(NULL);
     telemetry_start_task(NULL);
 
-#ifdef DEBUG
-    uint8_t* i2c_devs = NULL;
-    uint8_t i2c_devn = 0;
-    i2c_scan_bus(&i2c_devs, &i2c_devn, &hi2c1);
-    printf("There are %d i2c devices available.", i2c_devn);
-    for (int i = 0; i < i2c_devn; i++) printf("\n\t%2x", i2c_devs[i]);
-#endif
-
-    uint32_t camera_id = get_camera_id();
-    printf("The camera available on this robot is: %x", camera_id);
+    uart_init(&huart3, handle_instruction);
 
     while (1) {
         osDelay(100);

@@ -1,5 +1,4 @@
-#ifndef EXAMPLE_SCRIPT_H
-#define EXAMPLE_SCRIPT_H
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -12,5 +11,3 @@ extern unsigned int src_luavm_example_script_lua_len;
 #ifdef __cplusplus
 }
 #endif
-
-#endif  // EXAMPLE_SCRIPT_H

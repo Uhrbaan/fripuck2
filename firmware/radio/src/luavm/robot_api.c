@@ -90,8 +90,6 @@ int L_robot_set_modules(lua_State* L) {
         const char* key = lua_tostring(L, -2);
         bool value = lua_toboolean(L, -1);
 
-        ESP_LOGI(TAG, "Checking for key %s:%s", key, (value ? "true" : "false"));
-
         // 3. Map keys to struct members
         if (strcmp(key, "mode_selector") == 0) {
             params.enable_mode_selector = value;

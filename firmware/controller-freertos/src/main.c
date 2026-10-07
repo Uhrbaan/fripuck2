@@ -1,5 +1,6 @@
 #include "main.h"
 #include "stm32f4xx_hal.h"
+#include <math.h>
 
 #include "core/driver.h"
 #include "core/can.h"
@@ -17,6 +18,7 @@
 
 #include "leds/leds.h"
 #include "motors/motors.h"
+#include "motors/kinematics.h"
 #include "uart/uart.h"
 #include "spi/spi.h"
 #include "i2c/i2c.h"
@@ -42,8 +44,8 @@ int init_hardware(void) {
     MX_DMA_Init();
     MX_CAN1_Init();
     MX_TIM2_Init();
-    MX_TIM3_Init();
-    MX_TIM4_Init();
+    MX_TIM3_Init();  // motor left
+    MX_TIM4_Init();  // motor right
     MX_TIM5_Init();
     HAL_TIM_PWM_Start(&htim5, TIM_CHANNEL_1);
     HAL_Delay(1000);
@@ -61,19 +63,31 @@ osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
     .name = "defaultTask",
     .priority = (osPriority_t)osPriorityNormal,
+    .stack_size = 2048,
+};
+
+osThreadId_t motionTaskHandle;
+const osThreadAttr_t motionTask_attributes = {
+    .name = "motionTask",
+    .priority = (osPriority_t)osPriorityNormal,
 };
 
 void StartDefaultTask(void* argument) {
     int err = 0;
-    proximity_start(&htim2, &hadc1);
+    motors_init(&htim3, &htim4);
+    osThreadNew(motion_control_task, NULL, &motionTask_attributes);
+    err = proximity_start(&htim2, &hadc1);
+    if (err != 0) set_led(4, true);
     err = imu_start();
     if (err != 0) set_led(4, true);
+    // uart_init(&huart3, prepare_and_send_instruction);
+    // start_instruction_handler(10);
     err = ground_start(NULL);
     if (err != 0) set_led(5, true);
     tof_start_task(NULL);
     telemetry_start_task(NULL);
 
-    uart_init(&huart3, handle_instruction);
+    start_trajectory(2.0f * M_PI * 0.15f, 0.1f, 0.15f, 0.1f, 0.1f, false);
 
     while (1) {
         osDelay(100);
@@ -86,8 +100,10 @@ int main(void) {
     /* Init scheduler */
     osKernelInitialize(); /* Call init function for freertos objects (in cmsis_os2.c) */
 
-    i2c_init(&hi2c1);
-    tof_init(&hi2c1, TOF_HIGH_SPEED);
+    int err = i2c_init(&hi2c1);
+    configASSERT(err == 0);
+    err = tof_init(&hi2c1, TOF_HIGH_SPEED);
+    configASSERT(err == 0);
     spi_bus_init(&hspi1);
 
     defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);

@@ -58,11 +58,13 @@ int i2c_scan_bus(uint8_t** out_device_list, uint8_t* out_device_num, I2C_HandleT
 }
 #endif
 
-void i2c_init(I2C_HandleTypeDef* hi2c) {
+int i2c_init(I2C_HandleTypeDef* hi2c) {
     i2c_handle = hi2c;
 
     static const osMutexAttr_t mutex_attributes = {"i2c_bus_mutex", osMutexRecursive | osMutexPrioInherit, NULL, 0};
     i2c_mutex = osMutexNew(&mutex_attributes);
+    if (i2c_mutex == NULL) return 1;
+    return 0;
 }
 
 void i2c_reset(I2C_HandleTypeDef* hi2c) {

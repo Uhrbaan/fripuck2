@@ -1,7 +1,12 @@
 #include "instructions.h"
 #include "opcodes.h"
 #include <stdio.h>
-#include <strings.h>
+#include <string.h>
+#include <FreeRTOS.h>
+#include <queue.h>
+#include <cmsis_os.h>
+
+#include "motors/motors.h"
 
 struct device_flags {
     unsigned mode_selector : 1;
@@ -25,29 +30,29 @@ struct device_flags {
 
 void enable_instruction(struct device_flags);
 
-void handle_instruction(uint8_t* data, uint16_t length) {
-    if (length < 1) {
-        return;
-    }
+QueueHandle_t instruction_queue_handle = NULL;
+osThreadId_t instruction_handler_task = NULL;
+const osThreadAttr_t instruction_task_attributes = {
+    .name = "instruction-handler-task",
+    .priority = (osPriority_t)osPriorityNormal,
+};
 
-    switch (data[0])  // switch on the opcode
+void handle_instruction(unified_instruction_payload_t* payload) {
+    switch (payload->opcode)  // switch on the opcode
     {
         case (ENABLE_ENABLE_OPCODE): {
-            uint32_t mask = 0;
-            memcpy(&mask, &data[1], sizeof(mask));
-
+            uint32_t mask = payload->mask;
             struct device_flags flags = {0};
+
             flags.mode_selector = (mask & MASK_MODE_SELECTOR) != 0;
             flags.ir_receiver = (mask & MASK_IR_RECEIVER) != 0;
             flags.battery = (mask & MASK_BATTERY) != 0;
-
             flags.led_1 = (mask & MASK_LED_1) != 0;
             flags.led_3 = (mask & MASK_LED_3) != 0;
             flags.led_5 = (mask & MASK_LED_5) != 0;
             flags.led_7 = (mask & MASK_LED_7) != 0;
             flags.body_led = (mask & MASK_BODY_LED) != 0;
             flags.front_led = (mask & MASK_FRONT_LED) != 0;
-
             flags.proximity = (mask & MASK_PROXIMITY) != 0;
             flags.tof = (mask & MASK_TOF) != 0;
             flags.imu = (mask & MASK_IMU) != 0;
@@ -59,9 +64,58 @@ void handle_instruction(uint8_t* data, uint16_t length) {
             break;
         }
 
+        case (WHEEL_SPEED_OPCODE): {
+            motor_set_speed(MOTOR_LEFT, payload->wheel_speed.left);
+            motor_set_speed(MOTOR_RIGHT, payload->wheel_speed.right);
+            break;
+        }
+
+        case (MOVE_TRAJECTORY_OPCODE): {
+            // TODO
+            break;
+        }
+
         default:
             break;
     }
+}
+
+void instruction_handler(void* arguments) {
+    unified_instruction_payload_t payload = {0};
+    for (;;) {
+        if (xQueueReceive(instruction_queue_handle, &payload, portMAX_DELAY)) {
+            handle_instruction(&payload);
+        }
+    }
+}
+
+int start_instruction_handler(size_t queue_length) {
+    instruction_queue_handle = xQueueCreate(queue_length, sizeof(unified_instruction_payload_t));
+    if (instruction_queue_handle == NULL) {
+        return 1;
+    }
+
+    instruction_handler_task = osThreadNew(instruction_handler, NULL, &instruction_task_attributes);
+    if (instruction_handler_task == NULL) {
+        return 1;
+    }
+
+    return 0;
+}
+
+void prepare_and_send_instruction(uint8_t* data, uint16_t length) {
+    if (length < 1) {
+        return;
+    }
+
+    unified_instruction_payload_t payload = {0};
+    size_t min_size = (sizeof(payload) > length ? length : sizeof(payload));
+    memcpy(&payload, data, min_size);
+
+    // NOTE: running inside UART interrupt
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+    xQueueSendFromISR(instruction_queue_handle, &payload, &xHigherPriorityTaskWoken);
+    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 
 #include "leds/leds.h"

@@ -22,9 +22,11 @@ enum microstep_name {
     MICROSTEP_HALT = 8,
 };
 
-void motors_init(TIM_HandleTypeDef hardware_timer_left, TIM_HandleTypeDef hardware_timer_right);
+void motors_init(TIM_HandleTypeDef* hardware_timer_left, TIM_HandleTypeDef* hardware_timer_right);
 void motor_set_speed(enum motor_name motor_number, uint16_t steps_per_second);
 void motor_set_direction(enum motor_name motor_number, bool reversed);
 int32_t motor_get_steps(enum motor_name motor_number);
+void motion_control_task(void* argument);
+void start_trajectory(float distance, float speed, float radius, float accel, float decel, bool notify);
 
 #endif  // MOTORS_H

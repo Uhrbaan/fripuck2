@@ -6,6 +6,7 @@
 #include "commands/commands.h"
 
 static const char* TAG = "ROBOT API";
+// FIXME: actually calculate what the values are
 
 typedef int (*hook_register_fn)(lua_State*, int);
 

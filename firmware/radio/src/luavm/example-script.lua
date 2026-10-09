@@ -1,7 +1,3 @@
-local speed = 0
-local last_side = "center"
-local side = "center"
-
 local tostr_mt = {
     __tostring = function(self)
         local str = "{\n"
@@ -12,80 +8,82 @@ local tostr_mt = {
     end
 }
 
+-- Make sure motors and ToF are enabled!
 local enabled_modules = setmetatable({
-    mode_selector=false,
-    ir_receiver=false,
-    battery=false,
-    proximity=false,
-    ring_led_1=false,
-    ring_led_3=false,
-    ring_led_5=false,
-    ring_led_7=false,
-    body_led=false,
-    front_led=false,
-    tof=true,
-    imu=false,
-    camera=false,
-    motors=false,
-    ground=true,
+    mode_selector = false,
+    ir_receiver = false,
+    battery = false,
+    proximity = false,
+    ring_led_1 = false,
+    ring_led_3 = false,
+    ring_led_5 = false,
+    ring_led_7 = false,
+    body_led = true, -- Let's use this for visual feedback
+    front_led = false,
+    tof = true,
+    imu = false,
+    camera = false,
+    motors = true, -- Enabled to allow driving!
+    ground = false
 }, tostr_mt)
 
+-- Controller Settings
+local TARGET_DISTANCE = 100 -- The distance (in mm) the robot wants to maintain
+local MAX_SPEED = 0.3 -- Maximum speed in m/s
+local KP = 0.004 -- Proportional gain (how aggressively it corrects the error)
+local DEADZONE = 15 -- Ignore errors smaller than this to prevent nervous jittering
 
 function init()
-    print([[
-       Welcome to the E-puck lua interface !
-       
-       You can write standard programs with the `init()` and `update()` functions, or you can react to sensor data by subscribing to a sensor, ex: 
-        `robot.on(telemetry:tof, function(distance) print(distance) end)
-       
-       Have fun ! 
-    ]])
-    speed = 100
-
-    print("Enabeling the following modules: ", enabled_modules)
+    print("Starting Jedi-Force Follow-Me mode (with Trajectory Profiling)...")
     robot.set_modules(enabled_modules)
 
-    robot.on("telemetry:ground", function(ground)
-        -- lua arrays start at 1
-        local difference = ground[1] - ground[3]
-        
-        if math.abs(difference) > 20 then 
-            if difference < 0 then side = "left"
-            else side = "right" end 
-        else side = "center" end
+    robot.on("telemetry:tof", function(distance)
 
-        if side ~= last_side then 
-            print("Black line on the " .. side .. " side.") 
+        -- 1. If nothing is in front of the robot, anchor it with a standard stop
+        if distance > 400 then
+            robot.drive(0)
+            enabled_modules.body_led = false
+            robot.set_modules(enabled_modules)
+            return
         end
 
-        last_side = side
-    end)
+        enabled_modules.body_led = true
+        robot.set_modules(enabled_modules)
 
-    robot.on("telemetry:tof", function(distance) 
-        if distance < 50 then print("Caution !!") end
-    end)
+        -- 2. Calculate the error in mm, and convert it to meters for the API
+        local error_mm = distance - TARGET_DISTANCE
+        local error_m = math.abs(error_mm) / 1000.0 -- Absolute distance in meters
 
-    robot.on("custom:test", function(payload)
-        print("Custom Dummy data sent:" .. payload)
+        -- 3. Deadzone check
+        if math.abs(error_mm) < DEADZONE then
+            -- By the time it reaches the deadzone, the FSM's deceleration 
+            -- profile should have already brought the velocity down to ~0.
+            robot.drive(0)
+            return
+        end
+
+        -- 4. Calculate speed based on the error
+        local speed = error_mm * KP
+
+        -- 5. Clamp the speed
+        if speed > MAX_SPEED then
+            speed = MAX_SPEED
+        elseif speed < -MAX_SPEED then
+            speed = -MAX_SPEED
+        end
+
+        -- 6. Drive with the remaining distance!
+        -- The C-level FSM will automatically trigger MOTION_DECEL when
+        -- this provided distance approaches the dynamic `d_stop` braking threshold.
+        robot.drive(speed)
     end)
 end
 
-local counter = 0
-local total_dt = 0
-
+local counter = 0.0
 function update(dt)
-    counter = counter + 1
-    total_dt = total_dt + dt
-    if counter > 100  then 
-        local average = total_dt / counter 
-        print("Over 100 iterations, the average dt is: " .. dt .. "s.")
+    counter = counter + dt
+    if counter > 5 then
+        print(counter .. "s passed...")
         counter = 0
-        total_dt = 0
-
-        -- blink first led.
-        enabled_modules.ring_led_1 = not enabled_modules.ring_led_1
-        enabled_modules.body_led = not enabled_modules.body_led
-        robot.set_modules(enabled_modules)
-        print("Led 1 is now " .. tostring(enabled_modules.ring_led_1))
     end
 end

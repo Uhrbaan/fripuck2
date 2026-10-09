@@ -187,7 +187,9 @@ int tof_get_last_distance(uint16_t* out_distance_mm) {
 
     if (VL53L0X_GetRangingMeasurementData(&device, &measure) == VL53L0X_ERROR_NONE) {
         *out_distance_mm = measure.RangeMilliMeter;
-        err = measure.RangeStatus;
+        // only don't send if hardware failure
+        // TODO: publish quality of reading too
+        if (measure.RangeStatus >= 5) err = measure.RangeStatus;
     }
     osMutexRelease(i2c_mutex);
 

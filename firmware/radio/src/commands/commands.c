@@ -110,3 +110,22 @@ void command_enable_modules(struct enable_modules_params p) {
     uart_send((void*)&payload, sizeof(payload));
     ESP_LOGI(TAG, "Sent length=%d, opcode=%x, mask=%x", sizeof(payload), payload.opcode, payload.mask);
 }
+
+void command_move_trajectory(float speed, float distance, float radius, float accel, float decel, bool notify,
+                             bool synchronous) {
+    move_trajectory_payload_t payload = {.opcode = MOVEMENT_OPCODE,
+                                         .options = {
+                                             .speed = speed,
+                                             .distance = distance,
+                                             .radius = radius,
+                                             .accel = accel,
+                                             .decel = decel,
+                                             .notify = notify,
+                                             .synchronous = synchronous,
+                                         }};
+    uart_send((void*)&payload, sizeof(payload));
+    ESP_LOGI(TAG,
+             "Sent movement trajectory with speed=%.2f, distance=%.2f, radius=%.2f, accel=%.2f, decel=%.2f, notify=%s",
+             payload.options.speed, payload.options.distance, payload.options.radius, payload.options.accel,
+             payload.options.decel, payload.options.notify ? "true" : "false");
+}

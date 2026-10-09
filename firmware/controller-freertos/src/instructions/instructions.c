@@ -64,14 +64,11 @@ void handle_instruction(unified_instruction_payload_t* payload) {
             break;
         }
 
-        case (WHEEL_SPEED_OPCODE): {
-            motor_set_speed(MOTOR_LEFT, payload->wheel_speed.left);
-            motor_set_speed(MOTOR_RIGHT, payload->wheel_speed.right);
-            break;
-        }
-
-        case (MOVE_TRAJECTORY_OPCODE): {
-            // TODO
+        case (MOVEMENT_OPCODE): {
+            start_trajectory(payload->move_trajectory.distance, payload->move_trajectory.speed,
+                             payload->move_trajectory.radius, payload->move_trajectory.accel,
+                             payload->move_trajectory.decel, payload->move_trajectory.notify,
+                             payload->move_trajectory.synchronous);
             break;
         }
 

@@ -14,7 +14,7 @@ static const char TAG[] = "SPI";
 
 #define SPI_PACKET_MAX_SIZE 4092
 
-static uint8_t* spi_transmit_buffer;
+// static uint8_t* spi_transmit_buffer;
 static uint8_t* spi_receive_buffer;
 
 // static QueueHandle_t spi_request_queue; ///< Holds data sent from a remote client.
@@ -29,8 +29,11 @@ void spi_receiver(void* pvParameters);
 #define PIN_NUM_CLK 18
 #define PIN_NUM_CS 5
 
-static spi_bus_config_t spi_bus_config = {
-    .miso_io_num = PIN_NUM_MISO, .mosi_io_num = PIN_NUM_MOSI, .sclk_io_num = PIN_NUM_CLK};
+static spi_bus_config_t spi_bus_config = {.miso_io_num = PIN_NUM_MISO,
+                                          .mosi_io_num = PIN_NUM_MOSI,
+                                          .sclk_io_num = PIN_NUM_CLK,
+                                          .quadwp_io_num = -1,
+                                          .quadhd_io_num = -1};
 
 static spi_slave_interface_config_t spi_slave_config = {
     .mode = 0,                   // SPI mode0: CPOL=0, CPHA=0.
@@ -49,16 +52,18 @@ esp_err_t spi_init(spi_host_device_t host_device, spi_callback_fn callback) {
 
     int err = spi_slave_initialize(SPI3_HOST, &spi_bus_config, &spi_slave_config, SPI_DMA_CH_AUTO);
     if (err != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to initialize SPI slave: %d", err);
         return ESP_FAIL;
     }
 
     // Create the buffers to hold spi data
-    spi_transmit_buffer = (uint8_t*)heap_caps_malloc(SPI_PACKET_MAX_SIZE, MALLOC_CAP_DMA);
-    if (spi_transmit_buffer == NULL) {
-        ESP_LOGE(TAG, "Could not allocate %d bytes for the spi transmit buffer.", SPI_PACKET_MAX_SIZE);
-        return ESP_FAIL;
-    }
-    memset(spi_transmit_buffer, 0, SPI_PACKET_MAX_SIZE);
+    // spi_transmit_buffer = (uint8_t*)heap_caps_malloc(SPI_PACKET_MAX_SIZE, MALLOC_CAP_DMA);
+    // if (spi_transmit_buffer == NULL) {
+    //     ESP_LOGE(TAG, "Could not allocate %d bytes for the spi transmit buffer.", SPI_PACKET_MAX_SIZE);
+    //     return ESP_FAIL;
+    // }
+    // memset(spi_transmit_buffer, 0, SPI_PACKET_MAX_SIZE);
+
     spi_receive_buffer = (uint8_t*)heap_caps_malloc(SPI_PACKET_MAX_SIZE, MALLOC_CAP_DMA);
     if (spi_receive_buffer == NULL) {
         ESP_LOGE(TAG, "Could not allocate %d bytes for the spi receive buffer.", SPI_PACKET_MAX_SIZE);
@@ -72,6 +77,7 @@ esp_err_t spi_init(spi_host_device_t host_device, spi_callback_fn callback) {
     if (user_callback) {
         xTaskCreate(spi_receiver, "spi_receiver", 4096, NULL, 5, NULL);
     } else {
+        ESP_LOGE(TAG, "Failed to create the reciever task.");
         return ESP_FAIL;
     }
 
@@ -86,7 +92,7 @@ void spi_receiver(void* pvParameters) {
 
     // We use the DMA-capable buffer allocated in spi_init
     spi_slave_transaction_t transaction = {
-        .tx_buffer = spi_transmit_buffer,  // We only care about receiving
+        // .tx_buffer = spi_transmit_buffer,  // We only care about receiving
         .rx_buffer = spi_receive_buffer,
         .length = SPI_PACKET_MAX_SIZE * 8,  // Maximum space available in bits
     };
@@ -98,6 +104,7 @@ void spi_receiver(void* pvParameters) {
         memset(spi_receive_buffer, 0, SPI_PACKET_MAX_SIZE);
 
         err = spi_slave_transmit(SPI3_HOST, &transaction, portMAX_DELAY);
+        ESP_LOGI(TAG, "Recieved somthing: %d", err);
 
         if (err == ESP_OK) {
             // trans_len is the number of bits actually clocked by the master

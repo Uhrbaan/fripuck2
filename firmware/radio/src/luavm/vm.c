@@ -13,6 +13,7 @@
 #include "example-script.h"
 
 #include "robot_api.h"
+#include "api/movement.h"
 
 QueueHandle_t lua_event_queue = NULL;
 
@@ -88,7 +89,9 @@ void lua_vm(void* argument) {
 
     // Register our api under the 'robot' table.
     luaL_register(L, "robot", robot_lib);
-    lua_pop(L, 1);  // remove the table from the stack.
+    lua_pop(L, 1);
+    luaL_register(L, "robot", robot_movement_lib);
+    lua_pop(L, 1);
     ESP_LOGI(TAG, "Registered robot libraries.");
 
     if (luaL_loadbuffer(L, (const char*)src_luavm_example_script_lua, src_luavm_example_script_lua_len, "script") !=
@@ -116,23 +119,24 @@ void lua_vm(void* argument) {
                     execute_ground_hook(L);
                     break;
                 case HOOK_TELEMETRY_TOF:
+                    execute_tof_hook(L);
                     break;
-                case HOOK_TELEMETRY_BATTERY:
-                    break;
-                case HOOK_TELEMETRY_ENCODER:
-                    break;
-                case HOOK_TELEMETRY_IMU:
-                    break;
-                case HOOK_TELEMETRY_VOLUME:
-                    break;
-                case HOOK_COMMAND_CUSTOM:
-                    break;
-                case HOOK_REPL:
-                    //     if (event.data != NULL) {
-                    //         execute_repl_cmd(L, (const char*)event.data);
-                    //         free(event.data);  // Free memory immediately after execution!
-                    //     }
-                    break;
+                // case HOOK_TELEMETRY_BATTERY:
+                //     break;
+                // case HOOK_TELEMETRY_ENCODER:
+                //     break;
+                // case HOOK_TELEMETRY_IMU:
+                //     break;
+                // case HOOK_TELEMETRY_VOLUME:
+                //     break;
+                // case HOOK_COMMAND_CUSTOM:
+                //     break;
+                // case HOOK_REPL:
+                //     //     if (event.data != NULL) {
+                //     //         execute_repl_cmd(L, (const char*)event.data);
+                //     //         free(event.data);  // Free memory immediately after execution!
+                //     //     }
+                //     break;
                 default:
                     ESP_LOGI(TAG, "Event type %d is not supported.", event.type);
             }

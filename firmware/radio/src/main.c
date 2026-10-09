@@ -40,11 +40,16 @@ void spi_recieve_cb(uint8_t* data, uint16_t length) {
         return;
     }
     FripuckProtocol_Sensors_SensorBatch_table_t batch = FripuckProtocol_Sensors_SensorBatch_as_root(data);
+    ESP_LOGI(TAG, "Recieved batch of size %u.", length);
 
     // Log the first TOF element for logging purposes
     FripuckProtocol_Sensors_TofData_vec_t tof_vec = FripuckProtocol_Sensors_SensorBatch_tof(batch);
     size_t tof_count = FripuckProtocol_Sensors_TofData_vec_len(tof_vec);
     if (tof_vec != NULL && tof_count > 0) {
+        ESP_LOGI(TAG, "Batch contains %u TOF data points.", tof_count);
+        FripuckProtocol_Sensors_TofData_struct_t tof_data =
+            FripuckProtocol_Sensors_TofData_vec_at(tof_vec, tof_count - 1);
+        trigger_tof_hook(tof_data);
     }
 
     // Log proximity
@@ -62,6 +67,7 @@ void spi_recieve_cb(uint8_t* data, uint16_t length) {
     FripuckProtocol_Sensors_GroundData_vec_t ground_vec = FripuckProtocol_Sensors_SensorBatch_ground(batch);
     size_t ground_count = FripuckProtocol_Sensors_GroundData_vec_len(ground_vec);
     if (ground_vec != NULL && ground_count > 0) {
+        ESP_LOGI(TAG, "Batch contains %u GROUND data points.", ground_count);
         FripuckProtocol_Sensors_GroundData_struct_t ground_data =
             FripuckProtocol_Sensors_GroundData_vec_at(ground_vec, ground_count - 1);
         trigger_ground_hook(ground_data);
@@ -72,8 +78,6 @@ void spi_recieve_cb(uint8_t* data, uint16_t length) {
         memcpy(packet.data, data, length);
         xQueueSend(spi_to_udp_queue, &packet, 0);
         total_bytes_received += length;
-    } else {
-        ESP_LOGW(TAG, "Failed to process spi data: Wi-fi to slow !");
     }
 }
 
@@ -121,11 +125,11 @@ void app_main(void) {
     // tcp_init_();
     // ESP_LOGI(TAG, "Finished TCP initialization");
     // udp_init_();
-    QueueHandle_t instruction_send_handle = NULL;
     err = uart_init(NULL);
     if (err != ESP_OK) ESP_LOGE(TAG, "Failed to initilize UART bridge");
     ESP_LOGI(TAG, "Initialized UART communication. Send instructions into the ");
-    // spi_init(SPI1_HOST, spi_recieve_cb);
+    err = spi_init(SPI1_HOST, spi_recieve_cb);
+    assert(err == 0);
     ESP_LOGI(TAG, "Finished SPI1 HW initialization");
 
     // Start TCP tasks

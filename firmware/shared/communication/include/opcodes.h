@@ -3,11 +3,13 @@
 
 #include <stdint.h>
 #include <limits.h>
+#include <stdbool.h>
 
 #define OPCODES_BUF_MAX_SIZE UCHAR_MAX  // 255 bytes
 
 typedef enum {
     ENABLE_ENABLE_OPCODE = 0x01,
+    MOVEMENT_OPCODE = 0X02,
 } command_opcodes;
 
 #pragma pack(push, 1)
@@ -15,6 +17,33 @@ typedef struct {
     uint8_t opcode;
     uint32_t mask;
 } enable_command_payload_t;
+#pragma pack(pop)
+
+struct move_trajectory_t {
+    float speed;
+    float distance;
+    float radius;
+    float accel;
+    float decel;
+    bool notify;
+    bool synchronous;
+};
+
+#pragma pack(push, 1)
+typedef struct {
+    uint8_t opcode;
+    struct move_trajectory_t options;
+} move_trajectory_payload_t;
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+typedef struct {
+    uint8_t opcode;
+    union {
+        uint32_t mask;
+        struct move_trajectory_t move_trajectory;
+    };
+} unified_instruction_payload_t;
 #pragma pack(pop)
 
 // Use explicit bitmasks instead of C bitfields for cross-compiler safety

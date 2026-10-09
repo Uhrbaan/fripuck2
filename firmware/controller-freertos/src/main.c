@@ -80,14 +80,14 @@ void StartDefaultTask(void* argument) {
     if (err != 0) set_led(4, true);
     err = imu_start();
     if (err != 0) set_led(4, true);
-    // uart_init(&huart3, prepare_and_send_instruction);
-    // start_instruction_handler(10);
+    uart_init(&huart3, prepare_and_send_instruction);
+    start_instruction_handler(10);
     err = ground_start(NULL);
     if (err != 0) set_led(5, true);
     tof_start_task(NULL);
     telemetry_start_task(NULL);
 
-    start_trajectory(2.0f * M_PI * 0.15f, 0.1f, 0.15f, 0.1f, 0.1f, false);
+    // robot_move_demo_sequence();
 
     while (1) {
         osDelay(100);

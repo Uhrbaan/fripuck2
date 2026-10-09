@@ -30,7 +30,7 @@ int spi_radio_send(uint8_t* data, uint16_t length) {
         // Select ESP32 (PA15)
         HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_RESET);
 
-        HAL_StatusTypeDef status = HAL_SPI_Transmit(spi_handle, data, length, pdMS_TO_TICKS(10));
+        HAL_StatusTypeDef status = HAL_SPI_Transmit(spi_handle, data, length, pdMS_TO_TICKS(100));
         if (status != HAL_OK) {
             HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_SET);
             osMutexRelease(spi_bus_mutex);

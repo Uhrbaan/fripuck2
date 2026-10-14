@@ -168,7 +168,7 @@ static int l_set_wheels(lua_State* L) {
     // Ensure speed passed to profiler is positive (negative movement handled by radius/omega geometry context, or needs
     // backward state) Note: If you need explicit backward linear travel, you might need a negative speed check
     // depending on your underlying motor_set_direction logic.
-    speed = fabsf(speed);
+    speed = speed;
 
     command_move_trajectory(speed, dist, rad, acc, dec, notify, sync);
     return 0;

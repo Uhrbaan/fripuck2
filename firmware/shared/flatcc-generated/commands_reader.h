@@ -11,8 +11,9 @@
 #include <stdalign.h>
 #endif
 #include "flatcc/flatcc_prologue.h"
-#undef flatbuffers_identifier
-#define flatbuffers_identifier "CMND"
+#ifndef flatbuffers_identifier
+#define flatbuffers_identifier 0
+#endif
 #ifndef flatbuffers_extension
 #define flatbuffers_extension "bin"
 #endif
@@ -22,22 +23,14 @@ typedef const struct FripuckProtocol_Commands_Custom_table *FripuckProtocol_Comm
 typedef struct FripuckProtocol_Commands_Custom_table *FripuckProtocol_Commands_Custom_mutable_table_t;
 typedef const flatbuffers_uoffset_t *FripuckProtocol_Commands_Custom_vec_t;
 typedef flatbuffers_uoffset_t *FripuckProtocol_Commands_Custom_mutable_vec_t;
-typedef const struct FripuckProtocol_Commands_Notify_table *FripuckProtocol_Commands_Notify_table_t;
-typedef struct FripuckProtocol_Commands_Notify_table *FripuckProtocol_Commands_Notify_mutable_table_t;
-typedef const flatbuffers_uoffset_t *FripuckProtocol_Commands_Notify_vec_t;
-typedef flatbuffers_uoffset_t *FripuckProtocol_Commands_Notify_mutable_vec_t;
-typedef const struct FripuckProtocol_Commands_SetLed_table *FripuckProtocol_Commands_SetLed_table_t;
-typedef struct FripuckProtocol_Commands_SetLed_table *FripuckProtocol_Commands_SetLed_mutable_table_t;
-typedef const flatbuffers_uoffset_t *FripuckProtocol_Commands_SetLed_vec_t;
-typedef flatbuffers_uoffset_t *FripuckProtocol_Commands_SetLed_mutable_vec_t;
-typedef const struct FripuckProtocol_Commands_Sequence_table *FripuckProtocol_Commands_Sequence_table_t;
-typedef struct FripuckProtocol_Commands_Sequence_table *FripuckProtocol_Commands_Sequence_mutable_table_t;
-typedef const flatbuffers_uoffset_t *FripuckProtocol_Commands_Sequence_vec_t;
-typedef flatbuffers_uoffset_t *FripuckProtocol_Commands_Sequence_mutable_vec_t;
-typedef const struct FripuckProtocol_Commands_AbortSequence_table *FripuckProtocol_Commands_AbortSequence_table_t;
-typedef struct FripuckProtocol_Commands_AbortSequence_table *FripuckProtocol_Commands_AbortSequence_mutable_table_t;
-typedef const flatbuffers_uoffset_t *FripuckProtocol_Commands_AbortSequence_vec_t;
-typedef flatbuffers_uoffset_t *FripuckProtocol_Commands_AbortSequence_mutable_vec_t;
+typedef const struct FripuckProtocol_Commands_EnableCommand_table *FripuckProtocol_Commands_EnableCommand_table_t;
+typedef struct FripuckProtocol_Commands_EnableCommand_table *FripuckProtocol_Commands_EnableCommand_mutable_table_t;
+typedef const flatbuffers_uoffset_t *FripuckProtocol_Commands_EnableCommand_vec_t;
+typedef flatbuffers_uoffset_t *FripuckProtocol_Commands_EnableCommand_mutable_vec_t;
+typedef const struct FripuckProtocol_Commands_MoveTrajectory_table *FripuckProtocol_Commands_MoveTrajectory_table_t;
+typedef struct FripuckProtocol_Commands_MoveTrajectory_table *FripuckProtocol_Commands_MoveTrajectory_mutable_table_t;
+typedef const flatbuffers_uoffset_t *FripuckProtocol_Commands_MoveTrajectory_vec_t;
+typedef flatbuffers_uoffset_t *FripuckProtocol_Commands_MoveTrajectory_mutable_vec_t;
 typedef const struct FripuckProtocol_Commands_Command_table *FripuckProtocol_Commands_Command_table_t;
 typedef struct FripuckProtocol_Commands_Command_table *FripuckProtocol_Commands_Command_mutable_table_t;
 typedef const flatbuffers_uoffset_t *FripuckProtocol_Commands_Command_vec_t;
@@ -47,71 +40,47 @@ typedef struct FripuckProtocol_Commands_CommandBatch_table *FripuckProtocol_Comm
 typedef const flatbuffers_uoffset_t *FripuckProtocol_Commands_CommandBatch_vec_t;
 typedef flatbuffers_uoffset_t *FripuckProtocol_Commands_CommandBatch_mutable_vec_t;
 #ifndef FripuckProtocol_Commands_Custom_file_identifier
-#define FripuckProtocol_Commands_Custom_file_identifier "CMND"
+#define FripuckProtocol_Commands_Custom_file_identifier 0
 #endif
 /* deprecated, use FripuckProtocol_Commands_Custom_file_identifier */
 #ifndef FripuckProtocol_Commands_Custom_identifier
-#define FripuckProtocol_Commands_Custom_identifier "CMND"
+#define FripuckProtocol_Commands_Custom_identifier 0
 #endif
 #define FripuckProtocol_Commands_Custom_type_hash ((flatbuffers_thash_t)0xc26c9bb8)
 #define FripuckProtocol_Commands_Custom_type_identifier "\xb8\x9b\x6c\xc2"
 #ifndef FripuckProtocol_Commands_Custom_file_extension
 #define FripuckProtocol_Commands_Custom_file_extension "bin"
 #endif
-#ifndef FripuckProtocol_Commands_Notify_file_identifier
-#define FripuckProtocol_Commands_Notify_file_identifier "CMND"
+#ifndef FripuckProtocol_Commands_EnableCommand_file_identifier
+#define FripuckProtocol_Commands_EnableCommand_file_identifier 0
 #endif
-/* deprecated, use FripuckProtocol_Commands_Notify_file_identifier */
-#ifndef FripuckProtocol_Commands_Notify_identifier
-#define FripuckProtocol_Commands_Notify_identifier "CMND"
+/* deprecated, use FripuckProtocol_Commands_EnableCommand_file_identifier */
+#ifndef FripuckProtocol_Commands_EnableCommand_identifier
+#define FripuckProtocol_Commands_EnableCommand_identifier 0
 #endif
-#define FripuckProtocol_Commands_Notify_type_hash ((flatbuffers_thash_t)0x8b32c486)
-#define FripuckProtocol_Commands_Notify_type_identifier "\x86\xc4\x32\x8b"
-#ifndef FripuckProtocol_Commands_Notify_file_extension
-#define FripuckProtocol_Commands_Notify_file_extension "bin"
+#define FripuckProtocol_Commands_EnableCommand_type_hash ((flatbuffers_thash_t)0x67fc9f5d)
+#define FripuckProtocol_Commands_EnableCommand_type_identifier "\x5d\x9f\xfc\x67"
+#ifndef FripuckProtocol_Commands_EnableCommand_file_extension
+#define FripuckProtocol_Commands_EnableCommand_file_extension "bin"
 #endif
-#ifndef FripuckProtocol_Commands_SetLed_file_identifier
-#define FripuckProtocol_Commands_SetLed_file_identifier "CMND"
+#ifndef FripuckProtocol_Commands_MoveTrajectory_file_identifier
+#define FripuckProtocol_Commands_MoveTrajectory_file_identifier 0
 #endif
-/* deprecated, use FripuckProtocol_Commands_SetLed_file_identifier */
-#ifndef FripuckProtocol_Commands_SetLed_identifier
-#define FripuckProtocol_Commands_SetLed_identifier "CMND"
+/* deprecated, use FripuckProtocol_Commands_MoveTrajectory_file_identifier */
+#ifndef FripuckProtocol_Commands_MoveTrajectory_identifier
+#define FripuckProtocol_Commands_MoveTrajectory_identifier 0
 #endif
-#define FripuckProtocol_Commands_SetLed_type_hash ((flatbuffers_thash_t)0xf4161ee)
-#define FripuckProtocol_Commands_SetLed_type_identifier "\xee\x61\x41\x0f"
-#ifndef FripuckProtocol_Commands_SetLed_file_extension
-#define FripuckProtocol_Commands_SetLed_file_extension "bin"
-#endif
-#ifndef FripuckProtocol_Commands_Sequence_file_identifier
-#define FripuckProtocol_Commands_Sequence_file_identifier "CMND"
-#endif
-/* deprecated, use FripuckProtocol_Commands_Sequence_file_identifier */
-#ifndef FripuckProtocol_Commands_Sequence_identifier
-#define FripuckProtocol_Commands_Sequence_identifier "CMND"
-#endif
-#define FripuckProtocol_Commands_Sequence_type_hash ((flatbuffers_thash_t)0xc78b87aa)
-#define FripuckProtocol_Commands_Sequence_type_identifier "\xaa\x87\x8b\xc7"
-#ifndef FripuckProtocol_Commands_Sequence_file_extension
-#define FripuckProtocol_Commands_Sequence_file_extension "bin"
-#endif
-#ifndef FripuckProtocol_Commands_AbortSequence_file_identifier
-#define FripuckProtocol_Commands_AbortSequence_file_identifier "CMND"
-#endif
-/* deprecated, use FripuckProtocol_Commands_AbortSequence_file_identifier */
-#ifndef FripuckProtocol_Commands_AbortSequence_identifier
-#define FripuckProtocol_Commands_AbortSequence_identifier "CMND"
-#endif
-#define FripuckProtocol_Commands_AbortSequence_type_hash ((flatbuffers_thash_t)0x1a9e843e)
-#define FripuckProtocol_Commands_AbortSequence_type_identifier "\x3e\x84\x9e\x1a"
-#ifndef FripuckProtocol_Commands_AbortSequence_file_extension
-#define FripuckProtocol_Commands_AbortSequence_file_extension "bin"
+#define FripuckProtocol_Commands_MoveTrajectory_type_hash ((flatbuffers_thash_t)0x3ba6524f)
+#define FripuckProtocol_Commands_MoveTrajectory_type_identifier "\x4f\x52\xa6\x3b"
+#ifndef FripuckProtocol_Commands_MoveTrajectory_file_extension
+#define FripuckProtocol_Commands_MoveTrajectory_file_extension "bin"
 #endif
 #ifndef FripuckProtocol_Commands_Command_file_identifier
-#define FripuckProtocol_Commands_Command_file_identifier "CMND"
+#define FripuckProtocol_Commands_Command_file_identifier 0
 #endif
 /* deprecated, use FripuckProtocol_Commands_Command_file_identifier */
 #ifndef FripuckProtocol_Commands_Command_identifier
-#define FripuckProtocol_Commands_Command_identifier "CMND"
+#define FripuckProtocol_Commands_Command_identifier 0
 #endif
 #define FripuckProtocol_Commands_Command_type_hash ((flatbuffers_thash_t)0xd1c0ccc8)
 #define FripuckProtocol_Commands_Command_type_identifier "\xc8\xcc\xc0\xd1"
@@ -119,17 +88,82 @@ typedef flatbuffers_uoffset_t *FripuckProtocol_Commands_CommandBatch_mutable_vec
 #define FripuckProtocol_Commands_Command_file_extension "bin"
 #endif
 #ifndef FripuckProtocol_Commands_CommandBatch_file_identifier
-#define FripuckProtocol_Commands_CommandBatch_file_identifier "CMND"
+#define FripuckProtocol_Commands_CommandBatch_file_identifier 0
 #endif
 /* deprecated, use FripuckProtocol_Commands_CommandBatch_file_identifier */
 #ifndef FripuckProtocol_Commands_CommandBatch_identifier
-#define FripuckProtocol_Commands_CommandBatch_identifier "CMND"
+#define FripuckProtocol_Commands_CommandBatch_identifier 0
 #endif
 #define FripuckProtocol_Commands_CommandBatch_type_hash ((flatbuffers_thash_t)0x6cae4260)
 #define FripuckProtocol_Commands_CommandBatch_type_identifier "\x60\x42\xae\x6c"
 #ifndef FripuckProtocol_Commands_CommandBatch_file_extension
 #define FripuckProtocol_Commands_CommandBatch_file_extension "bin"
 #endif
+
+typedef uint32_t FripuckProtocol_Commands_ModuleMask_enum_t;
+__flatbuffers_define_integer_type(FripuckProtocol_Commands_ModuleMask, FripuckProtocol_Commands_ModuleMask_enum_t, 32)
+#define FripuckProtocol_Commands_ModuleMask_None ((FripuckProtocol_Commands_ModuleMask_enum_t)UINT32_C(0))
+#define FripuckProtocol_Commands_ModuleMask_ModeSelector ((FripuckProtocol_Commands_ModuleMask_enum_t)UINT32_C(1))
+#define FripuckProtocol_Commands_ModuleMask_IrReceiver ((FripuckProtocol_Commands_ModuleMask_enum_t)UINT32_C(2))
+#define FripuckProtocol_Commands_ModuleMask_Battery ((FripuckProtocol_Commands_ModuleMask_enum_t)UINT32_C(4))
+#define FripuckProtocol_Commands_ModuleMask_Led1 ((FripuckProtocol_Commands_ModuleMask_enum_t)UINT32_C(8))
+#define FripuckProtocol_Commands_ModuleMask_Led3 ((FripuckProtocol_Commands_ModuleMask_enum_t)UINT32_C(16))
+#define FripuckProtocol_Commands_ModuleMask_Led5 ((FripuckProtocol_Commands_ModuleMask_enum_t)UINT32_C(32))
+#define FripuckProtocol_Commands_ModuleMask_Led7 ((FripuckProtocol_Commands_ModuleMask_enum_t)UINT32_C(64))
+#define FripuckProtocol_Commands_ModuleMask_BodyLed ((FripuckProtocol_Commands_ModuleMask_enum_t)UINT32_C(128))
+#define FripuckProtocol_Commands_ModuleMask_FrontLed ((FripuckProtocol_Commands_ModuleMask_enum_t)UINT32_C(256))
+#define FripuckProtocol_Commands_ModuleMask_Proximity ((FripuckProtocol_Commands_ModuleMask_enum_t)UINT32_C(512))
+#define FripuckProtocol_Commands_ModuleMask_Tof ((FripuckProtocol_Commands_ModuleMask_enum_t)UINT32_C(1024))
+#define FripuckProtocol_Commands_ModuleMask_Imu ((FripuckProtocol_Commands_ModuleMask_enum_t)UINT32_C(2048))
+#define FripuckProtocol_Commands_ModuleMask_Camera ((FripuckProtocol_Commands_ModuleMask_enum_t)UINT32_C(4096))
+#define FripuckProtocol_Commands_ModuleMask_Motors ((FripuckProtocol_Commands_ModuleMask_enum_t)UINT32_C(8192))
+#define FripuckProtocol_Commands_ModuleMask_Ground ((FripuckProtocol_Commands_ModuleMask_enum_t)UINT32_C(16384))
+
+static inline const char *FripuckProtocol_Commands_ModuleMask_name(FripuckProtocol_Commands_ModuleMask_enum_t value)
+{
+    switch (value) {
+    case FripuckProtocol_Commands_ModuleMask_None: return "None";
+    case FripuckProtocol_Commands_ModuleMask_ModeSelector: return "ModeSelector";
+    case FripuckProtocol_Commands_ModuleMask_IrReceiver: return "IrReceiver";
+    case FripuckProtocol_Commands_ModuleMask_Battery: return "Battery";
+    case FripuckProtocol_Commands_ModuleMask_Led1: return "Led1";
+    case FripuckProtocol_Commands_ModuleMask_Led3: return "Led3";
+    case FripuckProtocol_Commands_ModuleMask_Led5: return "Led5";
+    case FripuckProtocol_Commands_ModuleMask_Led7: return "Led7";
+    case FripuckProtocol_Commands_ModuleMask_BodyLed: return "BodyLed";
+    case FripuckProtocol_Commands_ModuleMask_FrontLed: return "FrontLed";
+    case FripuckProtocol_Commands_ModuleMask_Proximity: return "Proximity";
+    case FripuckProtocol_Commands_ModuleMask_Tof: return "Tof";
+    case FripuckProtocol_Commands_ModuleMask_Imu: return "Imu";
+    case FripuckProtocol_Commands_ModuleMask_Camera: return "Camera";
+    case FripuckProtocol_Commands_ModuleMask_Motors: return "Motors";
+    case FripuckProtocol_Commands_ModuleMask_Ground: return "Ground";
+    default: return "";
+    }
+}
+
+static inline int FripuckProtocol_Commands_ModuleMask_is_known_value(FripuckProtocol_Commands_ModuleMask_enum_t value)
+{
+    switch (value) {
+    case FripuckProtocol_Commands_ModuleMask_None: return 1;
+    case FripuckProtocol_Commands_ModuleMask_ModeSelector: return 1;
+    case FripuckProtocol_Commands_ModuleMask_IrReceiver: return 1;
+    case FripuckProtocol_Commands_ModuleMask_Battery: return 1;
+    case FripuckProtocol_Commands_ModuleMask_Led1: return 1;
+    case FripuckProtocol_Commands_ModuleMask_Led3: return 1;
+    case FripuckProtocol_Commands_ModuleMask_Led5: return 1;
+    case FripuckProtocol_Commands_ModuleMask_Led7: return 1;
+    case FripuckProtocol_Commands_ModuleMask_BodyLed: return 1;
+    case FripuckProtocol_Commands_ModuleMask_FrontLed: return 1;
+    case FripuckProtocol_Commands_ModuleMask_Proximity: return 1;
+    case FripuckProtocol_Commands_ModuleMask_Tof: return 1;
+    case FripuckProtocol_Commands_ModuleMask_Imu: return 1;
+    case FripuckProtocol_Commands_ModuleMask_Camera: return 1;
+    case FripuckProtocol_Commands_ModuleMask_Motors: return 1;
+    case FripuckProtocol_Commands_ModuleMask_Ground: return 1;
+    default: return 0;
+    }
+}
 
 
 
@@ -144,65 +178,46 @@ __flatbuffers_table_as_root(FripuckProtocol_Commands_Custom)
 __flatbuffers_define_string_field(0, FripuckProtocol_Commands_Custom, topic, 0)
 __flatbuffers_define_string_field(1, FripuckProtocol_Commands_Custom, payload, 0)
 
-struct FripuckProtocol_Commands_Notify_table { uint8_t unused__; };
+struct FripuckProtocol_Commands_EnableCommand_table { uint8_t unused__; };
 
-static inline size_t FripuckProtocol_Commands_Notify_vec_len(FripuckProtocol_Commands_Notify_vec_t vec)
+static inline size_t FripuckProtocol_Commands_EnableCommand_vec_len(FripuckProtocol_Commands_EnableCommand_vec_t vec)
 __flatbuffers_vec_len(vec)
-static inline FripuckProtocol_Commands_Notify_table_t FripuckProtocol_Commands_Notify_vec_at(FripuckProtocol_Commands_Notify_vec_t vec, size_t i)
-__flatbuffers_offset_vec_at(FripuckProtocol_Commands_Notify_table_t, vec, i, 0)
-__flatbuffers_table_as_root(FripuckProtocol_Commands_Notify)
+static inline FripuckProtocol_Commands_EnableCommand_table_t FripuckProtocol_Commands_EnableCommand_vec_at(FripuckProtocol_Commands_EnableCommand_vec_t vec, size_t i)
+__flatbuffers_offset_vec_at(FripuckProtocol_Commands_EnableCommand_table_t, vec, i, 0)
+__flatbuffers_table_as_root(FripuckProtocol_Commands_EnableCommand)
 
-__flatbuffers_define_string_field(0, FripuckProtocol_Commands_Notify, message, 0)
+__flatbuffers_define_scalar_field(0, FripuckProtocol_Commands_EnableCommand, modules, FripuckProtocol_Commands_ModuleMask, FripuckProtocol_Commands_ModuleMask_enum_t, UINT32_C(0))
 
-struct FripuckProtocol_Commands_SetLed_table { uint8_t unused__; };
+struct FripuckProtocol_Commands_MoveTrajectory_table { uint8_t unused__; };
 
-static inline size_t FripuckProtocol_Commands_SetLed_vec_len(FripuckProtocol_Commands_SetLed_vec_t vec)
+static inline size_t FripuckProtocol_Commands_MoveTrajectory_vec_len(FripuckProtocol_Commands_MoveTrajectory_vec_t vec)
 __flatbuffers_vec_len(vec)
-static inline FripuckProtocol_Commands_SetLed_table_t FripuckProtocol_Commands_SetLed_vec_at(FripuckProtocol_Commands_SetLed_vec_t vec, size_t i)
-__flatbuffers_offset_vec_at(FripuckProtocol_Commands_SetLed_table_t, vec, i, 0)
-__flatbuffers_table_as_root(FripuckProtocol_Commands_SetLed)
+static inline FripuckProtocol_Commands_MoveTrajectory_table_t FripuckProtocol_Commands_MoveTrajectory_vec_at(FripuckProtocol_Commands_MoveTrajectory_vec_t vec, size_t i)
+__flatbuffers_offset_vec_at(FripuckProtocol_Commands_MoveTrajectory_table_t, vec, i, 0)
+__flatbuffers_table_as_root(FripuckProtocol_Commands_MoveTrajectory)
 
-__flatbuffers_define_scalar_field(0, FripuckProtocol_Commands_SetLed, color, flatbuffers_uint32, uint32_t, UINT32_C(0))
-__flatbuffers_define_scalar_field(1, FripuckProtocol_Commands_SetLed, mask, flatbuffers_uint32, uint32_t, UINT32_C(0))
-
-struct FripuckProtocol_Commands_Sequence_table { uint8_t unused__; };
-
-static inline size_t FripuckProtocol_Commands_Sequence_vec_len(FripuckProtocol_Commands_Sequence_vec_t vec)
-__flatbuffers_vec_len(vec)
-static inline FripuckProtocol_Commands_Sequence_table_t FripuckProtocol_Commands_Sequence_vec_at(FripuckProtocol_Commands_Sequence_vec_t vec, size_t i)
-__flatbuffers_offset_vec_at(FripuckProtocol_Commands_Sequence_table_t, vec, i, 0)
-__flatbuffers_table_as_root(FripuckProtocol_Commands_Sequence)
-
-__flatbuffers_define_scalar_field(0, FripuckProtocol_Commands_Sequence, id, flatbuffers_uint32, uint32_t, UINT32_C(0))
-__flatbuffers_define_scalar_field(1, FripuckProtocol_Commands_Sequence, loop, flatbuffers_bool, flatbuffers_bool_t, UINT8_C(0))
-__flatbuffers_define_vector_field(2, FripuckProtocol_Commands_Sequence, commands, FripuckProtocol_Commands_Command_vec_t, 0)
-
-struct FripuckProtocol_Commands_AbortSequence_table { uint8_t unused__; };
-
-static inline size_t FripuckProtocol_Commands_AbortSequence_vec_len(FripuckProtocol_Commands_AbortSequence_vec_t vec)
-__flatbuffers_vec_len(vec)
-static inline FripuckProtocol_Commands_AbortSequence_table_t FripuckProtocol_Commands_AbortSequence_vec_at(FripuckProtocol_Commands_AbortSequence_vec_t vec, size_t i)
-__flatbuffers_offset_vec_at(FripuckProtocol_Commands_AbortSequence_table_t, vec, i, 0)
-__flatbuffers_table_as_root(FripuckProtocol_Commands_AbortSequence)
-
-__flatbuffers_define_scalar_field(0, FripuckProtocol_Commands_AbortSequence, id, flatbuffers_uint32, uint32_t, UINT32_C(0))
+__flatbuffers_define_scalar_field(0, FripuckProtocol_Commands_MoveTrajectory, speed, flatbuffers_float, float, 0.00000000f)
+__flatbuffers_define_scalar_field(1, FripuckProtocol_Commands_MoveTrajectory, distance, flatbuffers_float, float, 0.00000000f)
+__flatbuffers_define_scalar_field(2, FripuckProtocol_Commands_MoveTrajectory, radius, flatbuffers_float, float, 0.00000000f)
+__flatbuffers_define_scalar_field(3, FripuckProtocol_Commands_MoveTrajectory, accel, flatbuffers_float, float, 0.00000000f)
+__flatbuffers_define_scalar_field(4, FripuckProtocol_Commands_MoveTrajectory, decel, flatbuffers_float, float, 0.00000000f)
+__flatbuffers_define_scalar_field(5, FripuckProtocol_Commands_MoveTrajectory, notify, flatbuffers_bool, flatbuffers_bool_t, UINT8_C(0))
+__flatbuffers_define_scalar_field(6, FripuckProtocol_Commands_MoveTrajectory, synchronous, flatbuffers_bool, flatbuffers_bool_t, UINT8_C(0))
 typedef uint8_t FripuckProtocol_Commands_Instruction_union_type_t;
 __flatbuffers_define_integer_type(FripuckProtocol_Commands_Instruction, FripuckProtocol_Commands_Instruction_union_type_t, 8)
 __flatbuffers_define_union(flatbuffers_, FripuckProtocol_Commands_Instruction)
 #define FripuckProtocol_Commands_Instruction_NONE ((FripuckProtocol_Commands_Instruction_union_type_t)UINT8_C(0))
-#define FripuckProtocol_Commands_Instruction_Notify ((FripuckProtocol_Commands_Instruction_union_type_t)UINT8_C(1))
-#define FripuckProtocol_Commands_Instruction_SetLed ((FripuckProtocol_Commands_Instruction_union_type_t)UINT8_C(2))
-#define FripuckProtocol_Commands_Instruction_AbortSequence ((FripuckProtocol_Commands_Instruction_union_type_t)UINT8_C(3))
-#define FripuckProtocol_Commands_Instruction_Custom ((FripuckProtocol_Commands_Instruction_union_type_t)UINT8_C(4))
+#define FripuckProtocol_Commands_Instruction_Custom ((FripuckProtocol_Commands_Instruction_union_type_t)UINT8_C(1))
+#define FripuckProtocol_Commands_Instruction_EnableCommand ((FripuckProtocol_Commands_Instruction_union_type_t)UINT8_C(2))
+#define FripuckProtocol_Commands_Instruction_MoveTrajectory ((FripuckProtocol_Commands_Instruction_union_type_t)UINT8_C(3))
 
 static inline const char *FripuckProtocol_Commands_Instruction_type_name(FripuckProtocol_Commands_Instruction_union_type_t type)
 {
     switch (type) {
     case FripuckProtocol_Commands_Instruction_NONE: return "NONE";
-    case FripuckProtocol_Commands_Instruction_Notify: return "Notify";
-    case FripuckProtocol_Commands_Instruction_SetLed: return "SetLed";
-    case FripuckProtocol_Commands_Instruction_AbortSequence: return "AbortSequence";
     case FripuckProtocol_Commands_Instruction_Custom: return "Custom";
+    case FripuckProtocol_Commands_Instruction_EnableCommand: return "EnableCommand";
+    case FripuckProtocol_Commands_Instruction_MoveTrajectory: return "MoveTrajectory";
     default: return "";
     }
 }
@@ -211,10 +226,9 @@ static inline int FripuckProtocol_Commands_Instruction_is_known_type(FripuckProt
 {
     switch (type) {
     case FripuckProtocol_Commands_Instruction_NONE: return 1;
-    case FripuckProtocol_Commands_Instruction_Notify: return 1;
-    case FripuckProtocol_Commands_Instruction_SetLed: return 1;
-    case FripuckProtocol_Commands_Instruction_AbortSequence: return 1;
     case FripuckProtocol_Commands_Instruction_Custom: return 1;
+    case FripuckProtocol_Commands_Instruction_EnableCommand: return 1;
+    case FripuckProtocol_Commands_Instruction_MoveTrajectory: return 1;
     default: return 0;
     }
 }
@@ -239,9 +253,7 @@ __flatbuffers_offset_vec_at(FripuckProtocol_Commands_CommandBatch_table_t, vec, 
 __flatbuffers_table_as_root(FripuckProtocol_Commands_CommandBatch)
 
 __flatbuffers_define_scalar_field(0, FripuckProtocol_Commands_CommandBatch, timestamp, flatbuffers_uint64, uint64_t, UINT64_C(0))
-__flatbuffers_define_vector_field(1, FripuckProtocol_Commands_CommandBatch, immediate_commands, FripuckProtocol_Commands_Command_vec_t, 0)
-__flatbuffers_define_vector_field(2, FripuckProtocol_Commands_CommandBatch, sequences, FripuckProtocol_Commands_Sequence_vec_t, 0)
-__flatbuffers_define_scalar_field(3, FripuckProtocol_Commands_CommandBatch, abort_all, flatbuffers_bool, flatbuffers_bool_t, UINT8_C(0))
+__flatbuffers_define_vector_field(1, FripuckProtocol_Commands_CommandBatch, commands, FripuckProtocol_Commands_Command_vec_t, 0)
 
 
 #include "flatcc/flatcc_epilogue.h"

@@ -104,7 +104,7 @@ void uart_transmitter(void* arguments) {
 
     for (;;) {
         if (xQueueReceive(uart_tx_queue_handle, &packet, portMAX_DELAY) == pdTRUE) {
-            ESP_LOGI(TAG, "Sending a message of size %d", packet.length);
+            // ESP_LOGI(TAG, "Sending a message of size %d", packet.length);
             cobs_encode_result result =
                 cobs_encode(encoded_buffer, sizeof(encoded_buffer) - 1, packet.payload, packet.length);
 

@@ -5,32 +5,43 @@ table Custom {
     payload: string; // anything but text, optional
 }
 
-// Notify simply sends back the same message through a notify struct. 
-// Can be used in a sequence to notify the client when a sequence is finished.
-table Notify{
-    message: string;
+enum ModuleMask : uint32 {
+    None = 0,
+    ModeSelector = 1,
+    IrReceiver = 2,
+    Battery = 4,
+    Led1 = 8,
+    Led3 = 16,
+    Led5 = 32,
+    Led7 = 64,
+    BodyLed = 128,
+    FrontLed = 256,
+    Proximity = 512,
+    Tof = 1024,
+    Imu = 2048,
+    Camera = 4096,
+    Motors = 8192,
+    Ground = 16384
 }
 
-table SetLed {
-    color: uint32; // only applies for RGB LEDs
-    mask: uint32; // TODO: document the how the mask is interpreted
+table EnableCommand {
+    modules: ModuleMask = 0;
 }
 
-table Sequence {
-    id: uint32;
-    loop: bool = false; 
-    commands: [Command];
-}
-
-table AbortSequence {
-    id: uint32;
+table MoveTrajectory {
+    speed: float;
+    distance: float;
+    radius: float;
+    accel: float;
+    decel: float;
+    notify: bool;
+    synchronous: bool;
 }
 
 union Instruction {
-    Notify,
-    SetLed,
-    AbortSequence,
     Custom,
+    EnableCommand,
+    MoveTrajectory
 }
 
 // Needed since flatbuffers doesn't support vectors of unions.
@@ -40,12 +51,7 @@ table Command {
 
 table CommandBatch {
     timestamp: uint64;
-
-    immediate_commands: [Command];
-    sequences: [Sequence];
-
-    abort_all: bool = false;
+    commands: [Command];
 }
 
 root_type CommandBatch;
-file_identifier "CMND";

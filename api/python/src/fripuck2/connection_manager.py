@@ -23,7 +23,6 @@ class ConnectionManager:
         self.udp_thread = threading.Thread(target=self._udp_task, daemon=True)
         self.udp_thread.start()
         print("Bound UDP connection")
-
                 
         self.thread = threading.Thread(target=self._tcp_task, daemon=True)
         self.thread.start()

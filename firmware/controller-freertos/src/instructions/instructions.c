@@ -101,17 +101,21 @@ int start_instruction_handler(size_t queue_length) {
 }
 
 void prepare_and_send_instruction(uint8_t* data, uint16_t length) {
-    if (length < 1) {
-        return;
-    }
+    if (length < 1) return;
 
     unified_instruction_payload_t payload = {0};
     size_t min_size = (sizeof(payload) > length ? length : sizeof(payload));
     memcpy(&payload, data, min_size);
 
-    // NOTE: running inside UART interrupt
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-    xQueueSendFromISR(instruction_queue_handle, &payload, &xHigherPriorityTaskWoken);
+    BaseType_t err = xQueueSendFromISR(instruction_queue_handle, &payload, &xHigherPriorityTaskWoken);
+
+    if (err != pdTRUE) {
+        // QUEUE FULL! The handler task is too slow.
+        // You might need to increase your queue length from 10 to 30.
+        __BKPT(0);
+    }
+
     portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 

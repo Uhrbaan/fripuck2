@@ -40,13 +40,13 @@ void spi_recieve_cb(uint8_t* data, uint16_t length) {
         return;
     }
     FripuckProtocol_Sensors_SensorBatch_table_t batch = FripuckProtocol_Sensors_SensorBatch_as_root(data);
-    ESP_LOGI(TAG, "Recieved batch of size %u.", length);
+    // ESP_LOGI(TAG, "Recieved batch of size %u.", length);
 
     // Log the first TOF element for logging purposes
     FripuckProtocol_Sensors_TofData_vec_t tof_vec = FripuckProtocol_Sensors_SensorBatch_tof(batch);
     size_t tof_count = FripuckProtocol_Sensors_TofData_vec_len(tof_vec);
     if (tof_vec != NULL && tof_count > 0) {
-        ESP_LOGI(TAG, "Batch contains %u TOF data points.", tof_count);
+        // ESP_LOGI(TAG, "Batch contains %u TOF data points.", tof_count);
         FripuckProtocol_Sensors_TofData_struct_t tof_data =
             FripuckProtocol_Sensors_TofData_vec_at(tof_vec, tof_count - 1);
         trigger_tof_hook(tof_data);
@@ -67,7 +67,7 @@ void spi_recieve_cb(uint8_t* data, uint16_t length) {
     FripuckProtocol_Sensors_GroundData_vec_t ground_vec = FripuckProtocol_Sensors_SensorBatch_ground(batch);
     size_t ground_count = FripuckProtocol_Sensors_GroundData_vec_len(ground_vec);
     if (ground_vec != NULL && ground_count > 0) {
-        ESP_LOGI(TAG, "Batch contains %u GROUND data points.", ground_count);
+        // ESP_LOGI(TAG, "Batch contains %u GROUND data points.", ground_count);
         FripuckProtocol_Sensors_GroundData_struct_t ground_data =
             FripuckProtocol_Sensors_GroundData_vec_at(ground_vec, ground_count - 1);
         trigger_ground_hook(ground_data);
@@ -77,6 +77,10 @@ void spi_recieve_cb(uint8_t* data, uint16_t length) {
         packet.length = length;
         memcpy(packet.data, data, length);
         xQueueSend(spi_to_udp_queue, &packet, 0);
+        // if (err != pdPASS) {
+        //     ESP_LOGE(TAG, "Failed to send %u bytes to the UDP service: Queue Full !");
+        // }
+        // ESP_LOGI(TAG, "Sent %u bytes over UDP.", length);
         total_bytes_received += length;
     }
 }
@@ -113,18 +117,15 @@ void app_main(void) {
     // Initialize non-volatile memory
     nvs_flash_init();
 
-    // Initialize and start the Lua VM
-    err = lua_vm_start();
-    if (err != ESP_OK) {
-        ESP_LOGE(TAG, "Failed to initialize Lua VM");
-    }
-
     // Net communication
-    // wifi_init();
-    // ESP_LOGI(TAG, "Finished Wi-Fi initialization.");
-    // tcp_init_();
-    // ESP_LOGI(TAG, "Finished TCP initialization");
-    // udp_init_();
+    wifi_init();
+    ESP_LOGI(TAG, "Finished Wi-Fi initialization.");
+    tcp_init_();
+    ESP_LOGI(TAG, "Finished TCP initialization");
+    udp_init_();
+    xTaskCreate(tcp_connection_manager, "tcp connection manager", 1024 * 4, NULL, 1, NULL);
+
+    // Uart communication
     err = uart_init(NULL);
     if (err != ESP_OK) ESP_LOGE(TAG, "Failed to initilize UART bridge");
     ESP_LOGI(TAG, "Initialized UART communication. Send instructions into the ");
@@ -132,8 +133,11 @@ void app_main(void) {
     assert(err == 0);
     ESP_LOGI(TAG, "Finished SPI1 HW initialization");
 
-    // Start TCP tasks
-    // xTaskCreate(tcp_connection_manager, "tcp connection manager", 1024 * 4, NULL, 1, NULL);
+    // Lua VM
+    err = lua_vm_start();
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to initialize Lua VM");
+    }
 
     while (1) {
         vTaskDelay(pdMS_TO_TICKS(5000));

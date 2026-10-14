@@ -104,7 +104,7 @@ void spi_receiver(void* pvParameters) {
         memset(spi_receive_buffer, 0, SPI_PACKET_MAX_SIZE);
 
         err = spi_slave_transmit(SPI3_HOST, &transaction, portMAX_DELAY);
-        ESP_LOGI(TAG, "Recieved somthing: %d", err);
+        // ESP_LOGI(TAG, "Recieved somthing: %d", err);
 
         if (err == ESP_OK) {
             // trans_len is the number of bits actually clocked by the master

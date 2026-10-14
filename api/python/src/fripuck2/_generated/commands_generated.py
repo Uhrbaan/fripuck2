@@ -6,25 +6,41 @@ import flatbuffers
 from flatbuffers.compat import import_numpy
 np = import_numpy()
 
+class ModuleMask(object):
+    None_ = 0
+    ModeSelector = 1
+    IrReceiver = 2
+    Battery = 4
+    Led1 = 8
+    Led3 = 16
+    Led5 = 32
+    Led7 = 64
+    BodyLed = 128
+    FrontLed = 256
+    Proximity = 512
+    Tof = 1024
+    Imu = 2048
+    Camera = 4096
+    Motors = 8192
+    Ground = 16384
+
+
 class Instruction(object):
     NONE = 0
-    Notify = 1
-    SetLed = 2
-    AbortSequence = 3
-    Custom = 4
+    Custom = 1
+    EnableCommand = 2
+    MoveTrajectory = 3
 
 def InstructionCreator(unionType, table):
     from flatbuffers.table import Table
     if not isinstance(table, Table):
         return None
-    if unionType == Instruction.Notify:
-        return NotifyT.InitFromBuf(table.Bytes, table.Pos)
-    if unionType == Instruction.SetLed:
-        return SetLedT.InitFromBuf(table.Bytes, table.Pos)
-    if unionType == Instruction.AbortSequence:
-        return AbortSequenceT.InitFromBuf(table.Bytes, table.Pos)
     if unionType == Instruction.Custom:
         return CustomT.InitFromBuf(table.Bytes, table.Pos)
+    if unionType == Instruction.EnableCommand:
+        return EnableCommandT.InitFromBuf(table.Bytes, table.Pos)
+    if unionType == Instruction.MoveTrajectory:
+        return MoveTrajectoryT.InitFromBuf(table.Bytes, table.Pos)
     return None
 
 
@@ -42,10 +58,6 @@ class Custom(object):
     def GetRootAsCustom(cls, buf, offset=0):
         """This method is deprecated. Please switch to GetRootAs."""
         return cls.GetRootAs(buf, offset)
-    @classmethod
-    def CustomBufferHasIdentifier(cls, buf, offset, size_prefixed=False):
-        return flatbuffers.util.BufferHasIdentifier(buf, offset, b"\x43\x4D\x4E\x44", size_prefixed=size_prefixed)
-
     # Custom
     def Init(self, buf, pos):
         self._tab = flatbuffers.table.Table(buf, pos)
@@ -128,60 +140,56 @@ class CustomT(object):
         return custom
 
 
-class Notify(object):
+class EnableCommand(object):
     __slots__ = ['_tab']
 
     @classmethod
     def GetRootAs(cls, buf, offset=0):
         n = flatbuffers.encode.Get(flatbuffers.packer.uoffset, buf, offset)
-        x = Notify()
+        x = EnableCommand()
         x.Init(buf, n + offset)
         return x
 
     @classmethod
-    def GetRootAsNotify(cls, buf, offset=0):
+    def GetRootAsEnableCommand(cls, buf, offset=0):
         """This method is deprecated. Please switch to GetRootAs."""
         return cls.GetRootAs(buf, offset)
-    @classmethod
-    def NotifyBufferHasIdentifier(cls, buf, offset, size_prefixed=False):
-        return flatbuffers.util.BufferHasIdentifier(buf, offset, b"\x43\x4D\x4E\x44", size_prefixed=size_prefixed)
-
-    # Notify
+    # EnableCommand
     def Init(self, buf, pos):
         self._tab = flatbuffers.table.Table(buf, pos)
 
-    # Notify
-    def Message(self):
+    # EnableCommand
+    def Modules(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(4))
         if o != 0:
-            return self._tab.String(o + self._tab.Pos)
-        return None
+            return self._tab.Get(flatbuffers.number_types.Uint32Flags, o + self._tab.Pos)
+        return 0
 
-def NotifyStart(builder):
+def EnableCommandStart(builder):
     builder.StartObject(1)
 
-def NotifyAddMessage(builder, message):
-    builder.PrependUOffsetTRelativeSlot(0, flatbuffers.number_types.UOffsetTFlags.py_type(message), 0)
+def EnableCommandAddModules(builder, modules):
+    builder.PrependUint32Slot(0, modules, 0)
 
-def NotifyEnd(builder):
+def EnableCommandEnd(builder):
     return builder.EndObject()
 
 
 
-class NotifyT(object):
+class EnableCommandT(object):
 
-    # NotifyT
+    # EnableCommandT
     def __init__(
         self,
-        message = None,
+        modules = 0,
     ):
-        self.message = message  # type: Optional[str]
+        self.modules = modules  # type: int
 
     @classmethod
     def InitFromBuf(cls, buf, pos):
-        notify = Notify()
-        notify.Init(buf, pos)
-        return cls.InitFromObj(notify)
+        enableCommand = EnableCommand()
+        enableCommand.Init(buf, pos)
+        return cls.InitFromObj(enableCommand)
 
     @classmethod
     def InitFromPackedBuf(cls, buf, pos=0):
@@ -189,227 +197,147 @@ class NotifyT(object):
         return cls.InitFromBuf(buf, pos+n)
 
     @classmethod
-    def InitFromObj(cls, notify):
-        x = NotifyT()
-        x._UnPack(notify)
+    def InitFromObj(cls, enableCommand):
+        x = EnableCommandT()
+        x._UnPack(enableCommand)
         return x
 
-    # NotifyT
-    def _UnPack(self, notify):
-        if notify is None:
+    # EnableCommandT
+    def _UnPack(self, enableCommand):
+        if enableCommand is None:
             return
-        self.message = notify.Message()
+        self.modules = enableCommand.Modules()
 
-    # NotifyT
+    # EnableCommandT
     def Pack(self, builder):
-        if self.message is not None:
-            message = builder.CreateString(self.message)
-        NotifyStart(builder)
-        if self.message is not None:
-            NotifyAddMessage(builder, message)
-        notify = NotifyEnd(builder)
-        return notify
+        EnableCommandStart(builder)
+        EnableCommandAddModules(builder, self.modules)
+        enableCommand = EnableCommandEnd(builder)
+        return enableCommand
 
 
-class SetLed(object):
+class MoveTrajectory(object):
     __slots__ = ['_tab']
 
     @classmethod
     def GetRootAs(cls, buf, offset=0):
         n = flatbuffers.encode.Get(flatbuffers.packer.uoffset, buf, offset)
-        x = SetLed()
+        x = MoveTrajectory()
         x.Init(buf, n + offset)
         return x
 
     @classmethod
-    def GetRootAsSetLed(cls, buf, offset=0):
+    def GetRootAsMoveTrajectory(cls, buf, offset=0):
         """This method is deprecated. Please switch to GetRootAs."""
         return cls.GetRootAs(buf, offset)
-    @classmethod
-    def SetLedBufferHasIdentifier(cls, buf, offset, size_prefixed=False):
-        return flatbuffers.util.BufferHasIdentifier(buf, offset, b"\x43\x4D\x4E\x44", size_prefixed=size_prefixed)
-
-    # SetLed
+    # MoveTrajectory
     def Init(self, buf, pos):
         self._tab = flatbuffers.table.Table(buf, pos)
 
-    # SetLed
-    def Color(self):
+    # MoveTrajectory
+    def Speed(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(4))
         if o != 0:
-            return self._tab.Get(flatbuffers.number_types.Uint32Flags, o + self._tab.Pos)
-        return 0
+            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
+        return 0.0
 
-    # SetLed
-    def Mask(self):
+    # MoveTrajectory
+    def Distance(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(6))
         if o != 0:
-            return self._tab.Get(flatbuffers.number_types.Uint32Flags, o + self._tab.Pos)
-        return 0
+            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
+        return 0.0
 
-def SetLedStart(builder):
-    builder.StartObject(2)
-
-def SetLedAddColor(builder, color):
-    builder.PrependUint32Slot(0, color, 0)
-
-def SetLedAddMask(builder, mask):
-    builder.PrependUint32Slot(1, mask, 0)
-
-def SetLedEnd(builder):
-    return builder.EndObject()
-
-
-
-class SetLedT(object):
-
-    # SetLedT
-    def __init__(
-        self,
-        color = 0,
-        mask = 0,
-    ):
-        self.color = color  # type: int
-        self.mask = mask  # type: int
-
-    @classmethod
-    def InitFromBuf(cls, buf, pos):
-        setLed = SetLed()
-        setLed.Init(buf, pos)
-        return cls.InitFromObj(setLed)
-
-    @classmethod
-    def InitFromPackedBuf(cls, buf, pos=0):
-        n = flatbuffers.encode.Get(flatbuffers.packer.uoffset, buf, pos)
-        return cls.InitFromBuf(buf, pos+n)
-
-    @classmethod
-    def InitFromObj(cls, setLed):
-        x = SetLedT()
-        x._UnPack(setLed)
-        return x
-
-    # SetLedT
-    def _UnPack(self, setLed):
-        if setLed is None:
-            return
-        self.color = setLed.Color()
-        self.mask = setLed.Mask()
-
-    # SetLedT
-    def Pack(self, builder):
-        SetLedStart(builder)
-        SetLedAddColor(builder, self.color)
-        SetLedAddMask(builder, self.mask)
-        setLed = SetLedEnd(builder)
-        return setLed
-
-
-class Sequence(object):
-    __slots__ = ['_tab']
-
-    @classmethod
-    def GetRootAs(cls, buf, offset=0):
-        n = flatbuffers.encode.Get(flatbuffers.packer.uoffset, buf, offset)
-        x = Sequence()
-        x.Init(buf, n + offset)
-        return x
-
-    @classmethod
-    def GetRootAsSequence(cls, buf, offset=0):
-        """This method is deprecated. Please switch to GetRootAs."""
-        return cls.GetRootAs(buf, offset)
-    @classmethod
-    def SequenceBufferHasIdentifier(cls, buf, offset, size_prefixed=False):
-        return flatbuffers.util.BufferHasIdentifier(buf, offset, b"\x43\x4D\x4E\x44", size_prefixed=size_prefixed)
-
-    # Sequence
-    def Init(self, buf, pos):
-        self._tab = flatbuffers.table.Table(buf, pos)
-
-    # Sequence
-    def Id(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(4))
+    # MoveTrajectory
+    def Radius(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(8))
         if o != 0:
-            return self._tab.Get(flatbuffers.number_types.Uint32Flags, o + self._tab.Pos)
-        return 0
+            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
+        return 0.0
 
-    # Sequence
-    def Loop(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(6))
+    # MoveTrajectory
+    def Accel(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(10))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
+        return 0.0
+
+    # MoveTrajectory
+    def Decel(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(12))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
+        return 0.0
+
+    # MoveTrajectory
+    def Notify(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(14))
         if o != 0:
             return bool(self._tab.Get(flatbuffers.number_types.BoolFlags, o + self._tab.Pos))
         return False
 
-    # Sequence
-    def Commands(self, j):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(8))
+    # MoveTrajectory
+    def Synchronous(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(16))
         if o != 0:
-            x = self._tab.Vector(o)
-            x += flatbuffers.number_types.UOffsetTFlags.py_type(j) * 4
-            x = self._tab.Indirect(x)
-            obj = Command()
-            obj.Init(self._tab.Bytes, x)
-            return obj
-        return None
+            return bool(self._tab.Get(flatbuffers.number_types.BoolFlags, o + self._tab.Pos))
+        return False
 
-    # Sequence
-    def CommandsLength(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(8))
-        if o != 0:
-            return self._tab.VectorLen(o)
-        return 0
+def MoveTrajectoryStart(builder):
+    builder.StartObject(7)
 
-    # Sequence
-    def CommandsIsNone(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(8))
-        return o == 0
+def MoveTrajectoryAddSpeed(builder, speed):
+    builder.PrependFloat32Slot(0, speed, 0.0)
 
-def SequenceStart(builder):
-    builder.StartObject(3)
+def MoveTrajectoryAddDistance(builder, distance):
+    builder.PrependFloat32Slot(1, distance, 0.0)
 
-def SequenceAddId(builder, id):
-    builder.PrependUint32Slot(0, id, 0)
+def MoveTrajectoryAddRadius(builder, radius):
+    builder.PrependFloat32Slot(2, radius, 0.0)
 
-def SequenceAddLoop(builder, loop):
-    builder.PrependBoolSlot(1, loop, 0)
+def MoveTrajectoryAddAccel(builder, accel):
+    builder.PrependFloat32Slot(3, accel, 0.0)
 
-def SequenceAddCommands(builder, commands):
-    builder.PrependUOffsetTRelativeSlot(2, flatbuffers.number_types.UOffsetTFlags.py_type(commands), 0)
+def MoveTrajectoryAddDecel(builder, decel):
+    builder.PrependFloat32Slot(4, decel, 0.0)
 
-def SequenceStartCommandsVector(builder, numElems):
-    return builder.StartVector(4, numElems, 4)
+def MoveTrajectoryAddNotify(builder, notify):
+    builder.PrependBoolSlot(5, notify, 0)
 
-def SequenceCreateCommandsVector(builder, data):
-    return builder.CreateVectorOfTables(data)
+def MoveTrajectoryAddSynchronous(builder, synchronous):
+    builder.PrependBoolSlot(6, synchronous, 0)
 
-def SequenceEnd(builder):
+def MoveTrajectoryEnd(builder):
     return builder.EndObject()
 
 
-try:
-    from typing import List
-except:
-    pass
 
-class SequenceT(object):
+class MoveTrajectoryT(object):
 
-    # SequenceT
+    # MoveTrajectoryT
     def __init__(
         self,
-        id = 0,
-        loop = False,
-        commands = None,
+        speed = 0.0,
+        distance = 0.0,
+        radius = 0.0,
+        accel = 0.0,
+        decel = 0.0,
+        notify = False,
+        synchronous = False,
     ):
-        self.id = id  # type: int
-        self.loop = loop  # type: bool
-        self.commands = commands  # type: Optional[List[CommandT]]
+        self.speed = speed  # type: float
+        self.distance = distance  # type: float
+        self.radius = radius  # type: float
+        self.accel = accel  # type: float
+        self.decel = decel  # type: float
+        self.notify = notify  # type: bool
+        self.synchronous = synchronous  # type: bool
 
     @classmethod
     def InitFromBuf(cls, buf, pos):
-        sequence = Sequence()
-        sequence.Init(buf, pos)
-        return cls.InitFromObj(sequence)
+        moveTrajectory = MoveTrajectory()
+        moveTrajectory.Init(buf, pos)
+        return cls.InitFromObj(moveTrajectory)
 
     @classmethod
     def InitFromPackedBuf(cls, buf, pos=0):
@@ -417,123 +345,35 @@ class SequenceT(object):
         return cls.InitFromBuf(buf, pos+n)
 
     @classmethod
-    def InitFromObj(cls, sequence):
-        x = SequenceT()
-        x._UnPack(sequence)
+    def InitFromObj(cls, moveTrajectory):
+        x = MoveTrajectoryT()
+        x._UnPack(moveTrajectory)
         return x
 
-    # SequenceT
-    def _UnPack(self, sequence):
-        if sequence is None:
+    # MoveTrajectoryT
+    def _UnPack(self, moveTrajectory):
+        if moveTrajectory is None:
             return
-        self.id = sequence.Id()
-        self.loop = sequence.Loop()
-        if not sequence.CommandsIsNone():
-            self.commands = []
-            for i in range(sequence.CommandsLength()):
-                if sequence.Commands(i) is None:
-                    self.commands.append(None)
-                else:
-                    command_ = CommandT.InitFromObj(sequence.Commands(i))
-                    self.commands.append(command_)
+        self.speed = moveTrajectory.Speed()
+        self.distance = moveTrajectory.Distance()
+        self.radius = moveTrajectory.Radius()
+        self.accel = moveTrajectory.Accel()
+        self.decel = moveTrajectory.Decel()
+        self.notify = moveTrajectory.Notify()
+        self.synchronous = moveTrajectory.Synchronous()
 
-    # SequenceT
+    # MoveTrajectoryT
     def Pack(self, builder):
-        if self.commands is not None:
-            commandslist = []
-            for i in range(len(self.commands)):
-                commandslist.append(self.commands[i].Pack(builder))
-            SequenceStartCommandsVector(builder, len(self.commands))
-            for i in reversed(range(len(self.commands))):
-                builder.PrependUOffsetTRelative(commandslist[i])
-            commands = builder.EndVector()
-        SequenceStart(builder)
-        SequenceAddId(builder, self.id)
-        SequenceAddLoop(builder, self.loop)
-        if self.commands is not None:
-            SequenceAddCommands(builder, commands)
-        sequence = SequenceEnd(builder)
-        return sequence
-
-
-class AbortSequence(object):
-    __slots__ = ['_tab']
-
-    @classmethod
-    def GetRootAs(cls, buf, offset=0):
-        n = flatbuffers.encode.Get(flatbuffers.packer.uoffset, buf, offset)
-        x = AbortSequence()
-        x.Init(buf, n + offset)
-        return x
-
-    @classmethod
-    def GetRootAsAbortSequence(cls, buf, offset=0):
-        """This method is deprecated. Please switch to GetRootAs."""
-        return cls.GetRootAs(buf, offset)
-    @classmethod
-    def AbortSequenceBufferHasIdentifier(cls, buf, offset, size_prefixed=False):
-        return flatbuffers.util.BufferHasIdentifier(buf, offset, b"\x43\x4D\x4E\x44", size_prefixed=size_prefixed)
-
-    # AbortSequence
-    def Init(self, buf, pos):
-        self._tab = flatbuffers.table.Table(buf, pos)
-
-    # AbortSequence
-    def Id(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(4))
-        if o != 0:
-            return self._tab.Get(flatbuffers.number_types.Uint32Flags, o + self._tab.Pos)
-        return 0
-
-def AbortSequenceStart(builder):
-    builder.StartObject(1)
-
-def AbortSequenceAddId(builder, id):
-    builder.PrependUint32Slot(0, id, 0)
-
-def AbortSequenceEnd(builder):
-    return builder.EndObject()
-
-
-
-class AbortSequenceT(object):
-
-    # AbortSequenceT
-    def __init__(
-        self,
-        id = 0,
-    ):
-        self.id = id  # type: int
-
-    @classmethod
-    def InitFromBuf(cls, buf, pos):
-        abortSequence = AbortSequence()
-        abortSequence.Init(buf, pos)
-        return cls.InitFromObj(abortSequence)
-
-    @classmethod
-    def InitFromPackedBuf(cls, buf, pos=0):
-        n = flatbuffers.encode.Get(flatbuffers.packer.uoffset, buf, pos)
-        return cls.InitFromBuf(buf, pos+n)
-
-    @classmethod
-    def InitFromObj(cls, abortSequence):
-        x = AbortSequenceT()
-        x._UnPack(abortSequence)
-        return x
-
-    # AbortSequenceT
-    def _UnPack(self, abortSequence):
-        if abortSequence is None:
-            return
-        self.id = abortSequence.Id()
-
-    # AbortSequenceT
-    def Pack(self, builder):
-        AbortSequenceStart(builder)
-        AbortSequenceAddId(builder, self.id)
-        abortSequence = AbortSequenceEnd(builder)
-        return abortSequence
+        MoveTrajectoryStart(builder)
+        MoveTrajectoryAddSpeed(builder, self.speed)
+        MoveTrajectoryAddDistance(builder, self.distance)
+        MoveTrajectoryAddRadius(builder, self.radius)
+        MoveTrajectoryAddAccel(builder, self.accel)
+        MoveTrajectoryAddDecel(builder, self.decel)
+        MoveTrajectoryAddNotify(builder, self.notify)
+        MoveTrajectoryAddSynchronous(builder, self.synchronous)
+        moveTrajectory = MoveTrajectoryEnd(builder)
+        return moveTrajectory
 
 
 class Command(object):
@@ -550,10 +390,6 @@ class Command(object):
     def GetRootAsCommand(cls, buf, offset=0):
         """This method is deprecated. Please switch to GetRootAs."""
         return cls.GetRootAs(buf, offset)
-    @classmethod
-    def CommandBufferHasIdentifier(cls, buf, offset, size_prefixed=False):
-        return flatbuffers.util.BufferHasIdentifier(buf, offset, b"\x43\x4D\x4E\x44", size_prefixed=size_prefixed)
-
     # Command
     def Init(self, buf, pos):
         self._tab = flatbuffers.table.Table(buf, pos)
@@ -602,7 +438,7 @@ class CommandT(object):
         command = None,
     ):
         self.commandType = commandType  # type: int
-        self.command = command  # type: Union[None, 'NotifyT', 'SetLedT', 'AbortSequenceT', 'CustomT']
+        self.command = command  # type: Union[None, 'CustomT', 'EnableCommandT', 'MoveTrajectoryT']
 
     @classmethod
     def InitFromBuf(cls, buf, pos):
@@ -654,10 +490,6 @@ class CommandBatch(object):
     def GetRootAsCommandBatch(cls, buf, offset=0):
         """This method is deprecated. Please switch to GetRootAs."""
         return cls.GetRootAs(buf, offset)
-    @classmethod
-    def CommandBatchBufferHasIdentifier(cls, buf, offset, size_prefixed=False):
-        return flatbuffers.util.BufferHasIdentifier(buf, offset, b"\x43\x4D\x4E\x44", size_prefixed=size_prefixed)
-
     # CommandBatch
     def Init(self, buf, pos):
         self._tab = flatbuffers.table.Table(buf, pos)
@@ -670,7 +502,7 @@ class CommandBatch(object):
         return 0
 
     # CommandBatch
-    def ImmediateCommands(self, j):
+    def Commands(self, j):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(6))
         if o != 0:
             x = self._tab.Vector(o)
@@ -682,74 +514,31 @@ class CommandBatch(object):
         return None
 
     # CommandBatch
-    def ImmediateCommandsLength(self):
+    def CommandsLength(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(6))
         if o != 0:
             return self._tab.VectorLen(o)
         return 0
 
     # CommandBatch
-    def ImmediateCommandsIsNone(self):
+    def CommandsIsNone(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(6))
         return o == 0
-
-    # CommandBatch
-    def Sequences(self, j):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(8))
-        if o != 0:
-            x = self._tab.Vector(o)
-            x += flatbuffers.number_types.UOffsetTFlags.py_type(j) * 4
-            x = self._tab.Indirect(x)
-            obj = Sequence()
-            obj.Init(self._tab.Bytes, x)
-            return obj
-        return None
-
-    # CommandBatch
-    def SequencesLength(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(8))
-        if o != 0:
-            return self._tab.VectorLen(o)
-        return 0
-
-    # CommandBatch
-    def SequencesIsNone(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(8))
-        return o == 0
-
-    # CommandBatch
-    def AbortAll(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(10))
-        if o != 0:
-            return bool(self._tab.Get(flatbuffers.number_types.BoolFlags, o + self._tab.Pos))
-        return False
 
 def CommandBatchStart(builder):
-    builder.StartObject(4)
+    builder.StartObject(2)
 
 def CommandBatchAddTimestamp(builder, timestamp):
     builder.PrependUint64Slot(0, timestamp, 0)
 
-def CommandBatchAddImmediateCommands(builder, immediateCommands):
-    builder.PrependUOffsetTRelativeSlot(1, flatbuffers.number_types.UOffsetTFlags.py_type(immediateCommands), 0)
+def CommandBatchAddCommands(builder, commands):
+    builder.PrependUOffsetTRelativeSlot(1, flatbuffers.number_types.UOffsetTFlags.py_type(commands), 0)
 
-def CommandBatchStartImmediateCommandsVector(builder, numElems):
+def CommandBatchStartCommandsVector(builder, numElems):
     return builder.StartVector(4, numElems, 4)
 
-def CommandBatchCreateImmediateCommandsVector(builder, data):
+def CommandBatchCreateCommandsVector(builder, data):
     return builder.CreateVectorOfTables(data)
-
-def CommandBatchAddSequences(builder, sequences):
-    builder.PrependUOffsetTRelativeSlot(2, flatbuffers.number_types.UOffsetTFlags.py_type(sequences), 0)
-
-def CommandBatchStartSequencesVector(builder, numElems):
-    return builder.StartVector(4, numElems, 4)
-
-def CommandBatchCreateSequencesVector(builder, data):
-    return builder.CreateVectorOfTables(data)
-
-def CommandBatchAddAbortAll(builder, abortAll):
-    builder.PrependBoolSlot(3, abortAll, 0)
 
 def CommandBatchEnd(builder):
     return builder.EndObject()
@@ -766,14 +555,10 @@ class CommandBatchT(object):
     def __init__(
         self,
         timestamp = 0,
-        immediateCommands = None,
-        sequences = None,
-        abortAll = False,
+        commands = None,
     ):
         self.timestamp = timestamp  # type: int
-        self.immediateCommands = immediateCommands  # type: Optional[List[CommandT]]
-        self.sequences = sequences  # type: Optional[List[SequenceT]]
-        self.abortAll = abortAll  # type: bool
+        self.commands = commands  # type: Optional[List[CommandT]]
 
     @classmethod
     def InitFromBuf(cls, buf, pos):
@@ -797,49 +582,29 @@ class CommandBatchT(object):
         if commandBatch is None:
             return
         self.timestamp = commandBatch.Timestamp()
-        if not commandBatch.ImmediateCommandsIsNone():
-            self.immediateCommands = []
-            for i in range(commandBatch.ImmediateCommandsLength()):
-                if commandBatch.ImmediateCommands(i) is None:
-                    self.immediateCommands.append(None)
+        if not commandBatch.CommandsIsNone():
+            self.commands = []
+            for i in range(commandBatch.CommandsLength()):
+                if commandBatch.Commands(i) is None:
+                    self.commands.append(None)
                 else:
-                    command_ = CommandT.InitFromObj(commandBatch.ImmediateCommands(i))
-                    self.immediateCommands.append(command_)
-        if not commandBatch.SequencesIsNone():
-            self.sequences = []
-            for i in range(commandBatch.SequencesLength()):
-                if commandBatch.Sequences(i) is None:
-                    self.sequences.append(None)
-                else:
-                    sequence_ = SequenceT.InitFromObj(commandBatch.Sequences(i))
-                    self.sequences.append(sequence_)
-        self.abortAll = commandBatch.AbortAll()
+                    command_ = CommandT.InitFromObj(commandBatch.Commands(i))
+                    self.commands.append(command_)
 
     # CommandBatchT
     def Pack(self, builder):
-        if self.immediateCommands is not None:
-            immediateCommandslist = []
-            for i in range(len(self.immediateCommands)):
-                immediateCommandslist.append(self.immediateCommands[i].Pack(builder))
-            CommandBatchStartImmediateCommandsVector(builder, len(self.immediateCommands))
-            for i in reversed(range(len(self.immediateCommands))):
-                builder.PrependUOffsetTRelative(immediateCommandslist[i])
-            immediateCommands = builder.EndVector()
-        if self.sequences is not None:
-            sequenceslist = []
-            for i in range(len(self.sequences)):
-                sequenceslist.append(self.sequences[i].Pack(builder))
-            CommandBatchStartSequencesVector(builder, len(self.sequences))
-            for i in reversed(range(len(self.sequences))):
-                builder.PrependUOffsetTRelative(sequenceslist[i])
-            sequences = builder.EndVector()
+        if self.commands is not None:
+            commandslist = []
+            for i in range(len(self.commands)):
+                commandslist.append(self.commands[i].Pack(builder))
+            CommandBatchStartCommandsVector(builder, len(self.commands))
+            for i in reversed(range(len(self.commands))):
+                builder.PrependUOffsetTRelative(commandslist[i])
+            commands = builder.EndVector()
         CommandBatchStart(builder)
         CommandBatchAddTimestamp(builder, self.timestamp)
-        if self.immediateCommands is not None:
-            CommandBatchAddImmediateCommands(builder, immediateCommands)
-        if self.sequences is not None:
-            CommandBatchAddSequences(builder, sequences)
-        CommandBatchAddAbortAll(builder, self.abortAll)
+        if self.commands is not None:
+            CommandBatchAddCommands(builder, commands)
         commandBatch = CommandBatchEnd(builder)
         return commandBatch
 

@@ -20,26 +20,6 @@ void process_command(FripuckProtocol_Commands_Command_table_t cmd) {
     flatbuffers_generic_t val = FripuckProtocol_Commands_Command_command(cmd);
 
     switch (type) {
-        case FripuckProtocol_Commands_Instruction_Notify: {
-            FripuckProtocol_Commands_Notify_table_t notify = (FripuckProtocol_Commands_Notify_table_t)val;
-            const char* msg = FripuckProtocol_Commands_Notify_message(notify);
-            printf("    -> Instruction: Notify | message='%s'\n", msg ? msg : "");
-            break;
-        }
-        case FripuckProtocol_Commands_Instruction_SetLed: {
-            FripuckProtocol_Commands_SetLed_table_t led = (FripuckProtocol_Commands_SetLed_table_t)val;
-            uint32_t color = FripuckProtocol_Commands_SetLed_color(led);
-            uint32_t mask = FripuckProtocol_Commands_SetLed_mask(led);
-            printf("    -> Instruction: SetLed | color=0x%08X, mask=0x%08X\n", (unsigned int)color, (unsigned int)mask);
-            break;
-        }
-        case FripuckProtocol_Commands_Instruction_AbortSequence: {
-            FripuckProtocol_Commands_AbortSequence_table_t abort_seq =
-                (FripuckProtocol_Commands_AbortSequence_table_t)val;
-            uint32_t id = FripuckProtocol_Commands_AbortSequence_id(abort_seq);
-            printf("    -> Instruction: AbortSequence | ID: %u\n", (unsigned int)id);
-            break;
-        }
         case FripuckProtocol_Commands_Instruction_Custom: {
             FripuckProtocol_Commands_Custom_table_t custom = (FripuckProtocol_Commands_Custom_table_t)val;
             const char* topic = FripuckProtocol_Commands_Custom_topic(custom);
@@ -48,33 +28,57 @@ void process_command(FripuckProtocol_Commands_Command_table_t cmd) {
             trigger_custom_hook(topic, payload, strlen(payload) + 1);  // take into account null termination
             break;
         }
+        case FripuckProtocol_Commands_Instruction_EnableCommand: {
+            FripuckProtocol_Commands_EnableCommand_table_t cmd = (FripuckProtocol_Commands_EnableCommand_table_t)val;
+            const FripuckProtocol_Commands_ModuleMask_enum_t mask = FripuckProtocol_Commands_EnableCommand_modules(cmd);
+            enable_command_payload_t payload = {.opcode = ENABLE_ENABLE_OPCODE, .mask = mask};
+            uart_send((void*)&payload, sizeof(payload));
+            break;
+        }
+        case FripuckProtocol_Commands_Instruction_MoveTrajectory: {
+            FripuckProtocol_Commands_MoveTrajectory_table_t table =
+                (FripuckProtocol_Commands_MoveTrajectory_table_t)val;
+            float speed = FripuckProtocol_Commands_MoveTrajectory_speed(table);
+            float distance = FripuckProtocol_Commands_MoveTrajectory_distance(table);
+            float radius = FripuckProtocol_Commands_MoveTrajectory_radius(table);
+            float accel = FripuckProtocol_Commands_MoveTrajectory_accel(table);
+            float decel = FripuckProtocol_Commands_MoveTrajectory_decel(table);
+            bool notify = FripuckProtocol_Commands_MoveTrajectory_notify(table);
+            bool synchronous = FripuckProtocol_Commands_MoveTrajectory_synchronous(table);
+            command_move_trajectory(speed, distance, radius, accel, decel, notify, synchronous);
+            break;
+        }
         case FripuckProtocol_Commands_Instruction_NONE:
         default:
-            printf("    -> Instruction: NONE or Unknown\n");
+            printf("    -> Instruction: NONE or Unknown (%d)\n", type);
             break;
     }
 }
 
 void command_receive(const uint8_t* data, uint32_t length) {
-    if (FripuckProtocol_Commands_CommandBatch_verify_as_root(data, length) != 0) {
-        ESP_LOGE(TAG, "Could not verify incoming commands.");
+    int ret = FripuckProtocol_Commands_CommandBatch_verify_as_root_with_size(data, length);
+    if (ret != 0) {
+        ESP_LOGE("COMMANDS", "Could not verify incoming commands. Error: %s", flatcc_verify_error_string(ret));
         return;
     }
 
-    FripuckProtocol_Commands_CommandBatch_table_t batch = FripuckProtocol_Commands_CommandBatch_as_root(data);
+    // account for size offset
+    FripuckProtocol_Commands_CommandBatch_table_t batch = FripuckProtocol_Commands_CommandBatch_as_root(data + 4);
+    if (batch == NULL) {
+        ESP_LOGE("COMMANDS", "Failed to read the command batch.");
+        return;
+    }
 
     // Extract timestamp.
-    // uint64_t timestamp = FripuckProtocol_Commands_CommandBatch_timestamp(batch);
+    uint64_t timestamp = FripuckProtocol_Commands_CommandBatch_timestamp(batch);
 
-    // Go through immediate commands.
-    FripuckProtocol_Commands_Command_vec_t immediate_commands_vec =
-        FripuckProtocol_Commands_CommandBatch_immediate_commands(batch);
-    size_t immediate_commands_vec_len = FripuckProtocol_Commands_Command_vec_len(immediate_commands_vec);
-    if (immediate_commands_vec != NULL && immediate_commands_vec_len > 0) {
+    FripuckProtocol_Commands_Command_vec_t commands = FripuckProtocol_Commands_CommandBatch_commands(batch);
+    size_t commands_vec_len = FripuckProtocol_Commands_Command_vec_len(commands);
+    if (commands != NULL && commands_vec_len > 0) {
         // Go through the unions that it has
-        for (int i = 0; i < immediate_commands_vec_len; i++) {
+        for (int i = 0; i < commands_vec_len; i++) {
             FripuckProtocol_Commands_Command_table_t command_table =
-                FripuckProtocol_Commands_Command_vec_at(immediate_commands_vec, i);
+                FripuckProtocol_Commands_Command_vec_at(commands, i);
             process_command(command_table);
         }
     }
@@ -104,11 +108,11 @@ void command_enable_modules(struct enable_modules_params p) {
     mask |= MASK_MOTORS & -(uint32_t)p.enable_motors;
     mask |= MASK_GROUND & -(uint32_t)p.enable_ground;
 
-    ESP_LOGI(TAG, "Created mask: %X", mask);
+    // ESP_LOGI(TAG, "Created mask: %X", mask);
     // TODO: add crc
     enable_command_payload_t payload = {.opcode = ENABLE_ENABLE_OPCODE, .mask = mask};
     uart_send((void*)&payload, sizeof(payload));
-    ESP_LOGI(TAG, "Sent length=%d, opcode=%x, mask=%x", sizeof(payload), payload.opcode, payload.mask);
+    // ESP_LOGI(TAG, "Sent length=%d, opcode=%x, mask=%x", sizeof(payload), payload.opcode, payload.mask);
 }
 
 void command_move_trajectory(float speed, float distance, float radius, float accel, float decel, bool notify,
@@ -124,8 +128,9 @@ void command_move_trajectory(float speed, float distance, float radius, float ac
                                              .synchronous = synchronous,
                                          }};
     uart_send((void*)&payload, sizeof(payload));
-    ESP_LOGI(TAG,
-             "Sent movement trajectory with speed=%.2f, distance=%.2f, radius=%.2f, accel=%.2f, decel=%.2f, notify=%s",
-             payload.options.speed, payload.options.distance, payload.options.radius, payload.options.accel,
-             payload.options.decel, payload.options.notify ? "true" : "false");
+    // ESP_LOGI(
+    //     TAG,
+    //     "Sent movement trajectory with speed=%.2f, distance=%.2f, radius=%.2f, accel=%.2f, decel=%.2f, notify = % s
+    //     ", payload.options.speed, payload.options.distance, payload.options.radius, payload.options.accel,
+    //     payload.options.decel, payload.options.notify ? "true" : "false");
 }

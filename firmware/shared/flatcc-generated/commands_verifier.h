@@ -10,20 +10,17 @@
 #include "flatcc/flatcc_prologue.h"
 
 static int FripuckProtocol_Commands_Custom_verify_table(flatcc_table_verifier_descriptor_t *td);
-static int FripuckProtocol_Commands_Notify_verify_table(flatcc_table_verifier_descriptor_t *td);
-static int FripuckProtocol_Commands_SetLed_verify_table(flatcc_table_verifier_descriptor_t *td);
-static int FripuckProtocol_Commands_Sequence_verify_table(flatcc_table_verifier_descriptor_t *td);
-static int FripuckProtocol_Commands_AbortSequence_verify_table(flatcc_table_verifier_descriptor_t *td);
+static int FripuckProtocol_Commands_EnableCommand_verify_table(flatcc_table_verifier_descriptor_t *td);
+static int FripuckProtocol_Commands_MoveTrajectory_verify_table(flatcc_table_verifier_descriptor_t *td);
 static int FripuckProtocol_Commands_Command_verify_table(flatcc_table_verifier_descriptor_t *td);
 static int FripuckProtocol_Commands_CommandBatch_verify_table(flatcc_table_verifier_descriptor_t *td);
 
 static int FripuckProtocol_Commands_Instruction_union_verifier(flatcc_union_verifier_descriptor_t *ud)
 {
     switch (ud->type) {
-    case 1: return flatcc_verify_union_table(ud, FripuckProtocol_Commands_Notify_verify_table); /* Notify */
-    case 2: return flatcc_verify_union_table(ud, FripuckProtocol_Commands_SetLed_verify_table); /* SetLed */
-    case 3: return flatcc_verify_union_table(ud, FripuckProtocol_Commands_AbortSequence_verify_table); /* AbortSequence */
-    case 4: return flatcc_verify_union_table(ud, FripuckProtocol_Commands_Custom_verify_table); /* Custom */
+    case 1: return flatcc_verify_union_table(ud, FripuckProtocol_Commands_Custom_verify_table); /* Custom */
+    case 2: return flatcc_verify_union_table(ud, FripuckProtocol_Commands_EnableCommand_verify_table); /* EnableCommand */
+    case 3: return flatcc_verify_union_table(ud, FripuckProtocol_Commands_MoveTrajectory_verify_table); /* MoveTrajectory */
     default: return flatcc_verify_ok;
     }
 }
@@ -76,195 +73,104 @@ static inline int FripuckProtocol_Commands_Custom_verify_as_root_with_type_hash_
     return flatcc_verify_table_as_typed_root_with_size(buf, bufsiz, thash, &FripuckProtocol_Commands_Custom_verify_table);
 }
 
-static int FripuckProtocol_Commands_Notify_verify_table(flatcc_table_verifier_descriptor_t *td)
+static int FripuckProtocol_Commands_EnableCommand_verify_table(flatcc_table_verifier_descriptor_t *td)
 {
     int ret;
-    if ((ret = flatcc_verify_string_field(td, 0, 0) /* message */)) return ret;
+    if ((ret = flatcc_verify_field(td, 0, 4, 4) /* modules */)) return ret;
     return flatcc_verify_ok;
 }
 
-static inline int FripuckProtocol_Commands_Notify_verify_as_root(const void *buf, size_t bufsiz)
+static inline int FripuckProtocol_Commands_EnableCommand_verify_as_root(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_table_as_root(buf, bufsiz, FripuckProtocol_Commands_Notify_identifier, &FripuckProtocol_Commands_Notify_verify_table);
+    return flatcc_verify_table_as_root(buf, bufsiz, FripuckProtocol_Commands_EnableCommand_identifier, &FripuckProtocol_Commands_EnableCommand_verify_table);
 }
 
-static inline int FripuckProtocol_Commands_Notify_verify_as_root_with_size(const void *buf, size_t bufsiz)
+static inline int FripuckProtocol_Commands_EnableCommand_verify_as_root_with_size(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_table_as_root_with_size(buf, bufsiz, FripuckProtocol_Commands_Notify_identifier, &FripuckProtocol_Commands_Notify_verify_table);
+    return flatcc_verify_table_as_root_with_size(buf, bufsiz, FripuckProtocol_Commands_EnableCommand_identifier, &FripuckProtocol_Commands_EnableCommand_verify_table);
 }
 
-static inline int FripuckProtocol_Commands_Notify_verify_as_typed_root(const void *buf, size_t bufsiz)
+static inline int FripuckProtocol_Commands_EnableCommand_verify_as_typed_root(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_table_as_root(buf, bufsiz, FripuckProtocol_Commands_Notify_type_identifier, &FripuckProtocol_Commands_Notify_verify_table);
+    return flatcc_verify_table_as_root(buf, bufsiz, FripuckProtocol_Commands_EnableCommand_type_identifier, &FripuckProtocol_Commands_EnableCommand_verify_table);
 }
 
-static inline int FripuckProtocol_Commands_Notify_verify_as_typed_root_with_size(const void *buf, size_t bufsiz)
+static inline int FripuckProtocol_Commands_EnableCommand_verify_as_typed_root_with_size(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_table_as_root_with_size(buf, bufsiz, FripuckProtocol_Commands_Notify_type_identifier, &FripuckProtocol_Commands_Notify_verify_table);
+    return flatcc_verify_table_as_root_with_size(buf, bufsiz, FripuckProtocol_Commands_EnableCommand_type_identifier, &FripuckProtocol_Commands_EnableCommand_verify_table);
 }
 
-static inline int FripuckProtocol_Commands_Notify_verify_as_root_with_identifier(const void *buf, size_t bufsiz, const char *fid)
+static inline int FripuckProtocol_Commands_EnableCommand_verify_as_root_with_identifier(const void *buf, size_t bufsiz, const char *fid)
 {
-    return flatcc_verify_table_as_root(buf, bufsiz, fid, &FripuckProtocol_Commands_Notify_verify_table);
+    return flatcc_verify_table_as_root(buf, bufsiz, fid, &FripuckProtocol_Commands_EnableCommand_verify_table);
 }
 
-static inline int FripuckProtocol_Commands_Notify_verify_as_root_with_identifier_and_size(const void *buf, size_t bufsiz, const char *fid)
+static inline int FripuckProtocol_Commands_EnableCommand_verify_as_root_with_identifier_and_size(const void *buf, size_t bufsiz, const char *fid)
 {
-    return flatcc_verify_table_as_root_with_size(buf, bufsiz, fid, &FripuckProtocol_Commands_Notify_verify_table);
+    return flatcc_verify_table_as_root_with_size(buf, bufsiz, fid, &FripuckProtocol_Commands_EnableCommand_verify_table);
 }
 
-static inline int FripuckProtocol_Commands_Notify_verify_as_root_with_type_hash(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
+static inline int FripuckProtocol_Commands_EnableCommand_verify_as_root_with_type_hash(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
 {
-    return flatcc_verify_table_as_typed_root(buf, bufsiz, thash, &FripuckProtocol_Commands_Notify_verify_table);
+    return flatcc_verify_table_as_typed_root(buf, bufsiz, thash, &FripuckProtocol_Commands_EnableCommand_verify_table);
 }
 
-static inline int FripuckProtocol_Commands_Notify_verify_as_root_with_type_hash_and_size(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
+static inline int FripuckProtocol_Commands_EnableCommand_verify_as_root_with_type_hash_and_size(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
 {
-    return flatcc_verify_table_as_typed_root_with_size(buf, bufsiz, thash, &FripuckProtocol_Commands_Notify_verify_table);
+    return flatcc_verify_table_as_typed_root_with_size(buf, bufsiz, thash, &FripuckProtocol_Commands_EnableCommand_verify_table);
 }
 
-static int FripuckProtocol_Commands_SetLed_verify_table(flatcc_table_verifier_descriptor_t *td)
+static int FripuckProtocol_Commands_MoveTrajectory_verify_table(flatcc_table_verifier_descriptor_t *td)
 {
     int ret;
-    if ((ret = flatcc_verify_field(td, 0, 4, 4) /* color */)) return ret;
-    if ((ret = flatcc_verify_field(td, 1, 4, 4) /* mask */)) return ret;
+    if ((ret = flatcc_verify_field(td, 0, 4, 4) /* speed */)) return ret;
+    if ((ret = flatcc_verify_field(td, 1, 4, 4) /* distance */)) return ret;
+    if ((ret = flatcc_verify_field(td, 2, 4, 4) /* radius */)) return ret;
+    if ((ret = flatcc_verify_field(td, 3, 4, 4) /* accel */)) return ret;
+    if ((ret = flatcc_verify_field(td, 4, 4, 4) /* decel */)) return ret;
+    if ((ret = flatcc_verify_field(td, 5, 1, 1) /* notify */)) return ret;
+    if ((ret = flatcc_verify_field(td, 6, 1, 1) /* synchronous */)) return ret;
     return flatcc_verify_ok;
 }
 
-static inline int FripuckProtocol_Commands_SetLed_verify_as_root(const void *buf, size_t bufsiz)
+static inline int FripuckProtocol_Commands_MoveTrajectory_verify_as_root(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_table_as_root(buf, bufsiz, FripuckProtocol_Commands_SetLed_identifier, &FripuckProtocol_Commands_SetLed_verify_table);
+    return flatcc_verify_table_as_root(buf, bufsiz, FripuckProtocol_Commands_MoveTrajectory_identifier, &FripuckProtocol_Commands_MoveTrajectory_verify_table);
 }
 
-static inline int FripuckProtocol_Commands_SetLed_verify_as_root_with_size(const void *buf, size_t bufsiz)
+static inline int FripuckProtocol_Commands_MoveTrajectory_verify_as_root_with_size(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_table_as_root_with_size(buf, bufsiz, FripuckProtocol_Commands_SetLed_identifier, &FripuckProtocol_Commands_SetLed_verify_table);
+    return flatcc_verify_table_as_root_with_size(buf, bufsiz, FripuckProtocol_Commands_MoveTrajectory_identifier, &FripuckProtocol_Commands_MoveTrajectory_verify_table);
 }
 
-static inline int FripuckProtocol_Commands_SetLed_verify_as_typed_root(const void *buf, size_t bufsiz)
+static inline int FripuckProtocol_Commands_MoveTrajectory_verify_as_typed_root(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_table_as_root(buf, bufsiz, FripuckProtocol_Commands_SetLed_type_identifier, &FripuckProtocol_Commands_SetLed_verify_table);
+    return flatcc_verify_table_as_root(buf, bufsiz, FripuckProtocol_Commands_MoveTrajectory_type_identifier, &FripuckProtocol_Commands_MoveTrajectory_verify_table);
 }
 
-static inline int FripuckProtocol_Commands_SetLed_verify_as_typed_root_with_size(const void *buf, size_t bufsiz)
+static inline int FripuckProtocol_Commands_MoveTrajectory_verify_as_typed_root_with_size(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_table_as_root_with_size(buf, bufsiz, FripuckProtocol_Commands_SetLed_type_identifier, &FripuckProtocol_Commands_SetLed_verify_table);
+    return flatcc_verify_table_as_root_with_size(buf, bufsiz, FripuckProtocol_Commands_MoveTrajectory_type_identifier, &FripuckProtocol_Commands_MoveTrajectory_verify_table);
 }
 
-static inline int FripuckProtocol_Commands_SetLed_verify_as_root_with_identifier(const void *buf, size_t bufsiz, const char *fid)
+static inline int FripuckProtocol_Commands_MoveTrajectory_verify_as_root_with_identifier(const void *buf, size_t bufsiz, const char *fid)
 {
-    return flatcc_verify_table_as_root(buf, bufsiz, fid, &FripuckProtocol_Commands_SetLed_verify_table);
+    return flatcc_verify_table_as_root(buf, bufsiz, fid, &FripuckProtocol_Commands_MoveTrajectory_verify_table);
 }
 
-static inline int FripuckProtocol_Commands_SetLed_verify_as_root_with_identifier_and_size(const void *buf, size_t bufsiz, const char *fid)
+static inline int FripuckProtocol_Commands_MoveTrajectory_verify_as_root_with_identifier_and_size(const void *buf, size_t bufsiz, const char *fid)
 {
-    return flatcc_verify_table_as_root_with_size(buf, bufsiz, fid, &FripuckProtocol_Commands_SetLed_verify_table);
+    return flatcc_verify_table_as_root_with_size(buf, bufsiz, fid, &FripuckProtocol_Commands_MoveTrajectory_verify_table);
 }
 
-static inline int FripuckProtocol_Commands_SetLed_verify_as_root_with_type_hash(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
+static inline int FripuckProtocol_Commands_MoveTrajectory_verify_as_root_with_type_hash(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
 {
-    return flatcc_verify_table_as_typed_root(buf, bufsiz, thash, &FripuckProtocol_Commands_SetLed_verify_table);
+    return flatcc_verify_table_as_typed_root(buf, bufsiz, thash, &FripuckProtocol_Commands_MoveTrajectory_verify_table);
 }
 
-static inline int FripuckProtocol_Commands_SetLed_verify_as_root_with_type_hash_and_size(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
+static inline int FripuckProtocol_Commands_MoveTrajectory_verify_as_root_with_type_hash_and_size(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
 {
-    return flatcc_verify_table_as_typed_root_with_size(buf, bufsiz, thash, &FripuckProtocol_Commands_SetLed_verify_table);
-}
-
-static int FripuckProtocol_Commands_Sequence_verify_table(flatcc_table_verifier_descriptor_t *td)
-{
-    int ret;
-    if ((ret = flatcc_verify_field(td, 0, 4, 4) /* id */)) return ret;
-    if ((ret = flatcc_verify_field(td, 1, 1, 1) /* loop */)) return ret;
-    if ((ret = flatcc_verify_table_vector_field(td, 2, 0, &FripuckProtocol_Commands_Command_verify_table) /* commands */)) return ret;
-    return flatcc_verify_ok;
-}
-
-static inline int FripuckProtocol_Commands_Sequence_verify_as_root(const void *buf, size_t bufsiz)
-{
-    return flatcc_verify_table_as_root(buf, bufsiz, FripuckProtocol_Commands_Sequence_identifier, &FripuckProtocol_Commands_Sequence_verify_table);
-}
-
-static inline int FripuckProtocol_Commands_Sequence_verify_as_root_with_size(const void *buf, size_t bufsiz)
-{
-    return flatcc_verify_table_as_root_with_size(buf, bufsiz, FripuckProtocol_Commands_Sequence_identifier, &FripuckProtocol_Commands_Sequence_verify_table);
-}
-
-static inline int FripuckProtocol_Commands_Sequence_verify_as_typed_root(const void *buf, size_t bufsiz)
-{
-    return flatcc_verify_table_as_root(buf, bufsiz, FripuckProtocol_Commands_Sequence_type_identifier, &FripuckProtocol_Commands_Sequence_verify_table);
-}
-
-static inline int FripuckProtocol_Commands_Sequence_verify_as_typed_root_with_size(const void *buf, size_t bufsiz)
-{
-    return flatcc_verify_table_as_root_with_size(buf, bufsiz, FripuckProtocol_Commands_Sequence_type_identifier, &FripuckProtocol_Commands_Sequence_verify_table);
-}
-
-static inline int FripuckProtocol_Commands_Sequence_verify_as_root_with_identifier(const void *buf, size_t bufsiz, const char *fid)
-{
-    return flatcc_verify_table_as_root(buf, bufsiz, fid, &FripuckProtocol_Commands_Sequence_verify_table);
-}
-
-static inline int FripuckProtocol_Commands_Sequence_verify_as_root_with_identifier_and_size(const void *buf, size_t bufsiz, const char *fid)
-{
-    return flatcc_verify_table_as_root_with_size(buf, bufsiz, fid, &FripuckProtocol_Commands_Sequence_verify_table);
-}
-
-static inline int FripuckProtocol_Commands_Sequence_verify_as_root_with_type_hash(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
-{
-    return flatcc_verify_table_as_typed_root(buf, bufsiz, thash, &FripuckProtocol_Commands_Sequence_verify_table);
-}
-
-static inline int FripuckProtocol_Commands_Sequence_verify_as_root_with_type_hash_and_size(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
-{
-    return flatcc_verify_table_as_typed_root_with_size(buf, bufsiz, thash, &FripuckProtocol_Commands_Sequence_verify_table);
-}
-
-static int FripuckProtocol_Commands_AbortSequence_verify_table(flatcc_table_verifier_descriptor_t *td)
-{
-    int ret;
-    if ((ret = flatcc_verify_field(td, 0, 4, 4) /* id */)) return ret;
-    return flatcc_verify_ok;
-}
-
-static inline int FripuckProtocol_Commands_AbortSequence_verify_as_root(const void *buf, size_t bufsiz)
-{
-    return flatcc_verify_table_as_root(buf, bufsiz, FripuckProtocol_Commands_AbortSequence_identifier, &FripuckProtocol_Commands_AbortSequence_verify_table);
-}
-
-static inline int FripuckProtocol_Commands_AbortSequence_verify_as_root_with_size(const void *buf, size_t bufsiz)
-{
-    return flatcc_verify_table_as_root_with_size(buf, bufsiz, FripuckProtocol_Commands_AbortSequence_identifier, &FripuckProtocol_Commands_AbortSequence_verify_table);
-}
-
-static inline int FripuckProtocol_Commands_AbortSequence_verify_as_typed_root(const void *buf, size_t bufsiz)
-{
-    return flatcc_verify_table_as_root(buf, bufsiz, FripuckProtocol_Commands_AbortSequence_type_identifier, &FripuckProtocol_Commands_AbortSequence_verify_table);
-}
-
-static inline int FripuckProtocol_Commands_AbortSequence_verify_as_typed_root_with_size(const void *buf, size_t bufsiz)
-{
-    return flatcc_verify_table_as_root_with_size(buf, bufsiz, FripuckProtocol_Commands_AbortSequence_type_identifier, &FripuckProtocol_Commands_AbortSequence_verify_table);
-}
-
-static inline int FripuckProtocol_Commands_AbortSequence_verify_as_root_with_identifier(const void *buf, size_t bufsiz, const char *fid)
-{
-    return flatcc_verify_table_as_root(buf, bufsiz, fid, &FripuckProtocol_Commands_AbortSequence_verify_table);
-}
-
-static inline int FripuckProtocol_Commands_AbortSequence_verify_as_root_with_identifier_and_size(const void *buf, size_t bufsiz, const char *fid)
-{
-    return flatcc_verify_table_as_root_with_size(buf, bufsiz, fid, &FripuckProtocol_Commands_AbortSequence_verify_table);
-}
-
-static inline int FripuckProtocol_Commands_AbortSequence_verify_as_root_with_type_hash(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
-{
-    return flatcc_verify_table_as_typed_root(buf, bufsiz, thash, &FripuckProtocol_Commands_AbortSequence_verify_table);
-}
-
-static inline int FripuckProtocol_Commands_AbortSequence_verify_as_root_with_type_hash_and_size(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
-{
-    return flatcc_verify_table_as_typed_root_with_size(buf, bufsiz, thash, &FripuckProtocol_Commands_AbortSequence_verify_table);
+    return flatcc_verify_table_as_typed_root_with_size(buf, bufsiz, thash, &FripuckProtocol_Commands_MoveTrajectory_verify_table);
 }
 
 static int FripuckProtocol_Commands_Command_verify_table(flatcc_table_verifier_descriptor_t *td)
@@ -318,9 +224,7 @@ static int FripuckProtocol_Commands_CommandBatch_verify_table(flatcc_table_verif
 {
     int ret;
     if ((ret = flatcc_verify_field(td, 0, 8, 8) /* timestamp */)) return ret;
-    if ((ret = flatcc_verify_table_vector_field(td, 1, 0, &FripuckProtocol_Commands_Command_verify_table) /* immediate_commands */)) return ret;
-    if ((ret = flatcc_verify_table_vector_field(td, 2, 0, &FripuckProtocol_Commands_Sequence_verify_table) /* sequences */)) return ret;
-    if ((ret = flatcc_verify_field(td, 3, 1, 1) /* abort_all */)) return ret;
+    if ((ret = flatcc_verify_table_vector_field(td, 1, 0, &FripuckProtocol_Commands_Command_verify_table) /* commands */)) return ret;
     return flatcc_verify_ok;
 }
 

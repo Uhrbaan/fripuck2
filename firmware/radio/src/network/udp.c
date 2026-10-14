@@ -13,6 +13,8 @@
 QueueHandle_t spi_to_udp_queue = NULL;
 static telemetry_packet_t item = {0};
 
+static const char* TAG = "UDP TASK";
+
 void udp_init_(void) { spi_to_udp_queue = xQueueCreate(10, sizeof(telemetry_packet_t)); }
 
 void udp_transmitter(void* pvParameters) {
@@ -47,6 +49,8 @@ void udp_transmitter(void* pvParameters) {
             ESP_LOGE("UDP TRANSMITTER", "Error while sending data: %s (%d).", strerror(errno), errno);
             // break; // can technically ignore error
         }
+
+        // ESP_LOGI(TAG, "Sent %u bytes over UDP.", item.length);
 
         // vTaskDelay(pdMS_TO_TICKS(1000));
     }

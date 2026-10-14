@@ -8,66 +8,41 @@ import (
 
 type CommandBatchT struct {
 	Timestamp uint64 `json:"timestamp"`
-	ImmediateCommands []*CommandT `json:"immediate_commands"`
-	Sequences []*SequenceT `json:"sequences"`
-	AbortAll bool `json:"abort_all"`
+	Commands []*CommandT `json:"commands"`
 }
 
 func (t *CommandBatchT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 	if t == nil {
 		return 0
 	}
-	immediateCommandsOffset := flatbuffers.UOffsetT(0)
-	if t.ImmediateCommands != nil {
-		immediateCommandsLength := len(t.ImmediateCommands)
-		immediateCommandsOffsets := make([]flatbuffers.UOffsetT, immediateCommandsLength)
-		for j := 0; j < immediateCommandsLength; j++ {
-			immediateCommandsOffsets[j] = t.ImmediateCommands[j].Pack(builder)
+	commandsOffset := flatbuffers.UOffsetT(0)
+	if t.Commands != nil {
+		commandsLength := len(t.Commands)
+		commandsOffsets := make([]flatbuffers.UOffsetT, commandsLength)
+		for j := 0; j < commandsLength; j++ {
+			commandsOffsets[j] = t.Commands[j].Pack(builder)
 		}
-		CommandBatchStartImmediateCommandsVector(builder, immediateCommandsLength)
-		for j := immediateCommandsLength - 1; j >= 0; j-- {
-			builder.PrependUOffsetT(immediateCommandsOffsets[j])
+		CommandBatchStartCommandsVector(builder, commandsLength)
+		for j := commandsLength - 1; j >= 0; j-- {
+			builder.PrependUOffsetT(commandsOffsets[j])
 		}
-		immediateCommandsOffset = builder.EndVector(immediateCommandsLength)
-	}
-	sequencesOffset := flatbuffers.UOffsetT(0)
-	if t.Sequences != nil {
-		sequencesLength := len(t.Sequences)
-		sequencesOffsets := make([]flatbuffers.UOffsetT, sequencesLength)
-		for j := 0; j < sequencesLength; j++ {
-			sequencesOffsets[j] = t.Sequences[j].Pack(builder)
-		}
-		CommandBatchStartSequencesVector(builder, sequencesLength)
-		for j := sequencesLength - 1; j >= 0; j-- {
-			builder.PrependUOffsetT(sequencesOffsets[j])
-		}
-		sequencesOffset = builder.EndVector(sequencesLength)
+		commandsOffset = builder.EndVector(commandsLength)
 	}
 	CommandBatchStart(builder)
 	CommandBatchAddTimestamp(builder, t.Timestamp)
-	CommandBatchAddImmediateCommands(builder, immediateCommandsOffset)
-	CommandBatchAddSequences(builder, sequencesOffset)
-	CommandBatchAddAbortAll(builder, t.AbortAll)
+	CommandBatchAddCommands(builder, commandsOffset)
 	return CommandBatchEnd(builder)
 }
 
 func (rcv *CommandBatch) UnPackTo(t *CommandBatchT) {
 	t.Timestamp = rcv.Timestamp()
-	immediateCommandsLength := rcv.ImmediateCommandsLength()
-	t.ImmediateCommands = make([]*CommandT, immediateCommandsLength)
-	for j := 0; j < immediateCommandsLength; j++ {
+	commandsLength := rcv.CommandsLength()
+	t.Commands = make([]*CommandT, commandsLength)
+	for j := 0; j < commandsLength; j++ {
 		x := Command{}
-		rcv.ImmediateCommands(&x, j)
-		t.ImmediateCommands[j] = x.UnPack()
+		rcv.Commands(&x, j)
+		t.Commands[j] = x.UnPack()
 	}
-	sequencesLength := rcv.SequencesLength()
-	t.Sequences = make([]*SequenceT, sequencesLength)
-	for j := 0; j < sequencesLength; j++ {
-		x := Sequence{}
-		rcv.Sequences(&x, j)
-		t.Sequences[j] = x.UnPack()
-	}
-	t.AbortAll = rcv.AbortAll()
 }
 
 func (rcv *CommandBatch) UnPack() *CommandBatchT {
@@ -83,8 +58,6 @@ type CommandBatch struct {
 	_tab flatbuffers.Table
 }
 
-const CommandBatchIdentifier = "CMND"
-
 func GetRootAsCommandBatch(buf []byte, offset flatbuffers.UOffsetT) *CommandBatch {
 	n := flatbuffers.GetUOffsetT(buf[offset:])
 	x := &CommandBatch{}
@@ -93,12 +66,7 @@ func GetRootAsCommandBatch(buf []byte, offset flatbuffers.UOffsetT) *CommandBatc
 }
 
 func FinishCommandBatchBuffer(builder *flatbuffers.Builder, offset flatbuffers.UOffsetT) {
-	identifierBytes := []byte(CommandBatchIdentifier)
-	builder.FinishWithFileIdentifier(offset, identifierBytes)
-}
-
-func CommandBatchBufferHasIdentifier(buf []byte) bool {
-	return flatbuffers.BufferHasIdentifier(buf, CommandBatchIdentifier)
+	builder.Finish(offset)
 }
 
 func GetSizePrefixedRootAsCommandBatch(buf []byte, offset flatbuffers.UOffsetT) *CommandBatch {
@@ -109,12 +77,7 @@ func GetSizePrefixedRootAsCommandBatch(buf []byte, offset flatbuffers.UOffsetT) 
 }
 
 func FinishSizePrefixedCommandBatchBuffer(builder *flatbuffers.Builder, offset flatbuffers.UOffsetT) {
-	identifierBytes := []byte(CommandBatchIdentifier)
-	builder.FinishSizePrefixedWithFileIdentifier(offset, identifierBytes)
-}
-
-func SizePrefixedCommandBatchBufferHasIdentifier(buf []byte) bool {
-	return flatbuffers.SizePrefixedBufferHasIdentifier(buf, CommandBatchIdentifier)
+	builder.FinishSizePrefixed(offset)
 }
 
 func (rcv *CommandBatch) Init(buf []byte, i flatbuffers.UOffsetT) {
@@ -138,7 +101,7 @@ func (rcv *CommandBatch) MutateTimestamp(n uint64) bool {
 	return rcv._tab.MutateUint64Slot(4, n)
 }
 
-func (rcv *CommandBatch) ImmediateCommands(obj *Command, j int) bool {
+func (rcv *CommandBatch) Commands(obj *Command, j int) bool {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(6))
 	if o != 0 {
 		x := rcv._tab.Vector(o)
@@ -150,66 +113,25 @@ func (rcv *CommandBatch) ImmediateCommands(obj *Command, j int) bool {
 	return false
 }
 
-func (rcv *CommandBatch) ImmediateCommandsLength() int {
+func (rcv *CommandBatch) CommandsLength() int {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(6))
 	if o != 0 {
 		return rcv._tab.VectorLen(o)
 	}
 	return 0
-}
-
-func (rcv *CommandBatch) Sequences(obj *Sequence, j int) bool {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(8))
-	if o != 0 {
-		x := rcv._tab.Vector(o)
-		x += flatbuffers.UOffsetT(j) * 4
-		x = rcv._tab.Indirect(x)
-		obj.Init(rcv._tab.Bytes, x)
-		return true
-	}
-	return false
-}
-
-func (rcv *CommandBatch) SequencesLength() int {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(8))
-	if o != 0 {
-		return rcv._tab.VectorLen(o)
-	}
-	return 0
-}
-
-func (rcv *CommandBatch) AbortAll() bool {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(10))
-	if o != 0 {
-		return rcv._tab.GetBool(o + rcv._tab.Pos)
-	}
-	return false
-}
-
-func (rcv *CommandBatch) MutateAbortAll(n bool) bool {
-	return rcv._tab.MutateBoolSlot(10, n)
 }
 
 func CommandBatchStart(builder *flatbuffers.Builder) {
-	builder.StartObject(4)
+	builder.StartObject(2)
 }
 func CommandBatchAddTimestamp(builder *flatbuffers.Builder, timestamp uint64) {
 	builder.PrependUint64Slot(0, timestamp, 0)
 }
-func CommandBatchAddImmediateCommands(builder *flatbuffers.Builder, immediateCommands flatbuffers.UOffsetT) {
-	builder.PrependUOffsetTSlot(1, flatbuffers.UOffsetT(immediateCommands), 0)
+func CommandBatchAddCommands(builder *flatbuffers.Builder, commands flatbuffers.UOffsetT) {
+	builder.PrependUOffsetTSlot(1, flatbuffers.UOffsetT(commands), 0)
 }
-func CommandBatchStartImmediateCommandsVector(builder *flatbuffers.Builder, numElems int) flatbuffers.UOffsetT {
+func CommandBatchStartCommandsVector(builder *flatbuffers.Builder, numElems int) flatbuffers.UOffsetT {
 	return builder.StartVector(4, numElems, 4)
-}
-func CommandBatchAddSequences(builder *flatbuffers.Builder, sequences flatbuffers.UOffsetT) {
-	builder.PrependUOffsetTSlot(2, flatbuffers.UOffsetT(sequences), 0)
-}
-func CommandBatchStartSequencesVector(builder *flatbuffers.Builder, numElems int) flatbuffers.UOffsetT {
-	return builder.StartVector(4, numElems, 4)
-}
-func CommandBatchAddAbortAll(builder *flatbuffers.Builder, abortAll bool) {
-	builder.PrependBoolSlot(3, abortAll, false)
 }
 func CommandBatchEnd(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 	return builder.EndObject()

@@ -22,55 +22,51 @@ EventGroupHandle_t tcp_event_group;
 
 struct sockaddr_storage client_address;  // Large enough to store both IPv4 and IPv6
 
+static int recv_exact(int sock, void* dst, size_t len) {
+    uint8_t* p = (uint8_t*)dst;
+    size_t got = 0;
+    while (got < len) {
+        int r = recv(sock, p + got, len - got, 0);
+        if (r <= 0) return r;  // 0 = closed, <0 = error
+        got += (size_t)r;
+    }
+    return (int)got;
+}
+
 void tcp_receiver(void* pvParameters) {
-    const int socket = (int)pvParameters;
+    const int socket = (int)(intptr_t)pvParameters;
     static const char TAG[] = "TCP RECEIVER";
-    alignas(4) static uint8_t buffer[1024 * 2] = {0};
 
-    ESP_LOGI("TCP RECEIVER", "Starting tcp_receiver.");
+    enum { MAX_PAYLOAD = 2048 };
+    alignas(8) static uint8_t buf[4 + MAX_PAYLOAD];
+
     for (;;) {
-        int bytes_read = 0;
-        int offset = 0;
-
-        while (offset < 4) {
-            bytes_read = recv(socket, &buffer[offset], 4 - offset, 0);
-            if (bytes_read <= 0) {
-                ESP_LOGE(TAG, "Error: %d", bytes_read);
-                xTaskNotify(xTCPConnectionManagerHandle, (uint32_t)bytes_read << 16, eSetValueWithOverwrite);
-                vTaskDelay(portMAX_DELAY);
-            }
-            offset += bytes_read;
+        // 1. Prefix goes INTO buf[0..3]
+        int r = recv_exact(socket, buf, 4);
+        if (r <= 0) {
+            xTaskNotify(xTCPConnectionManagerHandle, (uint32_t)r << 16, eSetValueWithOverwrite);
+            vTaskDelete(NULL);
         }
 
-        ESP_LOGI(TAG, "Raw header bytes: %02X %02X %02X %02X", buffer[0], buffer[1], buffer[2], buffer[3]);
-        size_t size = 0;
-        // Note: this is safe, because flatbuffers specifies in the docs that it is always little endian:
-        // https://flatbuffers.dev/white_paper/#:~:text=and-,endianness However, you need to finishe the instructions
-        // with FinishSizePrefixed so it adds the size.
-        memcpy(&size, buffer, sizeof(size));
-        ESP_LOGI(TAG, "Received packet indicates a length of %lu (BE: %)");
+        uint32_t size;
+        memcpy(&size, buf, sizeof(size));
 
-        if (size == 0 || size > (sizeof(buffer) - 4)) {
+        if (size == 0 || size > MAX_PAYLOAD) {
             ESP_LOGE(TAG, "Invalid payload size: %lu", (unsigned long)size);
-            xTaskNotify(xTCPConnectionManagerHandle, (uint32_t)bytes_read << 16, eSetValueWithOverwrite);
-            vTaskDelay(portMAX_DELAY);
+            xTaskNotify(xTCPConnectionManagerHandle, 0xFF << 16, eSetValueWithOverwrite);
+            vTaskDelete(NULL);
         }
 
-        offset = 4;  // write after the header
-        int target = 4 + size;
-
-        while (offset < target) {
-            bytes_read = recv(socket, &buffer[offset], sizeof(buffer) - offset, 0);
-            if (bytes_read <= 0) {
-                ESP_LOGE(TAG, "Error: %d", bytes_read);
-                xTaskNotify(xTCPConnectionManagerHandle, (uint32_t)bytes_read << 16, eSetValueWithOverwrite);
-                vTaskDelay(portMAX_DELAY);
-            }
-            offset += bytes_read;
+        // 2. Payload goes right after the prefix
+        r = recv_exact(socket, buf + 4, size);
+        if (r <= 0) {
+            xTaskNotify(xTCPConnectionManagerHandle, (uint32_t)r << 16, eSetValueWithOverwrite);
+            vTaskDelete(NULL);
         }
 
-        ESP_LOGI(TAG, "Received full FB packet.");
-        command_receive(&buffer[4], size);  // remove size header
+        // ESP_LOG_BUFFER_HEX(TAG, buf, 16);  // should now match Python: 64 00 00 00 14 00 00 00 43 4d 4e 44 ...
+
+        command_receive(buf, size + 4);
     }
 }
 

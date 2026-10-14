@@ -72,7 +72,7 @@ int L_robot_on(lua_State* L) {
 }
 
 int L_robot_set_modules(lua_State* L) {
-    ESP_LOGI(TAG, "robot_set-Modules");
+    // ESP_LOGI(TAG, "robot_set-Modules");
     // 1. Ensure the first argument is a table
     luaL_checktype(L, 1, LUA_TTABLE);
 

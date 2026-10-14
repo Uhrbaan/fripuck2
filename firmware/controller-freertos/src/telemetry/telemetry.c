@@ -175,18 +175,29 @@ void* un_end_sensors() {
     }
 }
 
-void pack_loop(flatcc_builder_t* builder, uint32_t budget) {
+/// @brief Packs ready sensor readings into a flatbuffer packet
+/// @param builder Reference to the FB builder
+/// @param budget Allowed size budget in bytes (max allowed data to pack). The budget should be a little smaller than
+/// the max space, since the space used can exceed the allowed budget by one packet (thus it should be at least
+/// sizeof(your largest packet) smaller).
+/// @return The remainder of the budget
+int32_t pack_loop(flatcc_builder_t* builder, int32_t budget) {
     uint32_t start_time = pdTICKS_TO_MS(HAL_GetTick());
     uint32_t elapsed_time = pdTICKS_TO_MS(HAL_GetTick()) - start_time;
+    uint32_t sensors_packed = 0;
+
     for (; budget > 0 && elapsed_time < MAX_TELEMETRY_DELAY_MS;) {
         elapsed_time = pdTICKS_TO_MS(HAL_GetTick()) - start_time;
 
         struct sensor_info* s = update_age_and_pick_sensor();
         if (s == NULL) {
-            // TODO: handle case that probably doesn't exist
+            if (sensors_packed > 0) break;  // got some data, don't wait for sensors that are not ready
+            // nothing yet, brief wait, then give up
+            osDelay(1);
+            elapsed_time = pdTICKS_TO_MS(HAL_GetTick()) - start_time;
+            if (elapsed_time >= MAX_TELEMETRY_DELAY_MS) break;  // truly nothing, send empty or skip
             continue;
         }
-
         uint32_t bytes_written = 0;
         generic_pack(builder, &s->fb_data, budget, &bytes_written);
         budget -= bytes_written;
@@ -195,9 +206,10 @@ void pack_loop(flatcc_builder_t* builder, uint32_t budget) {
         s->age = 0;
         s->ended = true;
 
-        // osThreadYield();
-        osDelay(pdMS_TO_TICKS(10));  // wait a little to let other processes run.
+        sensors_packed++;
     }
+
+    return budget;
 }
 
 osThreadId_t telemetryTaskHandle;
@@ -207,26 +219,38 @@ const osThreadAttr_t telemetryTask_attributes = {
 };
 
 void TelemetryTask(void* argument) {
+    uint32_t budget = 500;
+
     for (;;) {
         FripuckProtocol_Sensors_SensorBatch_start_as_root(&builder);
         FripuckProtocol_Sensors_SensorBatch_base_timestamp_add(&builder, 0);
 
-        pack_loop(&builder, 500);
-
+        int32_t budget_remainder = pack_loop(&builder, budget);
         FripuckProtocol_Sensors_SensorBatch_end_as_root(&builder);
 
-        // Get the final buffer
-        size_t final_size;
-        void* buf = get_final_buffer(&builder, &final_size);
-        if (buf && final_size <= RADIO_MAX_PACKET_SIZE) {
-            spi_radio_send((uint8_t*)buf, (uint16_t)final_size);
-        } else if (final_size > RADIO_MAX_PACKET_SIZE) {
+        // If packets were filled, send
+        if (budget_remainder < budget) {
+            // Get the final buffer
+            size_t final_size;
+            void* buf = get_final_buffer(&builder, &final_size);
+            if (buf && final_size <= RADIO_MAX_PACKET_SIZE) {
+                spi_radio_send((uint8_t*)buf, (uint16_t)final_size);
+            } else if (final_size > RADIO_MAX_PACKET_SIZE) {
+                // FIXME: Handle oversized packets
+                __BKPT(0);
+            }
         }
 
         flatcc_builder_reset(&builder);
         reset_emitter(&builder);
-
         un_end_sensors();  // mark sensors as being mutable again
+
+        // Aim for 50Hz, but send faster if we are reaching the max allowed packet sizes.
+        if (budget_remainder > 0) {
+            // Backlog cleared — re-anchor to now, then wait for next slot
+            uint32_t next = osKernelGetTickCount() + pdMS_TO_TICKS(20);
+            osDelayUntil(next);
+        }
     }
 
     flatcc_builder_clear(&builder);

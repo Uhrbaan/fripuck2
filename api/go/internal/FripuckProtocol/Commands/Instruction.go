@@ -10,27 +10,24 @@ import (
 type Instruction byte
 
 const (
-	InstructionNONE          Instruction = 0
-	InstructionNotify        Instruction = 1
-	InstructionSetLed        Instruction = 2
-	InstructionAbortSequence Instruction = 3
-	InstructionCustom        Instruction = 4
+	InstructionNONE           Instruction = 0
+	InstructionCustom         Instruction = 1
+	InstructionEnableCommand  Instruction = 2
+	InstructionMoveTrajectory Instruction = 3
 )
 
 var EnumNamesInstruction = map[Instruction]string{
-	InstructionNONE:          "NONE",
-	InstructionNotify:        "Notify",
-	InstructionSetLed:        "SetLed",
-	InstructionAbortSequence: "AbortSequence",
-	InstructionCustom:        "Custom",
+	InstructionNONE:           "NONE",
+	InstructionCustom:         "Custom",
+	InstructionEnableCommand:  "EnableCommand",
+	InstructionMoveTrajectory: "MoveTrajectory",
 }
 
 var EnumValuesInstruction = map[string]Instruction{
-	"NONE":          InstructionNONE,
-	"Notify":        InstructionNotify,
-	"SetLed":        InstructionSetLed,
-	"AbortSequence": InstructionAbortSequence,
-	"Custom":        InstructionCustom,
+	"NONE":           InstructionNONE,
+	"Custom":         InstructionCustom,
+	"EnableCommand":  InstructionEnableCommand,
+	"MoveTrajectory": InstructionMoveTrajectory,
 }
 
 func (v Instruction) String() string {
@@ -50,36 +47,30 @@ func (t *InstructionT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 		return 0
 	}
 	switch t.Type {
-	case InstructionNotify:
-		return t.Value.(*NotifyT).Pack(builder)
-	case InstructionSetLed:
-		return t.Value.(*SetLedT).Pack(builder)
-	case InstructionAbortSequence:
-		return t.Value.(*AbortSequenceT).Pack(builder)
 	case InstructionCustom:
 		return t.Value.(*CustomT).Pack(builder)
+	case InstructionEnableCommand:
+		return t.Value.(*EnableCommandT).Pack(builder)
+	case InstructionMoveTrajectory:
+		return t.Value.(*MoveTrajectoryT).Pack(builder)
 	}
 	return 0
 }
 
 func (rcv Instruction) UnPack(table flatbuffers.Table) *InstructionT {
 	switch rcv {
-	case InstructionNotify:
-		var x Notify
-		x.Init(table.Bytes, table.Pos)
-		return &InstructionT{Type: InstructionNotify, Value: x.UnPack()}
-	case InstructionSetLed:
-		var x SetLed
-		x.Init(table.Bytes, table.Pos)
-		return &InstructionT{Type: InstructionSetLed, Value: x.UnPack()}
-	case InstructionAbortSequence:
-		var x AbortSequence
-		x.Init(table.Bytes, table.Pos)
-		return &InstructionT{Type: InstructionAbortSequence, Value: x.UnPack()}
 	case InstructionCustom:
 		var x Custom
 		x.Init(table.Bytes, table.Pos)
 		return &InstructionT{Type: InstructionCustom, Value: x.UnPack()}
+	case InstructionEnableCommand:
+		var x EnableCommand
+		x.Init(table.Bytes, table.Pos)
+		return &InstructionT{Type: InstructionEnableCommand, Value: x.UnPack()}
+	case InstructionMoveTrajectory:
+		var x MoveTrajectory
+		x.Init(table.Bytes, table.Pos)
+		return &InstructionT{Type: InstructionMoveTrajectory, Value: x.UnPack()}
 	}
 	return nil
 }

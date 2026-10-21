@@ -22,6 +22,9 @@ EventGroupHandle_t tcp_event_group;
 
 struct sockaddr_storage client_address;  // Large enough to store both IPv4 and IPv6
 
+/// Global udp socket, so we don't create a new one each time tcp connection is lost.
+extern int udp_sock_fd;
+
 static int recv_exact(int sock, void* dst, size_t len) {
     uint8_t* p = (uint8_t*)dst;
     size_t got = 0;
@@ -45,7 +48,7 @@ void tcp_receiver(void* pvParameters) {
         int r = recv_exact(socket, buf, 4);
         if (r <= 0) {
             xTaskNotify(xTCPConnectionManagerHandle, (uint32_t)r << 16, eSetValueWithOverwrite);
-            vTaskDelete(NULL);
+            vTaskDelay(portMAX_DELAY);
         }
 
         uint32_t size;
@@ -54,14 +57,14 @@ void tcp_receiver(void* pvParameters) {
         if (size == 0 || size > MAX_PAYLOAD) {
             ESP_LOGE(TAG, "Invalid payload size: %lu", (unsigned long)size);
             xTaskNotify(xTCPConnectionManagerHandle, 0xFF << 16, eSetValueWithOverwrite);
-            vTaskDelete(NULL);
+            vTaskDelay(portMAX_DELAY);
         }
 
         // 2. Payload goes right after the prefix
         r = recv_exact(socket, buf + 4, size);
         if (r <= 0) {
             xTaskNotify(xTCPConnectionManagerHandle, (uint32_t)r << 16, eSetValueWithOverwrite);
-            vTaskDelete(NULL);
+            vTaskDelay(portMAX_DELAY);  // Wait for the manager to clean up
         }
 
         // ESP_LOG_BUFFER_HEX(TAG, buf, 16);  // should now match Python: 64 00 00 00 14 00 00 00 43 4d 4e 44 ...
@@ -139,6 +142,18 @@ esp_err_t wait_for_tcp_client(struct sockaddr_in* out_client_addr, int* out_sock
 
     if (sock < 0) return ESP_FAIL;
 
+    int optval = 1;  // Enable keep-alive
+    setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, &optval, sizeof(optval));
+
+    optval = 3;  // Wait 3 seconds of idle time before sending keep-alive probes
+    setsockopt(sock, IPPROTO_TCP, TCP_KEEPIDLE, &optval, sizeof(optval));
+
+    optval = 2;  // Send a probe every 2 seconds
+    setsockopt(sock, IPPROTO_TCP, TCP_KEEPINTVL, &optval, sizeof(optval));
+
+    optval = 3;  // Disconnect after 3 failed probes
+    setsockopt(sock, IPPROTO_TCP, TCP_KEEPCNT, &optval, sizeof(optval));
+
     *out_socket = sock;
     return ESP_OK;
 }
@@ -152,7 +167,11 @@ void tcp_connection_manager(void* pvParameters) {
 
 retry:
     ESP_LOGI(TAG, "Waiting for a client to connect.");
-    wait_for_tcp_client(&client_addr, &client_socket_fd);  // Waiting for incoming connection (blocking)
+    if (wait_for_tcp_client(&client_addr, &client_socket_fd) != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to initialize TCP client. Retrying in 1s...");
+        vTaskDelay(pdMS_TO_TICKS(1000));
+        goto retry;
+    }
 
     xTaskCreate(tcp_transmitter, "tcp_transmitter", 1024 * 2, (void*)client_socket_fd, 1, &xTCPTransmitterHandle);
     xTaskCreate(tcp_receiver, "tcp_receiver", 1024 * 2, (void*)client_socket_fd, 1, &xTCPRecieverHandle);
@@ -166,18 +185,14 @@ retry:
         if (xTaskNotifyWait(0, ULONG_MAX, &error_value, portMAX_DELAY) == pdTRUE) {
             ESP_LOGE(TAG, "Client disconnected or error occured. Retrying.");
 
-            // TODO: print and manage these errors
-            // int transmitter_error = error_value >> 16;
-            // int receiver_error = 0xFF;
-
-            // Delete tasks waiting for deletion
             vTaskDelete(xTCPTransmitterHandle);
             vTaskDelete(xTCPRecieverHandle);
             vTaskDelete(xUDPTransmitterHandle);
-            xTCPTransmitterHandle = NULL;
-            xTCPRecieverHandle = NULL;
-            xUDPTransmitterHandle = NULL;
 
+            if (udp_sock_fd >= 0) {
+                close(udp_sock_fd);
+                udp_sock_fd = -1;
+            }
             close(client_socket_fd);
 
             goto retry;

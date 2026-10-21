@@ -23,6 +23,7 @@ struct enable_modules_params {
 
 void command_receive(const uint8_t* data, uint32_t length);
 void command_enable_modules(struct enable_modules_params p);
+void update_system_state(uint32_t enable_mask, uint32_t disable_mask);
 void init_commands(QueueHandle_t instruction_queue);
 void command_wheel_speed(float left, float right);
 void command_move_trajectory(float speed, float distance, float radius, float accel, float decel, bool notify,

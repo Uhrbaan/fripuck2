@@ -4,6 +4,7 @@
 
 #include "all_lua_types.h"
 #include "commands/commands.h"
+#include "opcodes.h"
 
 static const char* TAG = "ROBOT API";
 // FIXME: actually calculate what the values are
@@ -72,11 +73,11 @@ int L_robot_on(lua_State* L) {
 }
 
 int L_robot_set_modules(lua_State* L) {
-    // ESP_LOGI(TAG, "robot_set-Modules");
     // 1. Ensure the first argument is a table
     luaL_checktype(L, 1, LUA_TTABLE);
 
-    struct enable_modules_params params = {0};
+    uint32_t enable_mask = 0;
+    uint32_t disable_mask = 0;
 
     // 2. Iterate through the table key-value pairs
     lua_pushnil(L);  // First key for lua_next
@@ -90,50 +91,59 @@ int L_robot_set_modules(lua_State* L) {
 
         const char* key = lua_tostring(L, -2);
         bool value = lua_toboolean(L, -1);
+        uint32_t target_module_mask = 0;
 
-        // 3. Map keys to struct members
+        // 3. Map keys to the corresponding hardware masks
         if (strcmp(key, "mode_selector") == 0) {
-            params.enable_mode_selector = value;
+            target_module_mask = MASK_MODE_SELECTOR;
         } else if (strcmp(key, "ir_receiver") == 0) {
-            params.enable_ir_receiver = value;
+            target_module_mask = MASK_IR_RECEIVER;
         } else if (strcmp(key, "battery") == 0) {
-            params.enable_battery = value;
+            target_module_mask = MASK_BATTERY;
         } else if (strcmp(key, "proximity") == 0) {
-            params.enable_proximity = value;
+            target_module_mask = MASK_PROXIMITY;
         } else if (strcmp(key, "ring_led_1") == 0) {
-            params.enable_ring_led_1 = value;
+            target_module_mask = MASK_LED_1;
         } else if (strcmp(key, "ring_led_3") == 0) {
-            params.enable_ring_led_3 = value;
+            target_module_mask = MASK_LED_3;
         } else if (strcmp(key, "ring_led_5") == 0) {
-            params.enable_ring_led_5 = value;
+            target_module_mask = MASK_LED_5;
         } else if (strcmp(key, "ring_led_7") == 0) {
-            params.enable_ring_led_7 = value;
+            target_module_mask = MASK_LED_7;
         } else if (strcmp(key, "body_led") == 0) {
-            params.enable_body_led = value;
+            target_module_mask = MASK_BODY_LED;
         } else if (strcmp(key, "front_led") == 0) {
-            params.enable_front_led = value;
+            target_module_mask = MASK_FRONT_LED;
         } else if (strcmp(key, "tof") == 0) {
-            params.enable_tof = value;
+            target_module_mask = MASK_TOF;
         } else if (strcmp(key, "imu") == 0) {
-            params.enable_imu = value;
+            target_module_mask = MASK_IMU;
         } else if (strcmp(key, "camera") == 0) {
-            params.enable_camera = value;
+            target_module_mask = MASK_CAMERA;
         } else if (strcmp(key, "motors") == 0) {
-            params.enable_motors = value;
+            target_module_mask = MASK_MOTORS;
         } else if (strcmp(key, "ground") == 0) {
-            params.enable_ground = value;
+            target_module_mask = MASK_GROUND;
         } else {
             // Error out on unexpected/invalid key names
             return luaL_error(L, "Unknown module option: '%s'", key);
+        }
+
+        // Apply the resolved mask to either the enable or disable bucket
+        if (value) {
+            enable_mask |= target_module_mask;
+        } else {
+            disable_mask |= target_module_mask;
         }
 
         // Pop the value, leave key for the next lua_next call
         lua_pop(L, 1);
     }
 
-    command_enable_modules(params);
+    // Apply the accumulated changes additively
+    update_system_state(enable_mask, disable_mask);
 
-    // Return 0 for no return values, or return luaL_error / nil on logic failure
+    // Return 0 for no return values
     return 0;
 }
 

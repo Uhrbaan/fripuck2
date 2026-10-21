@@ -159,17 +159,27 @@ class EnableCommand(object):
         self._tab = flatbuffers.table.Table(buf, pos)
 
     # EnableCommand
-    def Modules(self):
+    def EnableMask(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(4))
         if o != 0:
             return self._tab.Get(flatbuffers.number_types.Uint32Flags, o + self._tab.Pos)
         return 0
 
-def EnableCommandStart(builder):
-    builder.StartObject(1)
+    # EnableCommand
+    def DisableMask(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(6))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Uint32Flags, o + self._tab.Pos)
+        return 0
 
-def EnableCommandAddModules(builder, modules):
-    builder.PrependUint32Slot(0, modules, 0)
+def EnableCommandStart(builder):
+    builder.StartObject(2)
+
+def EnableCommandAddEnableMask(builder, enableMask):
+    builder.PrependUint32Slot(0, enableMask, 0)
+
+def EnableCommandAddDisableMask(builder, disableMask):
+    builder.PrependUint32Slot(1, disableMask, 0)
 
 def EnableCommandEnd(builder):
     return builder.EndObject()
@@ -181,9 +191,11 @@ class EnableCommandT(object):
     # EnableCommandT
     def __init__(
         self,
-        modules = 0,
+        enableMask = 0,
+        disableMask = 0,
     ):
-        self.modules = modules  # type: int
+        self.enableMask = enableMask  # type: int
+        self.disableMask = disableMask  # type: int
 
     @classmethod
     def InitFromBuf(cls, buf, pos):
@@ -206,12 +218,14 @@ class EnableCommandT(object):
     def _UnPack(self, enableCommand):
         if enableCommand is None:
             return
-        self.modules = enableCommand.Modules()
+        self.enableMask = enableCommand.EnableMask()
+        self.disableMask = enableCommand.DisableMask()
 
     # EnableCommandT
     def Pack(self, builder):
         EnableCommandStart(builder)
-        EnableCommandAddModules(builder, self.modules)
+        EnableCommandAddEnableMask(builder, self.enableMask)
+        EnableCommandAddDisableMask(builder, self.disableMask)
         enableCommand = EnableCommandEnd(builder)
         return enableCommand
 

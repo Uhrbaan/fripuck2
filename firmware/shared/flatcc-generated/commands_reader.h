@@ -186,7 +186,8 @@ static inline FripuckProtocol_Commands_EnableCommand_table_t FripuckProtocol_Com
 __flatbuffers_offset_vec_at(FripuckProtocol_Commands_EnableCommand_table_t, vec, i, 0)
 __flatbuffers_table_as_root(FripuckProtocol_Commands_EnableCommand)
 
-__flatbuffers_define_scalar_field(0, FripuckProtocol_Commands_EnableCommand, modules, FripuckProtocol_Commands_ModuleMask, FripuckProtocol_Commands_ModuleMask_enum_t, UINT32_C(0))
+__flatbuffers_define_scalar_field(0, FripuckProtocol_Commands_EnableCommand, enable_mask, FripuckProtocol_Commands_ModuleMask, FripuckProtocol_Commands_ModuleMask_enum_t, UINT32_C(0))
+__flatbuffers_define_scalar_field(1, FripuckProtocol_Commands_EnableCommand, disable_mask, FripuckProtocol_Commands_ModuleMask, FripuckProtocol_Commands_ModuleMask_enum_t, UINT32_C(0))
 
 struct FripuckProtocol_Commands_MoveTrajectory_table { uint8_t unused__; };
 

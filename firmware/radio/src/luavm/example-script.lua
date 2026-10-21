@@ -46,12 +46,15 @@ function init()
         if distance > 400 then
             -- robot.drive(0)
             enabled_modules.body_led = false
-            robot.set_modules(enabled_modules)
+            robot.set_modules({
+                body_led = false
+            })
             return
         end
 
-        enabled_modules.body_led = true
-        robot.set_modules(enabled_modules)
+        robot.set_modules({
+            body_led = true
+        })
 
         -- -- 2. Calculate the error in mm, and convert it to meters for the API
         -- local error_mm = distance - TARGET_DISTANCE

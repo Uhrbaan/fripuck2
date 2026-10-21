@@ -76,7 +76,8 @@ static inline int FripuckProtocol_Commands_Custom_verify_as_root_with_type_hash_
 static int FripuckProtocol_Commands_EnableCommand_verify_table(flatcc_table_verifier_descriptor_t *td)
 {
     int ret;
-    if ((ret = flatcc_verify_field(td, 0, 4, 4) /* modules */)) return ret;
+    if ((ret = flatcc_verify_field(td, 0, 4, 4) /* enable_mask */)) return ret;
+    if ((ret = flatcc_verify_field(td, 1, 4, 4) /* disable_mask */)) return ret;
     return flatcc_verify_ok;
 }
 

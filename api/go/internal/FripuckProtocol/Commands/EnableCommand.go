@@ -7,7 +7,8 @@ import (
 )
 
 type EnableCommandT struct {
-	Modules ModuleMask `json:"modules"`
+	EnableMask ModuleMask `json:"enable_mask"`
+	DisableMask ModuleMask `json:"disable_mask"`
 }
 
 func (t *EnableCommandT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
@@ -15,12 +16,14 @@ func (t *EnableCommandT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffsetT
 		return 0
 	}
 	EnableCommandStart(builder)
-	EnableCommandAddModules(builder, t.Modules)
+	EnableCommandAddEnableMask(builder, t.EnableMask)
+	EnableCommandAddDisableMask(builder, t.DisableMask)
 	return EnableCommandEnd(builder)
 }
 
 func (rcv *EnableCommand) UnPackTo(t *EnableCommandT) {
-	t.Modules = rcv.Modules()
+	t.EnableMask = rcv.EnableMask()
+	t.DisableMask = rcv.DisableMask()
 }
 
 func (rcv *EnableCommand) UnPack() *EnableCommandT {
@@ -67,7 +70,7 @@ func (rcv *EnableCommand) Table() flatbuffers.Table {
 	return rcv._tab
 }
 
-func (rcv *EnableCommand) Modules() ModuleMask {
+func (rcv *EnableCommand) EnableMask() ModuleMask {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(4))
 	if o != 0 {
 		return ModuleMask(rcv._tab.GetUint32(o + rcv._tab.Pos))
@@ -75,15 +78,30 @@ func (rcv *EnableCommand) Modules() ModuleMask {
 	return 0
 }
 
-func (rcv *EnableCommand) MutateModules(n ModuleMask) bool {
+func (rcv *EnableCommand) MutateEnableMask(n ModuleMask) bool {
 	return rcv._tab.MutateUint32Slot(4, uint32(n))
 }
 
-func EnableCommandStart(builder *flatbuffers.Builder) {
-	builder.StartObject(1)
+func (rcv *EnableCommand) DisableMask() ModuleMask {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(6))
+	if o != 0 {
+		return ModuleMask(rcv._tab.GetUint32(o + rcv._tab.Pos))
+	}
+	return 0
 }
-func EnableCommandAddModules(builder *flatbuffers.Builder, modules ModuleMask) {
-	builder.PrependUint32Slot(0, uint32(modules), 0)
+
+func (rcv *EnableCommand) MutateDisableMask(n ModuleMask) bool {
+	return rcv._tab.MutateUint32Slot(6, uint32(n))
+}
+
+func EnableCommandStart(builder *flatbuffers.Builder) {
+	builder.StartObject(2)
+}
+func EnableCommandAddEnableMask(builder *flatbuffers.Builder, enableMask ModuleMask) {
+	builder.PrependUint32Slot(0, uint32(enableMask), 0)
+}
+func EnableCommandAddDisableMask(builder *flatbuffers.Builder, disableMask ModuleMask) {
+	builder.PrependUint32Slot(1, uint32(disableMask), 0)
 }
 func EnableCommandEnd(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 	return builder.EndObject()

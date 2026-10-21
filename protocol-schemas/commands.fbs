@@ -25,7 +25,8 @@ enum ModuleMask : uint32 {
 }
 
 table EnableCommand {
-    modules: ModuleMask = 0;
+    enable_mask: ModuleMask = 0;
+    disable_mask: ModuleMask = 0;
 }
 
 table MoveTrajectory {

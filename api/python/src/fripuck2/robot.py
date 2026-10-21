@@ -86,7 +86,8 @@ class Robot:
         elif intent["type"] == "EnableCommand":
             cmd.commandType = commands.Instruction.EnableCommand
             cmd.command = commands.EnableCommandT(
-                modules=intent["mask"]
+                enableMask=intent["enable_mask"],
+                disableMask=intent["disable_mask"]
             )
 
         elif intent["type"] == "MoveTrajectory":
@@ -155,6 +156,7 @@ class Robot:
             "notify": bool(notify)
         })
         
+    #TODO: make it so notify is by default true when in with batch() block
     def drive(self, speed: float, distance: float = float('inf'), radius: float = float('inf'), 
               accel: float = None, decel: float = None, synchronous: bool = False, notify: bool = False):
         """Starts continuous movement at a specific speed."""
@@ -195,21 +197,26 @@ class Robot:
 
     def set_modules(self, **kwargs):
         """
-        Example: robot.set_modules(body_led=True, tof=True, motors=True)
+        Example: robot.set_modules(body_led=True, tof=True, motors=False)
         """
-        mask = ModuleMask.NONE
+        enable_mask = 0  # Assuming 0 is None
+        disable_mask = 0
         
         # Iterate through kwargs, convert to uppercase to match Enum, and apply bitwise OR
-        for key, enabled in kwargs.items():
-            if enabled:
-                try:
-                    mask |= ModuleMask[key.upper()]
-                except KeyError:
-                    print(f"Warning: Unknown module '{key}'")
+        for key, value in kwargs.items():
+            try:
+                module_bit = ModuleMask[key.upper()]
+                if value:
+                    enable_mask |= module_bit
+                else:
+                    disable_mask |= module_bit
+            except KeyError:
+                print(f"Warning: Unknown module '{key}'")
 
         command_intent = {
             "type": "EnableCommand",
-            "mask": mask
+            "enable_mask": enable_mask,
+            "disable_mask": disable_mask
         }
 
         self._queue_or_send(command_intent)

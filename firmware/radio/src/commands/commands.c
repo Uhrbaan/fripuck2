@@ -13,6 +13,18 @@
 #include "uart/uart.h"
 
 static const char* TAG = "COMMANDS";
+static uint32_t system_state = 0x00;
+
+void update_system_state(uint32_t enable_mask, uint32_t disable_mask) {
+    // 1. Turn ON the bits specified in enable_mask
+    system_state |= enable_mask;
+
+    // 2. Turn OFF the bits specified in disable_mask
+    system_state &= ~disable_mask;
+
+    enable_command_payload_t payload = {.opcode = ENABLE_ENABLE_OPCODE, .mask = system_state};
+    uart_send((void*)&payload, sizeof(payload));
+}
 
 void process_command(FripuckProtocol_Commands_Command_table_t cmd) {
     if (!cmd) return;
@@ -30,9 +42,11 @@ void process_command(FripuckProtocol_Commands_Command_table_t cmd) {
         }
         case FripuckProtocol_Commands_Instruction_EnableCommand: {
             FripuckProtocol_Commands_EnableCommand_table_t cmd = (FripuckProtocol_Commands_EnableCommand_table_t)val;
-            const FripuckProtocol_Commands_ModuleMask_enum_t mask = FripuckProtocol_Commands_EnableCommand_modules(cmd);
-            enable_command_payload_t payload = {.opcode = ENABLE_ENABLE_OPCODE, .mask = mask};
-            uart_send((void*)&payload, sizeof(payload));
+            const FripuckProtocol_Commands_ModuleMask_enum_t enable_mask =
+                FripuckProtocol_Commands_EnableCommand_enable_mask(cmd);
+            const FripuckProtocol_Commands_ModuleMask_enum_t disable_mask =
+                FripuckProtocol_Commands_EnableCommand_disable_mask(cmd);
+            update_system_state(enable_mask, disable_mask);
             break;
         }
         case FripuckProtocol_Commands_Instruction_MoveTrajectory: {

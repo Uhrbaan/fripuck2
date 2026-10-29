@@ -15,7 +15,7 @@ static const char TAG[] = "SPI";
 #define SPI_PACKET_MAX_SIZE 4092
 
 // static uint8_t* spi_transmit_buffer;
-static uint8_t* spi_receive_buffer;
+__attribute__((aligned(8))) static uint8_t spi_receive_buffer[SPI_PACKET_MAX_SIZE] = {0};
 
 // static QueueHandle_t spi_request_queue; ///< Holds data sent from a remote client.
 // static EventGroupHandle_t spi_event_group;
@@ -64,12 +64,12 @@ esp_err_t spi_init(spi_host_device_t host_device, spi_callback_fn callback) {
     // }
     // memset(spi_transmit_buffer, 0, SPI_PACKET_MAX_SIZE);
 
-    spi_receive_buffer = (uint8_t*)heap_caps_malloc(SPI_PACKET_MAX_SIZE, MALLOC_CAP_DMA);
-    if (spi_receive_buffer == NULL) {
-        ESP_LOGE(TAG, "Could not allocate %d bytes for the spi receive buffer.", SPI_PACKET_MAX_SIZE);
-        return ESP_FAIL;
-    }
-    memset(spi_receive_buffer, 0, SPI_PACKET_MAX_SIZE);
+    // spi_receive_buffer = (uint8_t*)heap_caps_malloc(SPI_PACKET_MAX_SIZE, MALLOC_CAP_DMA);
+    // if (spi_receive_buffer == NULL) {
+    //     ESP_LOGE(TAG, "Could not allocate %d bytes for the spi receive buffer.", SPI_PACKET_MAX_SIZE);
+    //     return ESP_FAIL;
+    // }
+    // memset(spi_receive_buffer, 0, SPI_PACKET_MAX_SIZE);
 
     user_callback = callback;
 

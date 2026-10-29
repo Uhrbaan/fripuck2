@@ -7,6 +7,11 @@
 #include "sensors_builder.h"
 #include <cmsis_os.h>
 
+struct tof_reading_t {
+    uint16_t distance;
+    uint16_t timestamp_offset;
+};
+
 uint32_t pack_tof_to_vector(flatcc_builder_t* builder, uint32_t limit);
 void tof_start_task(void* argument);
 

@@ -78,10 +78,19 @@ struct VolumeData {
     timestamp_offset: uint16;
 }
 
+enum AudioChannel : uint16 {
+    None = 0,
+    Left = 1,
+    Right = 2,
+    Front = 4,
+    Back = 8
+}
+
 // Audio and video
 // Both store a blob of uint8 with metadata attached to it
 // TODO: Currently genereated by AI, have to refine when doing implementation
 struct AudioMetadata {
+    channels: AudioChannel; // Channels this metadata applies to (or'd bitfield)
     offset: uint16;    // Start byte in the 'audio_blob' vector
     length: uint16;    // Number of bytes for this frame
     sample_count: uint16; // Number of PCM samples (helps the DAC timing)
@@ -110,7 +119,10 @@ table SensorBatch {
     imu: [ImuData];
 
     // Audio & video
-    audio_blob: [uint8];
+    audio_channel_left: [uint8];
+    audio_channel_right: [uint8];
+    audio_channel_front: [uint8];
+    audio_channel_back: [uint8];
     audio_metadata: [AudioMetadata];
     video_blob: [uint8];
     video_metadata: [VideoMetadata];

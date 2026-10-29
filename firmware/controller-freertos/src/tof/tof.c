@@ -14,11 +14,6 @@
 #include <stdio.h>
 #include <FreeRTOS.h>
 
-struct tof_reading_t {
-    uint16_t distance;
-    uint16_t timestamp_offset;
-};
-
 #define MAX_GND_SAMPLES 30
 #define VL53L0X_ADDR 0x52
 

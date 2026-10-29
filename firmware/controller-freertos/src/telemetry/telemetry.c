@@ -23,6 +23,7 @@
 #include "telemetry.h"
 #include "spi_conf.h"
 #include "leds/leds.h"
+#include "microphones/microphones.h"
 
 #include "fb_custom_emitter.h"
 
@@ -33,87 +34,134 @@ static flatcc_builder_t builder;
  * (built from back))
  * FIXME: Description
  */
-flatcc_builder_ref_t generic_pack(flatcc_builder_t* B, struct sensor_fb_data* s, uint32_t limit,
-                                  uint32_t* out_bytes_written) {
-    osMutexAcquire(s->data_mutex_id, osWaitForever);
+void generic_pack(flatcc_builder_t* builder, struct sensor_fb_data* fb_data, int32_t budget, uint32_t* bytes_written,
+                  uint64_t base_timestamp) {
+    *bytes_written = 0;
 
-    uint32_t current_read = *s->read_pointer;
-    uint32_t current_write = *s->write_pointer;
-    uint32_t count = current_write - current_read;
-    uint32_t elem_limit = limit / s->elem_size;
+    osMutexAcquire(fb_data->data_mutex_id, osWaitForever);
 
-    /* Apply buffer and byte limits */
-    if (count > s->max_elem) count = s->max_elem;
-    if (count > elem_limit) count = elem_limit;
+    uint32_t read_idx = *(fb_data->read_pointer);
+    uint32_t write_idx = *(fb_data->write_pointer);
 
-    /* Bail out early if there is no data to send */
-    if (count == 0) {
-        osMutexRelease(s->data_mutex_id);
-        if (out_bytes_written) *out_bytes_written = 0;
-        return 0; /* In flatcc, 0 represents a null/empty reference */
+    uint32_t available_frames =
+        (write_idx >= read_idx) ? (write_idx - read_idx) : (fb_data->max_elem - read_idx + write_idx);
+
+    uint32_t frames_to_pack = 0;
+    while (frames_to_pack < available_frames && (*bytes_written + fb_data->elem_size) <= budget) {
+        frames_to_pack++;
+        *bytes_written += fb_data->elem_size;
     }
 
-    /* Start constructing the untyped vector */
-    int err =
-        flatcc_builder_start_vector(B, s->elem_size, s->align, ((0xffffffffUL) / ((s->align) == 0 ? 1 : (s->align))));
-    if (err != 0) {
-        assert(1 == 0);
+    if (frames_to_pack == 0) {
+        osMutexRelease(fb_data->data_mutex_id);
+        return;
     }
 
-    /* Calculate ring buffer wrap-around indices */
-    uint32_t start_idx = (current_write - count) % s->max_elem;
-    uint32_t end_idx = current_write % s->max_elem;
+    uint32_t start_idx = read_idx % fb_data->max_elem;
+    // One past the last packed element. Based on what we actually pack, not on write_idx.
+    uint32_t end_idx = (read_idx + frames_to_pack) % fb_data->max_elem;
 
-    /* Cast buffer to byte pointer for safe arithmetic */
-    const uint8_t* byte_buf = (const uint8_t*)s->buffer;
+    switch (fb_data->id) {
+        // base_timestamp
+        case 0: {
+            break;
+        }
+            // proximity
+        case 1: {
+            break;
+        }
+            // ground
+        case 2: {
+            break;
+        }
+            // tof
+        case 3: {
+            FripuckProtocol_Sensors_TofData_vec_start(builder);
+            if (start_idx < end_idx) {
+                FripuckProtocol_Sensors_TofData_vec_append(
+                    builder, &((const FripuckProtocol_Sensors_TofData_t*)fb_data->buffer)[start_idx],
+                    end_idx - start_idx);
+            } else {  // Wrapped case: Data is split across the array boundary
+                // Part A: From read_pointer to the very end of the array
+                FripuckProtocol_Sensors_TofData_vec_append(
+                    builder, &((const FripuckProtocol_Sensors_TofData_t*)fb_data->buffer)[start_idx],
+                    fb_data->max_elem - start_idx);
+                // Part B: From the start of the array to the end index
+                if (end_idx > 0) {
+                    FripuckProtocol_Sensors_TofData_vec_append(
+                        builder, &((const FripuckProtocol_Sensors_TofData_t*)fb_data->buffer)[0], end_idx);
+                }
+            }
+            FripuckProtocol_Sensors_SensorBatch_tof_add(builder, FripuckProtocol_Sensors_TofData_vec_end(builder));
+            break;
+        }
+        // battery
+        case 4: {
+            break;
+        }
+        // encoder
+        case 5: {
+            break;
+        }
+        // imu
+        case 6: {
+            break;
+        }
+        // audio_blob
+        case 7: {
+            AudioFrame_t* buffer = (AudioFrame_t*)fb_data->buffer;
 
-    /* Append data to the vector */
-    if (start_idx < end_idx) {
-        /* Contiguous block: no wrap-around */
-        flatcc_builder_append_vector(B, byte_buf + (start_idx * s->elem_size), count);
-    } else {
-        /* Fragmented block: wraps around the end of the buffer */
-        uint32_t first_part_count = s->max_elem - start_idx;
+            // PASS 1: Build the [uint8] audio_blob and finalize each frame's metadata
+            uint16_t current_offset = 0;
+            FripuckProtocol_Sensors_SensorBatch_audio_channel_right_start(builder);
 
-        /* Append from start_idx to the end of the buffer */
-        flatcc_builder_append_vector(B, byte_buf + (start_idx * s->elem_size), first_part_count);
-        /* Append from the beginning of the buffer to end_idx */
-        flatcc_builder_append_vector(B, byte_buf, count - first_part_count);
+            for (uint32_t i = 0; i < frames_to_pack; i++) {
+                uint32_t idx = (read_idx + i) % fb_data->max_elem;
+                // Push the 336-byte frame (16-byte state header + 320-byte ADPCM) into the blob vector
+                flatbuffers_uint8_vec_append(builder, buffer[idx].pcm_data, PCM_FRAME_BYTES);
+
+                // Point the metadata at this exact chunk in the blob
+                buffer[idx].metadata.offset = current_offset;
+                current_offset += PCM_FRAME_BYTES;
+
+                // Time of this frame relative to the batch base. The subtraction is done in
+                // wrapping uint32 (ticks wrap after ~49 days) and then clamped to the uint16 field.
+                int32_t delta = (int32_t)(buffer[idx].capture_ms - (uint32_t)base_timestamp);
+                if (delta < 0) delta = 0;  // base was chosen newer than this frame; see notes
+                if (delta > 0xFFFF) delta = 0xFFFF;
+                buffer[idx].metadata.timestamp_offset = (uint16_t)delta;
+            }
+            FripuckProtocol_Sensors_SensorBatch_audio_channel_right_end(builder);
+
+            // PASS 2: Build the [AudioMetadata] struct vector
+            FripuckProtocol_Sensors_SensorBatch_audio_metadata_start(builder);
+            for (uint32_t i = 0; i < frames_to_pack; i++) {
+                uint32_t idx = (read_idx + i) % fb_data->max_elem;
+                FripuckProtocol_Sensors_AudioMetadata_vec_push(builder, &buffer[idx].metadata);
+            }
+            FripuckProtocol_Sensors_SensorBatch_audio_metadata_end(builder);
+            break;
+        }
+        // audio_metadata
+        case 8: {  // Ignored, always packaged with the audio_blob
+            break;
+        }
+        // video_blob
+        case 9: {
+            break;
+        }
+        // video_metadata
+        case 10: {
+            break;
+        }
+
+        default:
+            break;
     }
 
-    /* Finish the vector to get the reference */
-    UBaseType_t unused_words = uxTaskGetStackHighWaterMark(NULL);
-    printf("%d remaining\n", unused_words);
-    flatcc_builder_ref_t vec_ref = flatcc_builder_end_vector(B);  // vector now imutable
-    if (vec_ref == 0) {                                           // failed to build, no offset
-        goto failed_packaging;
-    }
-
-    // Add vector to the table
-    flatcc_builder_ref_t* table_slot_ref = flatcc_builder_table_add_offset(B, s->id);
-    if (table_slot_ref == NULL) {
-        goto failed_packaging;
-    }
-
-    // assign the vector to the table slot
-    *table_slot_ref = vec_ref;
-
-    /* Update the read pointer and release lock */
-    *s->read_pointer = current_write;
-    osMutexRelease(s->data_mutex_id);
-
-    /* Report bytes written if requested */
-    if (out_bytes_written) {
-        *out_bytes_written = count * s->elem_size;
-    }
-    return vec_ref;
-
-failed_packaging:
-    osMutexRelease(s->data_mutex_id);
-    if (out_bytes_written) {
-        *out_bytes_written = 0;
-    }
-    return 0;  // indicate no offset has happened (packing failed)
+    osMutexRelease(fb_data->data_mutex_id);
+    // Commit: these frames are now in the batch. Stale audio is useless, so we don't wait for a send ACK.
+    *(fb_data->read_pointer) = (read_idx + frames_to_pack) % fb_data->max_elem;
 }
 
 struct sensor_info {
@@ -181,25 +229,25 @@ void* un_end_sensors() {
 /// the max space, since the space used can exceed the allowed budget by one packet (thus it should be at least
 /// sizeof(your largest packet) smaller).
 /// @return The remainder of the budget
-int32_t pack_loop(flatcc_builder_t* builder, int32_t budget) {
-    uint32_t start_time = pdTICKS_TO_MS(HAL_GetTick());
-    uint32_t elapsed_time = pdTICKS_TO_MS(HAL_GetTick()) - start_time;
+int32_t pack_loop(flatcc_builder_t* builder, int32_t budget, uint64_t base_timestamp) {
+    uint32_t start_time = HAL_GetTick();
+    uint32_t elapsed_time = HAL_GetTick() - start_time;
     uint32_t sensors_packed = 0;
 
     for (; budget > 0 && elapsed_time < MAX_TELEMETRY_DELAY_MS;) {
-        elapsed_time = pdTICKS_TO_MS(HAL_GetTick()) - start_time;
+        elapsed_time = HAL_GetTick() - start_time;
 
         struct sensor_info* s = update_age_and_pick_sensor();
         if (s == NULL) {
             if (sensors_packed > 0) break;  // got some data, don't wait for sensors that are not ready
             // nothing yet, brief wait, then give up
             osDelay(1);
-            elapsed_time = pdTICKS_TO_MS(HAL_GetTick()) - start_time;
+            elapsed_time = HAL_GetTick() - start_time;
             if (elapsed_time >= MAX_TELEMETRY_DELAY_MS) break;  // truly nothing, send empty or skip
             continue;
         }
         uint32_t bytes_written = 0;
-        generic_pack(builder, &s->fb_data, budget, &bytes_written);
+        generic_pack(builder, &s->fb_data, budget, &bytes_written, base_timestamp);
         budget -= bytes_written;
 
         // FIXME: smarter age adjustment
@@ -216,44 +264,51 @@ osThreadId_t telemetryTaskHandle;
 const osThreadAttr_t telemetryTask_attributes = {
     .name = "telemetryTask",
     .priority = (osPriority_t)osPriorityNormal,
+    .stack_size = 4000,
 };
 
 void TelemetryTask(void* argument) {
-    uint32_t budget = 500;
+    uint32_t budget = 1100;
 
     for (;;) {
-        FripuckProtocol_Sensors_SensorBatch_start_as_root(&builder);
-        FripuckProtocol_Sensors_SensorBatch_base_timestamp_add(&builder, 0);
+        // 1. Check for silent allocation failures!
+        if (FripuckProtocol_Sensors_SensorBatch_start_as_root(&builder) != 0) {
+            __BKPT(0);  // If this hits, your custom emitter is out of memory pages
+        }
 
-        int32_t budget_remainder = pack_loop(&builder, budget);
+        uint32_t now = osKernelGetTickCount();
+        uint32_t base = (now > 1000) ? now - 1000 : 0;  // 1 s of slack so no sample is older than the base
+        if (FripuckProtocol_Sensors_SensorBatch_base_timestamp_add(&builder, (uint64_t)base) != 0) {
+            __BKPT(0);
+        }
+
+        int32_t budget_remainder = pack_loop(&builder, budget, (uint64_t)base);
+        // int32_t budget_remainder = 500;
         FripuckProtocol_Sensors_SensorBatch_end_as_root(&builder);
 
-        // If packets were filled, send
-        if (budget_remainder < budget) {
-            // Get the final buffer
-            size_t final_size;
-            void* buf = get_final_buffer(&builder, &final_size);
-            if (buf && final_size <= RADIO_MAX_PACKET_SIZE) {
+        // 2. ALWAYS extract the buffer to flush the emitter's memory
+        size_t final_size;
+        void* buf = get_final_buffer(&builder, &final_size);
+
+        // 3. Only send if we actually packed data
+        if (budget_remainder < budget && buf != NULL) {
+            if (final_size <= RADIO_MAX_PACKET_SIZE) {
                 spi_radio_send((uint8_t*)buf, (uint16_t)final_size);
-            } else if (final_size > RADIO_MAX_PACKET_SIZE) {
-                // FIXME: Handle oversized packets
-                __BKPT(0);
+            } else {
+                __BKPT(0);  // Handle oversized packets
             }
         }
 
         flatcc_builder_reset(&builder);
         reset_emitter(&builder);
-        un_end_sensors();  // mark sensors as being mutable again
+        un_end_sensors();
 
-        // Aim for 50Hz, but send faster if we are reaching the max allowed packet sizes.
-        if (budget_remainder > 0) {
-            // Backlog cleared — re-anchor to now, then wait for next slot
-            uint32_t next = osKernelGetTickCount() + pdMS_TO_TICKS(20);
+        // if there is not much data to send, wait a little
+        if (budget_remainder > 100) {
+            uint32_t next = osKernelGetTickCount() + pdMS_TO_TICKS(MAX_TELEMETRY_DELAY_MS);
             osDelayUntil(next);
         }
     }
-
-    flatcc_builder_clear(&builder);
 }
 
 void telemetry_start_task(void* argument) {

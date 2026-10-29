@@ -413,42 +413,42 @@ static inline int FripuckProtocol_Sensors_VolumeData_verify_as_root_with_identif
 
 static inline int FripuckProtocol_Sensors_AudioMetadata_verify_as_root(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_struct_as_root(buf, bufsiz, FripuckProtocol_Sensors_AudioMetadata_identifier, 8, 2);
+    return flatcc_verify_struct_as_root(buf, bufsiz, FripuckProtocol_Sensors_AudioMetadata_identifier, 10, 2);
 }
 
 static inline int FripuckProtocol_Sensors_AudioMetadata_verify_as_root_with_size(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_struct_as_root_with_size(buf, bufsiz, FripuckProtocol_Sensors_AudioMetadata_identifier, 8, 2);
+    return flatcc_verify_struct_as_root_with_size(buf, bufsiz, FripuckProtocol_Sensors_AudioMetadata_identifier, 10, 2);
 }
 
 static inline int FripuckProtocol_Sensors_AudioMetadata_verify_as_typed_root(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_struct_as_typed_root(buf, bufsiz, FripuckProtocol_Sensors_AudioMetadata_type_hash, 8, 2);
+    return flatcc_verify_struct_as_typed_root(buf, bufsiz, FripuckProtocol_Sensors_AudioMetadata_type_hash, 10, 2);
 }
 
 static inline int FripuckProtocol_Sensors_AudioMetadata_verify_as_typed_root_with_size(const void *buf, size_t bufsiz)
 {
-    return flatcc_verify_struct_as_typed_root_with_size(buf, bufsiz, FripuckProtocol_Sensors_AudioMetadata_type_hash, 8, 2);
+    return flatcc_verify_struct_as_typed_root_with_size(buf, bufsiz, FripuckProtocol_Sensors_AudioMetadata_type_hash, 10, 2);
 }
 
 static inline int FripuckProtocol_Sensors_AudioMetadata_verify_as_root_with_type_hash(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
 {
-    return flatcc_verify_struct_as_typed_root(buf, bufsiz, thash, 8, 2);
+    return flatcc_verify_struct_as_typed_root(buf, bufsiz, thash, 10, 2);
 }
 
 static inline int FripuckProtocol_Sensors_AudioMetadata_verify_as_root_with_type_hash_and_size(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
 {
-    return flatcc_verify_struct_as_typed_root_with_size(buf, bufsiz, thash, 8, 2);
+    return flatcc_verify_struct_as_typed_root_with_size(buf, bufsiz, thash, 10, 2);
 }
 
 static inline int FripuckProtocol_Sensors_AudioMetadata_verify_as_root_with_identifier(const void *buf, size_t bufsiz, const char *fid)
 {
-    return flatcc_verify_struct_as_root(buf, bufsiz, fid, 8, 2);
+    return flatcc_verify_struct_as_root(buf, bufsiz, fid, 10, 2);
 }
 
 static inline int FripuckProtocol_Sensors_AudioMetadata_verify_as_root_with_identifier_and_size(const void *buf, size_t bufsiz, const char *fid)
 {
-    return flatcc_verify_struct_as_root_with_size(buf, bufsiz, fid, 8, 2);
+    return flatcc_verify_struct_as_root_with_size(buf, bufsiz, fid, 10, 2);
 }
 
 static inline int FripuckProtocol_Sensors_VideoMetadata_verify_as_root(const void *buf, size_t bufsiz)
@@ -501,10 +501,13 @@ static int FripuckProtocol_Sensors_SensorBatch_verify_table(flatcc_table_verifie
     if ((ret = flatcc_verify_vector_field(td, 4, 0, 4, 2, INT64_C(1073741823)) /* battery */)) return ret;
     if ((ret = flatcc_verify_vector_field(td, 5, 0, 12, 4, INT64_C(357913941)) /* encoder */)) return ret;
     if ((ret = flatcc_verify_vector_field(td, 6, 0, 44, 4, INT64_C(97612893)) /* imu */)) return ret;
-    if ((ret = flatcc_verify_vector_field(td, 7, 0, 1, 1, INT64_C(4294967295)) /* audio_blob */)) return ret;
-    if ((ret = flatcc_verify_vector_field(td, 8, 0, 8, 2, INT64_C(536870911)) /* audio_metadata */)) return ret;
-    if ((ret = flatcc_verify_vector_field(td, 9, 0, 1, 1, INT64_C(4294967295)) /* video_blob */)) return ret;
-    if ((ret = flatcc_verify_vector_field(td, 10, 0, 16, 4, INT64_C(268435455)) /* video_metadata */)) return ret;
+    if ((ret = flatcc_verify_vector_field(td, 7, 0, 1, 1, INT64_C(4294967295)) /* audio_channel_left */)) return ret;
+    if ((ret = flatcc_verify_vector_field(td, 8, 0, 1, 1, INT64_C(4294967295)) /* audio_channel_right */)) return ret;
+    if ((ret = flatcc_verify_vector_field(td, 9, 0, 1, 1, INT64_C(4294967295)) /* audio_channel_front */)) return ret;
+    if ((ret = flatcc_verify_vector_field(td, 10, 0, 1, 1, INT64_C(4294967295)) /* audio_channel_back */)) return ret;
+    if ((ret = flatcc_verify_vector_field(td, 11, 0, 10, 2, INT64_C(429496729)) /* audio_metadata */)) return ret;
+    if ((ret = flatcc_verify_vector_field(td, 12, 0, 1, 1, INT64_C(4294967295)) /* video_blob */)) return ret;
+    if ((ret = flatcc_verify_vector_field(td, 13, 0, 16, 4, INT64_C(268435455)) /* video_metadata */)) return ret;
     return flatcc_verify_ok;
 }
 

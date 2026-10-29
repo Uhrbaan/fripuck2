@@ -239,6 +239,38 @@ typedef flatbuffers_uoffset_t *FripuckProtocol_Sensors_SensorBatch_mutable_vec_t
 #define FripuckProtocol_Sensors_SensorBatch_file_extension "bin"
 #endif
 
+typedef uint16_t FripuckProtocol_Sensors_AudioChannel_enum_t;
+__flatbuffers_define_integer_type(FripuckProtocol_Sensors_AudioChannel, FripuckProtocol_Sensors_AudioChannel_enum_t, 16)
+#define FripuckProtocol_Sensors_AudioChannel_None ((FripuckProtocol_Sensors_AudioChannel_enum_t)UINT16_C(0))
+#define FripuckProtocol_Sensors_AudioChannel_Left ((FripuckProtocol_Sensors_AudioChannel_enum_t)UINT16_C(1))
+#define FripuckProtocol_Sensors_AudioChannel_Right ((FripuckProtocol_Sensors_AudioChannel_enum_t)UINT16_C(2))
+#define FripuckProtocol_Sensors_AudioChannel_Front ((FripuckProtocol_Sensors_AudioChannel_enum_t)UINT16_C(4))
+#define FripuckProtocol_Sensors_AudioChannel_Back ((FripuckProtocol_Sensors_AudioChannel_enum_t)UINT16_C(8))
+
+static inline const char *FripuckProtocol_Sensors_AudioChannel_name(FripuckProtocol_Sensors_AudioChannel_enum_t value)
+{
+    switch (value) {
+    case FripuckProtocol_Sensors_AudioChannel_None: return "None";
+    case FripuckProtocol_Sensors_AudioChannel_Left: return "Left";
+    case FripuckProtocol_Sensors_AudioChannel_Right: return "Right";
+    case FripuckProtocol_Sensors_AudioChannel_Front: return "Front";
+    case FripuckProtocol_Sensors_AudioChannel_Back: return "Back";
+    default: return "";
+    }
+}
+
+static inline int FripuckProtocol_Sensors_AudioChannel_is_known_value(FripuckProtocol_Sensors_AudioChannel_enum_t value)
+{
+    switch (value) {
+    case FripuckProtocol_Sensors_AudioChannel_None: return 1;
+    case FripuckProtocol_Sensors_AudioChannel_Left: return 1;
+    case FripuckProtocol_Sensors_AudioChannel_Right: return 1;
+    case FripuckProtocol_Sensors_AudioChannel_Front: return 1;
+    case FripuckProtocol_Sensors_AudioChannel_Back: return 1;
+    default: return 0;
+    }
+}
+
 
 struct FripuckProtocol_Sensors_Uint16Array8 {
     alignas(2) uint16_t a0;
@@ -463,22 +495,24 @@ __flatbuffers_define_struct_scalar_field(FripuckProtocol_Sensors_VolumeData, m3,
 __flatbuffers_define_struct_scalar_field(FripuckProtocol_Sensors_VolumeData, timestamp_offset, flatbuffers_uint16, uint16_t)
 
 struct FripuckProtocol_Sensors_AudioMetadata {
+    alignas(2) FripuckProtocol_Sensors_AudioChannel_enum_t channels;
     alignas(2) uint16_t offset;
     alignas(2) uint16_t length;
     alignas(2) uint16_t sample_count;
     alignas(2) uint16_t timestamp_offset;
 };
-static_assert(sizeof(FripuckProtocol_Sensors_AudioMetadata_t) == 8, "struct size mismatch");
+static_assert(sizeof(FripuckProtocol_Sensors_AudioMetadata_t) == 10, "struct size mismatch");
 
 static inline const FripuckProtocol_Sensors_AudioMetadata_t *FripuckProtocol_Sensors_AudioMetadata__const_ptr_add(const FripuckProtocol_Sensors_AudioMetadata_t *p, size_t i) { return p + i; }
 static inline FripuckProtocol_Sensors_AudioMetadata_t *FripuckProtocol_Sensors_AudioMetadata__ptr_add(FripuckProtocol_Sensors_AudioMetadata_t *p, size_t i) { return p + i; }
 static inline FripuckProtocol_Sensors_AudioMetadata_struct_t FripuckProtocol_Sensors_AudioMetadata_vec_at(FripuckProtocol_Sensors_AudioMetadata_vec_t vec, size_t i)
 __flatbuffers_struct_vec_at(vec, i)
-static inline size_t FripuckProtocol_Sensors_AudioMetadata__size(void) { return 8; }
+static inline size_t FripuckProtocol_Sensors_AudioMetadata__size(void) { return 10; }
 static inline size_t FripuckProtocol_Sensors_AudioMetadata_vec_len(FripuckProtocol_Sensors_AudioMetadata_vec_t vec)
 __flatbuffers_vec_len(vec)
 __flatbuffers_struct_as_root(FripuckProtocol_Sensors_AudioMetadata)
 
+__flatbuffers_define_struct_scalar_field(FripuckProtocol_Sensors_AudioMetadata, channels, FripuckProtocol_Sensors_AudioChannel, FripuckProtocol_Sensors_AudioChannel_enum_t)
 __flatbuffers_define_struct_scalar_field(FripuckProtocol_Sensors_AudioMetadata, offset, flatbuffers_uint16, uint16_t)
 __flatbuffers_define_struct_scalar_field(FripuckProtocol_Sensors_AudioMetadata, length, flatbuffers_uint16, uint16_t)
 __flatbuffers_define_struct_scalar_field(FripuckProtocol_Sensors_AudioMetadata, sample_count, flatbuffers_uint16, uint16_t)
@@ -528,10 +562,13 @@ __flatbuffers_define_vector_field(3, FripuckProtocol_Sensors_SensorBatch, tof, F
 __flatbuffers_define_vector_field(4, FripuckProtocol_Sensors_SensorBatch, battery, FripuckProtocol_Sensors_BatteryData_vec_t, 0)
 __flatbuffers_define_vector_field(5, FripuckProtocol_Sensors_SensorBatch, encoder, FripuckProtocol_Sensors_EncoderData_vec_t, 0)
 __flatbuffers_define_vector_field(6, FripuckProtocol_Sensors_SensorBatch, imu, FripuckProtocol_Sensors_ImuData_vec_t, 0)
-__flatbuffers_define_vector_field(7, FripuckProtocol_Sensors_SensorBatch, audio_blob, flatbuffers_uint8_vec_t, 0)
-__flatbuffers_define_vector_field(8, FripuckProtocol_Sensors_SensorBatch, audio_metadata, FripuckProtocol_Sensors_AudioMetadata_vec_t, 0)
-__flatbuffers_define_vector_field(9, FripuckProtocol_Sensors_SensorBatch, video_blob, flatbuffers_uint8_vec_t, 0)
-__flatbuffers_define_vector_field(10, FripuckProtocol_Sensors_SensorBatch, video_metadata, FripuckProtocol_Sensors_VideoMetadata_vec_t, 0)
+__flatbuffers_define_vector_field(7, FripuckProtocol_Sensors_SensorBatch, audio_channel_left, flatbuffers_uint8_vec_t, 0)
+__flatbuffers_define_vector_field(8, FripuckProtocol_Sensors_SensorBatch, audio_channel_right, flatbuffers_uint8_vec_t, 0)
+__flatbuffers_define_vector_field(9, FripuckProtocol_Sensors_SensorBatch, audio_channel_front, flatbuffers_uint8_vec_t, 0)
+__flatbuffers_define_vector_field(10, FripuckProtocol_Sensors_SensorBatch, audio_channel_back, flatbuffers_uint8_vec_t, 0)
+__flatbuffers_define_vector_field(11, FripuckProtocol_Sensors_SensorBatch, audio_metadata, FripuckProtocol_Sensors_AudioMetadata_vec_t, 0)
+__flatbuffers_define_vector_field(12, FripuckProtocol_Sensors_SensorBatch, video_blob, flatbuffers_uint8_vec_t, 0)
+__flatbuffers_define_vector_field(13, FripuckProtocol_Sensors_SensorBatch, video_metadata, FripuckProtocol_Sensors_VideoMetadata_vec_t, 0)
 
 
 #include "flatcc/flatcc_epilogue.h"

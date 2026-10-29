@@ -16,6 +16,10 @@
 #define flatbuffers_extension "bin"
 #endif
 
+#define __FripuckProtocol_Sensors_AudioChannel_formal_args , FripuckProtocol_Sensors_AudioChannel_enum_t v0
+#define __FripuckProtocol_Sensors_AudioChannel_call_args , v0
+__flatbuffers_build_scalar(flatbuffers_, FripuckProtocol_Sensors_AudioChannel, FripuckProtocol_Sensors_AudioChannel_enum_t)
+
 #define __FripuckProtocol_Sensors_Uint16Array8_formal_args ,\
   uint16_t v0, uint16_t v1, uint16_t v2, uint16_t v3,\
   uint16_t v4, uint16_t v5, uint16_t v6, uint16_t v7
@@ -376,27 +380,38 @@ static inline FripuckProtocol_Sensors_VolumeData_t *FripuckProtocol_Sensors_Volu
 __flatbuffers_build_struct(flatbuffers_, FripuckProtocol_Sensors_VolumeData, 10, 2, FripuckProtocol_Sensors_VolumeData_file_identifier, FripuckProtocol_Sensors_VolumeData_type_identifier)
 __flatbuffers_define_fixed_array_primitives(flatbuffers_, FripuckProtocol_Sensors_VolumeData, FripuckProtocol_Sensors_VolumeData_t)
 
-#define __FripuckProtocol_Sensors_AudioMetadata_formal_args , uint16_t v0, uint16_t v1, uint16_t v2, uint16_t v3
-#define __FripuckProtocol_Sensors_AudioMetadata_call_args , v0, v1, v2, v3
-static inline FripuckProtocol_Sensors_AudioMetadata_t *FripuckProtocol_Sensors_AudioMetadata_assign(FripuckProtocol_Sensors_AudioMetadata_t *p, uint16_t v0, uint16_t v1, uint16_t v2, uint16_t v3)
-{ p->offset = v0; p->length = v1; p->sample_count = v2; p->timestamp_offset = v3;
+#define __FripuckProtocol_Sensors_AudioMetadata_formal_args ,\
+  FripuckProtocol_Sensors_AudioChannel_enum_t v0, uint16_t v1, uint16_t v2, uint16_t v3, uint16_t v4
+#define __FripuckProtocol_Sensors_AudioMetadata_call_args ,\
+  v0, v1, v2, v3, v4
+static inline FripuckProtocol_Sensors_AudioMetadata_t *FripuckProtocol_Sensors_AudioMetadata_assign(FripuckProtocol_Sensors_AudioMetadata_t *p,
+  FripuckProtocol_Sensors_AudioChannel_enum_t v0, uint16_t v1, uint16_t v2, uint16_t v3, uint16_t v4)
+{ p->channels = v0; p->offset = v1; p->length = v2; p->sample_count = v3;
+  p->timestamp_offset = v4;
   return p; }
 static inline FripuckProtocol_Sensors_AudioMetadata_t *FripuckProtocol_Sensors_AudioMetadata_copy(FripuckProtocol_Sensors_AudioMetadata_t *p, const FripuckProtocol_Sensors_AudioMetadata_t *p2)
-{ p->offset = p2->offset; p->length = p2->length; p->sample_count = p2->sample_count; p->timestamp_offset = p2->timestamp_offset;
+{ p->channels = p2->channels; p->offset = p2->offset; p->length = p2->length; p->sample_count = p2->sample_count;
+  p->timestamp_offset = p2->timestamp_offset;
   return p; }
-static inline FripuckProtocol_Sensors_AudioMetadata_t *FripuckProtocol_Sensors_AudioMetadata_assign_to_pe(FripuckProtocol_Sensors_AudioMetadata_t *p, uint16_t v0, uint16_t v1, uint16_t v2, uint16_t v3)
-{ flatbuffers_uint16_assign_to_pe(&p->offset, v0); flatbuffers_uint16_assign_to_pe(&p->length, v1); flatbuffers_uint16_assign_to_pe(&p->sample_count, v2); flatbuffers_uint16_assign_to_pe(&p->timestamp_offset, v3);
+static inline FripuckProtocol_Sensors_AudioMetadata_t *FripuckProtocol_Sensors_AudioMetadata_assign_to_pe(FripuckProtocol_Sensors_AudioMetadata_t *p,
+  FripuckProtocol_Sensors_AudioChannel_enum_t v0, uint16_t v1, uint16_t v2, uint16_t v3, uint16_t v4)
+{ FripuckProtocol_Sensors_AudioChannel_assign_to_pe(&p->channels, v0); flatbuffers_uint16_assign_to_pe(&p->offset, v1); flatbuffers_uint16_assign_to_pe(&p->length, v2); flatbuffers_uint16_assign_to_pe(&p->sample_count, v3);
+  flatbuffers_uint16_assign_to_pe(&p->timestamp_offset, v4);
   return p; }
 static inline FripuckProtocol_Sensors_AudioMetadata_t *FripuckProtocol_Sensors_AudioMetadata_copy_to_pe(FripuckProtocol_Sensors_AudioMetadata_t *p, const FripuckProtocol_Sensors_AudioMetadata_t *p2)
-{ flatbuffers_uint16_copy_to_pe(&p->offset, &p2->offset); flatbuffers_uint16_copy_to_pe(&p->length, &p2->length); flatbuffers_uint16_copy_to_pe(&p->sample_count, &p2->sample_count); flatbuffers_uint16_copy_to_pe(&p->timestamp_offset, &p2->timestamp_offset);
+{ FripuckProtocol_Sensors_AudioChannel_copy_to_pe(&p->channels, &p2->channels); flatbuffers_uint16_copy_to_pe(&p->offset, &p2->offset); flatbuffers_uint16_copy_to_pe(&p->length, &p2->length); flatbuffers_uint16_copy_to_pe(&p->sample_count, &p2->sample_count);
+  flatbuffers_uint16_copy_to_pe(&p->timestamp_offset, &p2->timestamp_offset);
   return p; }
-static inline FripuckProtocol_Sensors_AudioMetadata_t *FripuckProtocol_Sensors_AudioMetadata_assign_from_pe(FripuckProtocol_Sensors_AudioMetadata_t *p, uint16_t v0, uint16_t v1, uint16_t v2, uint16_t v3)
-{ flatbuffers_uint16_assign_from_pe(&p->offset, v0); flatbuffers_uint16_assign_from_pe(&p->length, v1); flatbuffers_uint16_assign_from_pe(&p->sample_count, v2); flatbuffers_uint16_assign_from_pe(&p->timestamp_offset, v3);
+static inline FripuckProtocol_Sensors_AudioMetadata_t *FripuckProtocol_Sensors_AudioMetadata_assign_from_pe(FripuckProtocol_Sensors_AudioMetadata_t *p,
+  FripuckProtocol_Sensors_AudioChannel_enum_t v0, uint16_t v1, uint16_t v2, uint16_t v3, uint16_t v4)
+{ FripuckProtocol_Sensors_AudioChannel_assign_from_pe(&p->channels, v0); flatbuffers_uint16_assign_from_pe(&p->offset, v1); flatbuffers_uint16_assign_from_pe(&p->length, v2); flatbuffers_uint16_assign_from_pe(&p->sample_count, v3);
+  flatbuffers_uint16_assign_from_pe(&p->timestamp_offset, v4);
   return p; }
 static inline FripuckProtocol_Sensors_AudioMetadata_t *FripuckProtocol_Sensors_AudioMetadata_copy_from_pe(FripuckProtocol_Sensors_AudioMetadata_t *p, const FripuckProtocol_Sensors_AudioMetadata_t *p2)
-{ flatbuffers_uint16_copy_from_pe(&p->offset, &p2->offset); flatbuffers_uint16_copy_from_pe(&p->length, &p2->length); flatbuffers_uint16_copy_from_pe(&p->sample_count, &p2->sample_count); flatbuffers_uint16_copy_from_pe(&p->timestamp_offset, &p2->timestamp_offset);
+{ FripuckProtocol_Sensors_AudioChannel_copy_from_pe(&p->channels, &p2->channels); flatbuffers_uint16_copy_from_pe(&p->offset, &p2->offset); flatbuffers_uint16_copy_from_pe(&p->length, &p2->length); flatbuffers_uint16_copy_from_pe(&p->sample_count, &p2->sample_count);
+  flatbuffers_uint16_copy_from_pe(&p->timestamp_offset, &p2->timestamp_offset);
   return p; }
-__flatbuffers_build_struct(flatbuffers_, FripuckProtocol_Sensors_AudioMetadata, 8, 2, FripuckProtocol_Sensors_AudioMetadata_file_identifier, FripuckProtocol_Sensors_AudioMetadata_type_identifier)
+__flatbuffers_build_struct(flatbuffers_, FripuckProtocol_Sensors_AudioMetadata, 10, 2, FripuckProtocol_Sensors_AudioMetadata_file_identifier, FripuckProtocol_Sensors_AudioMetadata_type_identifier)
 __flatbuffers_define_fixed_array_primitives(flatbuffers_, FripuckProtocol_Sensors_AudioMetadata, FripuckProtocol_Sensors_AudioMetadata_t)
 
 #define __FripuckProtocol_Sensors_VideoMetadata_formal_args ,\
@@ -441,16 +456,16 @@ __flatbuffers_define_fixed_array_primitives(flatbuffers_, FripuckProtocol_Sensor
 static const flatbuffers_voffset_t __FripuckProtocol_Sensors_SensorBatch_required[] = { 0 };
 typedef flatbuffers_ref_t FripuckProtocol_Sensors_SensorBatch_ref_t;
 static FripuckProtocol_Sensors_SensorBatch_ref_t FripuckProtocol_Sensors_SensorBatch_clone(flatbuffers_builder_t *B, FripuckProtocol_Sensors_SensorBatch_table_t t);
-__flatbuffers_build_table(flatbuffers_, FripuckProtocol_Sensors_SensorBatch, 11)
+__flatbuffers_build_table(flatbuffers_, FripuckProtocol_Sensors_SensorBatch, 14)
 
 #define __FripuckProtocol_Sensors_SensorBatch_formal_args ,\
   uint64_t v0, FripuckProtocol_Sensors_ProximityData_vec_ref_t v1, FripuckProtocol_Sensors_GroundData_vec_ref_t v2, FripuckProtocol_Sensors_TofData_vec_ref_t v3,\
   FripuckProtocol_Sensors_BatteryData_vec_ref_t v4, FripuckProtocol_Sensors_EncoderData_vec_ref_t v5, FripuckProtocol_Sensors_ImuData_vec_ref_t v6, flatbuffers_uint8_vec_ref_t v7,\
-  FripuckProtocol_Sensors_AudioMetadata_vec_ref_t v8, flatbuffers_uint8_vec_ref_t v9, FripuckProtocol_Sensors_VideoMetadata_vec_ref_t v10
+  flatbuffers_uint8_vec_ref_t v8, flatbuffers_uint8_vec_ref_t v9, flatbuffers_uint8_vec_ref_t v10, FripuckProtocol_Sensors_AudioMetadata_vec_ref_t v11, flatbuffers_uint8_vec_ref_t v12, FripuckProtocol_Sensors_VideoMetadata_vec_ref_t v13
 #define __FripuckProtocol_Sensors_SensorBatch_call_args ,\
   v0, v1, v2, v3,\
   v4, v5, v6, v7,\
-  v8, v9, v10
+  v8, v9, v10, v11, v12, v13
 static inline FripuckProtocol_Sensors_SensorBatch_ref_t FripuckProtocol_Sensors_SensorBatch_create(flatbuffers_builder_t *B __FripuckProtocol_Sensors_SensorBatch_formal_args);
 __flatbuffers_build_table_prolog(flatbuffers_, FripuckProtocol_Sensors_SensorBatch, FripuckProtocol_Sensors_SensorBatch_file_identifier, FripuckProtocol_Sensors_SensorBatch_type_identifier)
 
@@ -461,10 +476,13 @@ __flatbuffers_build_vector_field(3, flatbuffers_, FripuckProtocol_Sensors_Sensor
 __flatbuffers_build_vector_field(4, flatbuffers_, FripuckProtocol_Sensors_SensorBatch_battery, FripuckProtocol_Sensors_BatteryData, FripuckProtocol_Sensors_BatteryData_t, FripuckProtocol_Sensors_SensorBatch)
 __flatbuffers_build_vector_field(5, flatbuffers_, FripuckProtocol_Sensors_SensorBatch_encoder, FripuckProtocol_Sensors_EncoderData, FripuckProtocol_Sensors_EncoderData_t, FripuckProtocol_Sensors_SensorBatch)
 __flatbuffers_build_vector_field(6, flatbuffers_, FripuckProtocol_Sensors_SensorBatch_imu, FripuckProtocol_Sensors_ImuData, FripuckProtocol_Sensors_ImuData_t, FripuckProtocol_Sensors_SensorBatch)
-__flatbuffers_build_vector_field(7, flatbuffers_, FripuckProtocol_Sensors_SensorBatch_audio_blob, flatbuffers_uint8, uint8_t, FripuckProtocol_Sensors_SensorBatch)
-__flatbuffers_build_vector_field(8, flatbuffers_, FripuckProtocol_Sensors_SensorBatch_audio_metadata, FripuckProtocol_Sensors_AudioMetadata, FripuckProtocol_Sensors_AudioMetadata_t, FripuckProtocol_Sensors_SensorBatch)
-__flatbuffers_build_vector_field(9, flatbuffers_, FripuckProtocol_Sensors_SensorBatch_video_blob, flatbuffers_uint8, uint8_t, FripuckProtocol_Sensors_SensorBatch)
-__flatbuffers_build_vector_field(10, flatbuffers_, FripuckProtocol_Sensors_SensorBatch_video_metadata, FripuckProtocol_Sensors_VideoMetadata, FripuckProtocol_Sensors_VideoMetadata_t, FripuckProtocol_Sensors_SensorBatch)
+__flatbuffers_build_vector_field(7, flatbuffers_, FripuckProtocol_Sensors_SensorBatch_audio_channel_left, flatbuffers_uint8, uint8_t, FripuckProtocol_Sensors_SensorBatch)
+__flatbuffers_build_vector_field(8, flatbuffers_, FripuckProtocol_Sensors_SensorBatch_audio_channel_right, flatbuffers_uint8, uint8_t, FripuckProtocol_Sensors_SensorBatch)
+__flatbuffers_build_vector_field(9, flatbuffers_, FripuckProtocol_Sensors_SensorBatch_audio_channel_front, flatbuffers_uint8, uint8_t, FripuckProtocol_Sensors_SensorBatch)
+__flatbuffers_build_vector_field(10, flatbuffers_, FripuckProtocol_Sensors_SensorBatch_audio_channel_back, flatbuffers_uint8, uint8_t, FripuckProtocol_Sensors_SensorBatch)
+__flatbuffers_build_vector_field(11, flatbuffers_, FripuckProtocol_Sensors_SensorBatch_audio_metadata, FripuckProtocol_Sensors_AudioMetadata, FripuckProtocol_Sensors_AudioMetadata_t, FripuckProtocol_Sensors_SensorBatch)
+__flatbuffers_build_vector_field(12, flatbuffers_, FripuckProtocol_Sensors_SensorBatch_video_blob, flatbuffers_uint8, uint8_t, FripuckProtocol_Sensors_SensorBatch)
+__flatbuffers_build_vector_field(13, flatbuffers_, FripuckProtocol_Sensors_SensorBatch_video_metadata, FripuckProtocol_Sensors_VideoMetadata, FripuckProtocol_Sensors_VideoMetadata_t, FripuckProtocol_Sensors_SensorBatch)
 
 static inline FripuckProtocol_Sensors_SensorBatch_ref_t FripuckProtocol_Sensors_SensorBatch_create(flatbuffers_builder_t *B __FripuckProtocol_Sensors_SensorBatch_formal_args)
 {
@@ -476,10 +494,13 @@ static inline FripuckProtocol_Sensors_SensorBatch_ref_t FripuckProtocol_Sensors_
         || FripuckProtocol_Sensors_SensorBatch_battery_add(B, v4)
         || FripuckProtocol_Sensors_SensorBatch_encoder_add(B, v5)
         || FripuckProtocol_Sensors_SensorBatch_imu_add(B, v6)
-        || FripuckProtocol_Sensors_SensorBatch_audio_blob_add(B, v7)
-        || FripuckProtocol_Sensors_SensorBatch_audio_metadata_add(B, v8)
-        || FripuckProtocol_Sensors_SensorBatch_video_blob_add(B, v9)
-        || FripuckProtocol_Sensors_SensorBatch_video_metadata_add(B, v10)) {
+        || FripuckProtocol_Sensors_SensorBatch_audio_channel_left_add(B, v7)
+        || FripuckProtocol_Sensors_SensorBatch_audio_channel_right_add(B, v8)
+        || FripuckProtocol_Sensors_SensorBatch_audio_channel_front_add(B, v9)
+        || FripuckProtocol_Sensors_SensorBatch_audio_channel_back_add(B, v10)
+        || FripuckProtocol_Sensors_SensorBatch_audio_metadata_add(B, v11)
+        || FripuckProtocol_Sensors_SensorBatch_video_blob_add(B, v12)
+        || FripuckProtocol_Sensors_SensorBatch_video_metadata_add(B, v13)) {
         return 0;
     }
     return FripuckProtocol_Sensors_SensorBatch_end(B);
@@ -496,7 +517,10 @@ static FripuckProtocol_Sensors_SensorBatch_ref_t FripuckProtocol_Sensors_SensorB
         || FripuckProtocol_Sensors_SensorBatch_battery_pick(B, t)
         || FripuckProtocol_Sensors_SensorBatch_encoder_pick(B, t)
         || FripuckProtocol_Sensors_SensorBatch_imu_pick(B, t)
-        || FripuckProtocol_Sensors_SensorBatch_audio_blob_pick(B, t)
+        || FripuckProtocol_Sensors_SensorBatch_audio_channel_left_pick(B, t)
+        || FripuckProtocol_Sensors_SensorBatch_audio_channel_right_pick(B, t)
+        || FripuckProtocol_Sensors_SensorBatch_audio_channel_front_pick(B, t)
+        || FripuckProtocol_Sensors_SensorBatch_audio_channel_back_pick(B, t)
         || FripuckProtocol_Sensors_SensorBatch_audio_metadata_pick(B, t)
         || FripuckProtocol_Sensors_SensorBatch_video_blob_pick(B, t)
         || FripuckProtocol_Sensors_SensorBatch_video_metadata_pick(B, t)) {

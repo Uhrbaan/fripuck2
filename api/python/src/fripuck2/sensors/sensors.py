@@ -1,6 +1,8 @@
 from .._generated import sensors_generated as sensors
 from .._generated import commands_generated as commands
 from typing import Tuple, List
+import wave
+import numpy as np
 
 from .base import SensorHistory
 

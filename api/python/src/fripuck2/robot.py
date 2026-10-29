@@ -2,7 +2,7 @@ import json
 
 from ._generated import sensors_generated as sensors
 from ._generated import commands_generated as commands
-from .sensors import TofHisory, ProxHisory, ImuHistory, GroundHistory
+from .sensors import TofHisory, ProxHisory, ImuHistory, GroundHistory, AudioHistory
 from .commands import ModuleMask
 from .connection_manager import ConnectionManager
 from contextlib import contextmanager
@@ -33,6 +33,7 @@ class Robot:
         self.prox = ProxHisory(size=history_size)
         self.imu = ImuHistory(size=history_size)
         self.ground = GroundHistory(size=history_size)
+        self.audio = AudioHistory(size=history_size)
 
     def connect(self, manager: ConnectionManager):
         # Register and capture the send function natively
@@ -54,6 +55,7 @@ class Robot:
         self.prox._parse(base_timestamp, batch)
         self.imu._parse(base_timestamp, batch)
         self.ground._parse(base_timestamp, batch)
+        self.audio._parse(base_timestamp, batch)
         pass 
 
     def _parse_command_batch(self, data: bytes):

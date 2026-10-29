@@ -7,6 +7,7 @@ import (
 )
 
 type AudioMetadataT struct {
+	Channels AudioChannel `json:"channels"`
 	Offset uint16 `json:"offset"`
 	Length uint16 `json:"length"`
 	SampleCount uint16 `json:"sample_count"`
@@ -17,9 +18,10 @@ func (t *AudioMetadataT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffsetT
 	if t == nil {
 		return 0
 	}
-	return CreateAudioMetadata(builder, t.Offset, t.Length, t.SampleCount, t.TimestampOffset)
+	return CreateAudioMetadata(builder, t.Channels, t.Offset, t.Length, t.SampleCount, t.TimestampOffset)
 }
 func (rcv *AudioMetadata) UnPackTo(t *AudioMetadataT) {
+	t.Channels = rcv.Channels()
 	t.Offset = rcv.Offset()
 	t.Length = rcv.Length()
 	t.SampleCount = rcv.SampleCount()
@@ -48,39 +50,47 @@ func (rcv *AudioMetadata) Table() flatbuffers.Table {
 	return rcv._tab.Table
 }
 
-func (rcv *AudioMetadata) Offset() uint16 {
-	return rcv._tab.GetUint16(rcv._tab.Pos + flatbuffers.UOffsetT(0))
+func (rcv *AudioMetadata) Channels() AudioChannel {
+	return AudioChannel(rcv._tab.GetUint16(rcv._tab.Pos + flatbuffers.UOffsetT(0)))
 }
-func (rcv *AudioMetadata) MutateOffset(n uint16) bool {
-	return rcv._tab.MutateUint16(rcv._tab.Pos+flatbuffers.UOffsetT(0), n)
+func (rcv *AudioMetadata) MutateChannels(n AudioChannel) bool {
+	return rcv._tab.MutateUint16(rcv._tab.Pos+flatbuffers.UOffsetT(0), uint16(n))
 }
 
-func (rcv *AudioMetadata) Length() uint16 {
+func (rcv *AudioMetadata) Offset() uint16 {
 	return rcv._tab.GetUint16(rcv._tab.Pos + flatbuffers.UOffsetT(2))
 }
-func (rcv *AudioMetadata) MutateLength(n uint16) bool {
+func (rcv *AudioMetadata) MutateOffset(n uint16) bool {
 	return rcv._tab.MutateUint16(rcv._tab.Pos+flatbuffers.UOffsetT(2), n)
 }
 
-func (rcv *AudioMetadata) SampleCount() uint16 {
+func (rcv *AudioMetadata) Length() uint16 {
 	return rcv._tab.GetUint16(rcv._tab.Pos + flatbuffers.UOffsetT(4))
 }
-func (rcv *AudioMetadata) MutateSampleCount(n uint16) bool {
+func (rcv *AudioMetadata) MutateLength(n uint16) bool {
 	return rcv._tab.MutateUint16(rcv._tab.Pos+flatbuffers.UOffsetT(4), n)
 }
 
-func (rcv *AudioMetadata) TimestampOffset() uint16 {
+func (rcv *AudioMetadata) SampleCount() uint16 {
 	return rcv._tab.GetUint16(rcv._tab.Pos + flatbuffers.UOffsetT(6))
 }
-func (rcv *AudioMetadata) MutateTimestampOffset(n uint16) bool {
+func (rcv *AudioMetadata) MutateSampleCount(n uint16) bool {
 	return rcv._tab.MutateUint16(rcv._tab.Pos+flatbuffers.UOffsetT(6), n)
 }
 
-func CreateAudioMetadata(builder *flatbuffers.Builder, offset uint16, length uint16, sampleCount uint16, timestampOffset uint16) flatbuffers.UOffsetT {
-	builder.Prep(2, 8)
+func (rcv *AudioMetadata) TimestampOffset() uint16 {
+	return rcv._tab.GetUint16(rcv._tab.Pos + flatbuffers.UOffsetT(8))
+}
+func (rcv *AudioMetadata) MutateTimestampOffset(n uint16) bool {
+	return rcv._tab.MutateUint16(rcv._tab.Pos+flatbuffers.UOffsetT(8), n)
+}
+
+func CreateAudioMetadata(builder *flatbuffers.Builder, channels AudioChannel, offset uint16, length uint16, sampleCount uint16, timestampOffset uint16) flatbuffers.UOffsetT {
+	builder.Prep(2, 10)
 	builder.PrependUint16(timestampOffset)
 	builder.PrependUint16(sampleCount)
 	builder.PrependUint16(length)
 	builder.PrependUint16(offset)
+	builder.PrependUint16(uint16(channels))
 	return builder.Offset()
 }

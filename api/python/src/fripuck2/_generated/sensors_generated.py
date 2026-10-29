@@ -6,6 +6,14 @@ import flatbuffers
 from flatbuffers.compat import import_numpy
 np = import_numpy()
 
+class AudioChannel(object):
+    None_ = 0
+    Left = 1
+    Right = 2
+    Front = 4
+    Back = 8
+
+
 class Uint16Array8(object):
     __slots__ = ['_tab']
 
@@ -843,27 +851,30 @@ class AudioMetadata(object):
 
     @classmethod
     def SizeOf(cls):
-        return 8
+        return 10
 
     # AudioMetadata
     def Init(self, buf, pos):
         self._tab = flatbuffers.table.Table(buf, pos)
 
     # AudioMetadata
-    def Offset(self): return self._tab.Get(flatbuffers.number_types.Uint16Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(0))
+    def Channels(self): return self._tab.Get(flatbuffers.number_types.Uint16Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(0))
     # AudioMetadata
-    def Length(self): return self._tab.Get(flatbuffers.number_types.Uint16Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(2))
+    def Offset(self): return self._tab.Get(flatbuffers.number_types.Uint16Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(2))
     # AudioMetadata
-    def SampleCount(self): return self._tab.Get(flatbuffers.number_types.Uint16Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(4))
+    def Length(self): return self._tab.Get(flatbuffers.number_types.Uint16Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(4))
     # AudioMetadata
-    def TimestampOffset(self): return self._tab.Get(flatbuffers.number_types.Uint16Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(6))
+    def SampleCount(self): return self._tab.Get(flatbuffers.number_types.Uint16Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(6))
+    # AudioMetadata
+    def TimestampOffset(self): return self._tab.Get(flatbuffers.number_types.Uint16Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(8))
 
-def CreateAudioMetadata(builder, offset, length, sampleCount, timestampOffset):
-    builder.Prep(2, 8)
+def CreateAudioMetadata(builder, channels, offset, length, sampleCount, timestampOffset):
+    builder.Prep(2, 10)
     builder.PrependUint16(timestampOffset)
     builder.PrependUint16(sampleCount)
     builder.PrependUint16(length)
     builder.PrependUint16(offset)
+    builder.PrependUint16(channels)
     return builder.Offset()
 
 
@@ -872,11 +883,13 @@ class AudioMetadataT(object):
     # AudioMetadataT
     def __init__(
         self,
+        channels = 0,
         offset = 0,
         length = 0,
         sampleCount = 0,
         timestampOffset = 0,
     ):
+        self.channels = channels  # type: int
         self.offset = offset  # type: int
         self.length = length  # type: int
         self.sampleCount = sampleCount  # type: int
@@ -903,6 +916,7 @@ class AudioMetadataT(object):
     def _UnPack(self, audioMetadata):
         if audioMetadata is None:
             return
+        self.channels = audioMetadata.Channels()
         self.offset = audioMetadata.Offset()
         self.length = audioMetadata.Length()
         self.sampleCount = audioMetadata.SampleCount()
@@ -910,7 +924,7 @@ class AudioMetadataT(object):
 
     # AudioMetadataT
     def Pack(self, builder):
-        return CreateAudioMetadata(builder, self.offset, self.length, self.sampleCount, self.timestampOffset)
+        return CreateAudioMetadata(builder, self.channels, self.offset, self.length, self.sampleCount, self.timestampOffset)
 
 
 class VideoMetadata(object):
@@ -1174,7 +1188,7 @@ class SensorBatch(object):
         return o == 0
 
     # SensorBatch
-    def AudioBlob(self, j):
+    def AudioChannelLeft(self, j):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(18))
         if o != 0:
             a = self._tab.Vector(o)
@@ -1182,30 +1196,111 @@ class SensorBatch(object):
         return 0
 
     # SensorBatch
-    def AudioBlobAsNumpy(self):
+    def AudioChannelLeftAsNumpy(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(18))
         if o != 0:
             return self._tab.GetVectorAsNumpy(flatbuffers.number_types.Uint8Flags, o)
         return 0
 
     # SensorBatch
-    def AudioBlobLength(self):
+    def AudioChannelLeftLength(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(18))
         if o != 0:
             return self._tab.VectorLen(o)
         return 0
 
     # SensorBatch
-    def AudioBlobIsNone(self):
+    def AudioChannelLeftIsNone(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(18))
         return o == 0
 
     # SensorBatch
-    def AudioMetadata(self, j):
+    def AudioChannelRight(self, j):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(20))
         if o != 0:
+            a = self._tab.Vector(o)
+            return self._tab.Get(flatbuffers.number_types.Uint8Flags, a + flatbuffers.number_types.UOffsetTFlags.py_type(j * 1))
+        return 0
+
+    # SensorBatch
+    def AudioChannelRightAsNumpy(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(20))
+        if o != 0:
+            return self._tab.GetVectorAsNumpy(flatbuffers.number_types.Uint8Flags, o)
+        return 0
+
+    # SensorBatch
+    def AudioChannelRightLength(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(20))
+        if o != 0:
+            return self._tab.VectorLen(o)
+        return 0
+
+    # SensorBatch
+    def AudioChannelRightIsNone(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(20))
+        return o == 0
+
+    # SensorBatch
+    def AudioChannelFront(self, j):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(22))
+        if o != 0:
+            a = self._tab.Vector(o)
+            return self._tab.Get(flatbuffers.number_types.Uint8Flags, a + flatbuffers.number_types.UOffsetTFlags.py_type(j * 1))
+        return 0
+
+    # SensorBatch
+    def AudioChannelFrontAsNumpy(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(22))
+        if o != 0:
+            return self._tab.GetVectorAsNumpy(flatbuffers.number_types.Uint8Flags, o)
+        return 0
+
+    # SensorBatch
+    def AudioChannelFrontLength(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(22))
+        if o != 0:
+            return self._tab.VectorLen(o)
+        return 0
+
+    # SensorBatch
+    def AudioChannelFrontIsNone(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(22))
+        return o == 0
+
+    # SensorBatch
+    def AudioChannelBack(self, j):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(24))
+        if o != 0:
+            a = self._tab.Vector(o)
+            return self._tab.Get(flatbuffers.number_types.Uint8Flags, a + flatbuffers.number_types.UOffsetTFlags.py_type(j * 1))
+        return 0
+
+    # SensorBatch
+    def AudioChannelBackAsNumpy(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(24))
+        if o != 0:
+            return self._tab.GetVectorAsNumpy(flatbuffers.number_types.Uint8Flags, o)
+        return 0
+
+    # SensorBatch
+    def AudioChannelBackLength(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(24))
+        if o != 0:
+            return self._tab.VectorLen(o)
+        return 0
+
+    # SensorBatch
+    def AudioChannelBackIsNone(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(24))
+        return o == 0
+
+    # SensorBatch
+    def AudioMetadata(self, j):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(26))
+        if o != 0:
             x = self._tab.Vector(o)
-            x += flatbuffers.number_types.UOffsetTFlags.py_type(j) * 8
+            x += flatbuffers.number_types.UOffsetTFlags.py_type(j) * 10
             obj = AudioMetadata()
             obj.Init(self._tab.Bytes, x)
             return obj
@@ -1213,19 +1308,19 @@ class SensorBatch(object):
 
     # SensorBatch
     def AudioMetadataLength(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(20))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(26))
         if o != 0:
             return self._tab.VectorLen(o)
         return 0
 
     # SensorBatch
     def AudioMetadataIsNone(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(20))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(26))
         return o == 0
 
     # SensorBatch
     def VideoBlob(self, j):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(22))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(28))
         if o != 0:
             a = self._tab.Vector(o)
             return self._tab.Get(flatbuffers.number_types.Uint8Flags, a + flatbuffers.number_types.UOffsetTFlags.py_type(j * 1))
@@ -1233,26 +1328,26 @@ class SensorBatch(object):
 
     # SensorBatch
     def VideoBlobAsNumpy(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(22))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(28))
         if o != 0:
             return self._tab.GetVectorAsNumpy(flatbuffers.number_types.Uint8Flags, o)
         return 0
 
     # SensorBatch
     def VideoBlobLength(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(22))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(28))
         if o != 0:
             return self._tab.VectorLen(o)
         return 0
 
     # SensorBatch
     def VideoBlobIsNone(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(22))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(28))
         return o == 0
 
     # SensorBatch
     def VideoMetadata(self, j):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(24))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(30))
         if o != 0:
             x = self._tab.Vector(o)
             x += flatbuffers.number_types.UOffsetTFlags.py_type(j) * 16
@@ -1263,18 +1358,18 @@ class SensorBatch(object):
 
     # SensorBatch
     def VideoMetadataLength(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(24))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(30))
         if o != 0:
             return self._tab.VectorLen(o)
         return 0
 
     # SensorBatch
     def VideoMetadataIsNone(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(24))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(30))
         return o == 0
 
 def SensorBatchStart(builder):
-    builder.StartObject(11)
+    builder.StartObject(14)
 
 def SensorBatchAddBaseTimestamp(builder, baseTimestamp):
     builder.PrependUint64Slot(0, baseTimestamp, 0)
@@ -1357,13 +1452,52 @@ def SensorBatchCreateImuVector(builder, data):
         item.Pack(builder)
     return builder.EndVector()
 
-def SensorBatchAddAudioBlob(builder, audioBlob):
-    builder.PrependUOffsetTRelativeSlot(7, flatbuffers.number_types.UOffsetTFlags.py_type(audioBlob), 0)
+def SensorBatchAddAudioChannelLeft(builder, audioChannelLeft):
+    builder.PrependUOffsetTRelativeSlot(7, flatbuffers.number_types.UOffsetTFlags.py_type(audioChannelLeft), 0)
 
-def SensorBatchStartAudioBlobVector(builder, numElems):
+def SensorBatchStartAudioChannelLeftVector(builder, numElems):
     return builder.StartVector(1, numElems, 1)
 
-def SensorBatchCreateAudioBlobVector(builder, data):
+def SensorBatchCreateAudioChannelLeftVector(builder, data):
+    data = list(data)
+    builder.StartVector(1, len(data), 1)
+    for item in reversed(data):
+        builder.PrependUint8(item)
+    return builder.EndVector()
+
+def SensorBatchAddAudioChannelRight(builder, audioChannelRight):
+    builder.PrependUOffsetTRelativeSlot(8, flatbuffers.number_types.UOffsetTFlags.py_type(audioChannelRight), 0)
+
+def SensorBatchStartAudioChannelRightVector(builder, numElems):
+    return builder.StartVector(1, numElems, 1)
+
+def SensorBatchCreateAudioChannelRightVector(builder, data):
+    data = list(data)
+    builder.StartVector(1, len(data), 1)
+    for item in reversed(data):
+        builder.PrependUint8(item)
+    return builder.EndVector()
+
+def SensorBatchAddAudioChannelFront(builder, audioChannelFront):
+    builder.PrependUOffsetTRelativeSlot(9, flatbuffers.number_types.UOffsetTFlags.py_type(audioChannelFront), 0)
+
+def SensorBatchStartAudioChannelFrontVector(builder, numElems):
+    return builder.StartVector(1, numElems, 1)
+
+def SensorBatchCreateAudioChannelFrontVector(builder, data):
+    data = list(data)
+    builder.StartVector(1, len(data), 1)
+    for item in reversed(data):
+        builder.PrependUint8(item)
+    return builder.EndVector()
+
+def SensorBatchAddAudioChannelBack(builder, audioChannelBack):
+    builder.PrependUOffsetTRelativeSlot(10, flatbuffers.number_types.UOffsetTFlags.py_type(audioChannelBack), 0)
+
+def SensorBatchStartAudioChannelBackVector(builder, numElems):
+    return builder.StartVector(1, numElems, 1)
+
+def SensorBatchCreateAudioChannelBackVector(builder, data):
     data = list(data)
     builder.StartVector(1, len(data), 1)
     for item in reversed(data):
@@ -1371,20 +1505,20 @@ def SensorBatchCreateAudioBlobVector(builder, data):
     return builder.EndVector()
 
 def SensorBatchAddAudioMetadata(builder, audioMetadata):
-    builder.PrependUOffsetTRelativeSlot(8, flatbuffers.number_types.UOffsetTFlags.py_type(audioMetadata), 0)
+    builder.PrependUOffsetTRelativeSlot(11, flatbuffers.number_types.UOffsetTFlags.py_type(audioMetadata), 0)
 
 def SensorBatchStartAudioMetadataVector(builder, numElems):
-    return builder.StartVector(8, numElems, 2)
+    return builder.StartVector(10, numElems, 2)
 
 def SensorBatchCreateAudioMetadataVector(builder, data):
     data = list(data)
-    builder.StartVector(8, len(data), 2)
+    builder.StartVector(10, len(data), 2)
     for item in reversed(data):
         item.Pack(builder)
     return builder.EndVector()
 
 def SensorBatchAddVideoBlob(builder, videoBlob):
-    builder.PrependUOffsetTRelativeSlot(9, flatbuffers.number_types.UOffsetTFlags.py_type(videoBlob), 0)
+    builder.PrependUOffsetTRelativeSlot(12, flatbuffers.number_types.UOffsetTFlags.py_type(videoBlob), 0)
 
 def SensorBatchStartVideoBlobVector(builder, numElems):
     return builder.StartVector(1, numElems, 1)
@@ -1397,7 +1531,7 @@ def SensorBatchCreateVideoBlobVector(builder, data):
     return builder.EndVector()
 
 def SensorBatchAddVideoMetadata(builder, videoMetadata):
-    builder.PrependUOffsetTRelativeSlot(10, flatbuffers.number_types.UOffsetTFlags.py_type(videoMetadata), 0)
+    builder.PrependUOffsetTRelativeSlot(13, flatbuffers.number_types.UOffsetTFlags.py_type(videoMetadata), 0)
 
 def SensorBatchStartVideoMetadataVector(builder, numElems):
     return builder.StartVector(16, numElems, 4)
@@ -1430,7 +1564,10 @@ class SensorBatchT(object):
         battery = None,
         encoder = None,
         imu = None,
-        audioBlob = None,
+        audioChannelLeft = None,
+        audioChannelRight = None,
+        audioChannelFront = None,
+        audioChannelBack = None,
         audioMetadata = None,
         videoBlob = None,
         videoMetadata = None,
@@ -1442,7 +1579,10 @@ class SensorBatchT(object):
         self.battery = battery  # type: Optional[List[BatteryDataT]]
         self.encoder = encoder  # type: Optional[List[EncoderDataT]]
         self.imu = imu  # type: Optional[List[ImuDataT]]
-        self.audioBlob = audioBlob  # type: Optional[List[int]]
+        self.audioChannelLeft = audioChannelLeft  # type: Optional[List[int]]
+        self.audioChannelRight = audioChannelRight  # type: Optional[List[int]]
+        self.audioChannelFront = audioChannelFront  # type: Optional[List[int]]
+        self.audioChannelBack = audioChannelBack  # type: Optional[List[int]]
         self.audioMetadata = audioMetadata  # type: Optional[List[AudioMetadataT]]
         self.videoBlob = videoBlob  # type: Optional[List[int]]
         self.videoMetadata = videoMetadata  # type: Optional[List[VideoMetadataT]]
@@ -1517,13 +1657,34 @@ class SensorBatchT(object):
                 else:
                     imuData_ = ImuDataT.InitFromObj(sensorBatch.Imu(i))
                     self.imu.append(imuData_)
-        if not sensorBatch.AudioBlobIsNone():
+        if not sensorBatch.AudioChannelLeftIsNone():
             if np is None:
-                self.audioBlob = []
-                for i in range(sensorBatch.AudioBlobLength()):
-                    self.audioBlob.append(sensorBatch.AudioBlob(i))
+                self.audioChannelLeft = []
+                for i in range(sensorBatch.AudioChannelLeftLength()):
+                    self.audioChannelLeft.append(sensorBatch.AudioChannelLeft(i))
             else:
-                self.audioBlob = sensorBatch.AudioBlobAsNumpy()
+                self.audioChannelLeft = sensorBatch.AudioChannelLeftAsNumpy()
+        if not sensorBatch.AudioChannelRightIsNone():
+            if np is None:
+                self.audioChannelRight = []
+                for i in range(sensorBatch.AudioChannelRightLength()):
+                    self.audioChannelRight.append(sensorBatch.AudioChannelRight(i))
+            else:
+                self.audioChannelRight = sensorBatch.AudioChannelRightAsNumpy()
+        if not sensorBatch.AudioChannelFrontIsNone():
+            if np is None:
+                self.audioChannelFront = []
+                for i in range(sensorBatch.AudioChannelFrontLength()):
+                    self.audioChannelFront.append(sensorBatch.AudioChannelFront(i))
+            else:
+                self.audioChannelFront = sensorBatch.AudioChannelFrontAsNumpy()
+        if not sensorBatch.AudioChannelBackIsNone():
+            if np is None:
+                self.audioChannelBack = []
+                for i in range(sensorBatch.AudioChannelBackLength()):
+                    self.audioChannelBack.append(sensorBatch.AudioChannelBack(i))
+            else:
+                self.audioChannelBack = sensorBatch.AudioChannelBackAsNumpy()
         if not sensorBatch.AudioMetadataIsNone():
             self.audioMetadata = []
             for i in range(sensorBatch.AudioMetadataLength()):
@@ -1580,14 +1741,38 @@ class SensorBatchT(object):
             for i in reversed(range(len(self.imu))):
                 self.imu[i].Pack(builder)
             imu = builder.EndVector()
-        if self.audioBlob is not None:
-            if np is not None and type(self.audioBlob) is np.ndarray:
-                audioBlob = builder.CreateNumpyVector(self.audioBlob)
+        if self.audioChannelLeft is not None:
+            if np is not None and type(self.audioChannelLeft) is np.ndarray:
+                audioChannelLeft = builder.CreateNumpyVector(self.audioChannelLeft)
             else:
-                SensorBatchStartAudioBlobVector(builder, len(self.audioBlob))
-                for i in reversed(range(len(self.audioBlob))):
-                    builder.PrependUint8(self.audioBlob[i])
-                audioBlob = builder.EndVector()
+                SensorBatchStartAudioChannelLeftVector(builder, len(self.audioChannelLeft))
+                for i in reversed(range(len(self.audioChannelLeft))):
+                    builder.PrependUint8(self.audioChannelLeft[i])
+                audioChannelLeft = builder.EndVector()
+        if self.audioChannelRight is not None:
+            if np is not None and type(self.audioChannelRight) is np.ndarray:
+                audioChannelRight = builder.CreateNumpyVector(self.audioChannelRight)
+            else:
+                SensorBatchStartAudioChannelRightVector(builder, len(self.audioChannelRight))
+                for i in reversed(range(len(self.audioChannelRight))):
+                    builder.PrependUint8(self.audioChannelRight[i])
+                audioChannelRight = builder.EndVector()
+        if self.audioChannelFront is not None:
+            if np is not None and type(self.audioChannelFront) is np.ndarray:
+                audioChannelFront = builder.CreateNumpyVector(self.audioChannelFront)
+            else:
+                SensorBatchStartAudioChannelFrontVector(builder, len(self.audioChannelFront))
+                for i in reversed(range(len(self.audioChannelFront))):
+                    builder.PrependUint8(self.audioChannelFront[i])
+                audioChannelFront = builder.EndVector()
+        if self.audioChannelBack is not None:
+            if np is not None and type(self.audioChannelBack) is np.ndarray:
+                audioChannelBack = builder.CreateNumpyVector(self.audioChannelBack)
+            else:
+                SensorBatchStartAudioChannelBackVector(builder, len(self.audioChannelBack))
+                for i in reversed(range(len(self.audioChannelBack))):
+                    builder.PrependUint8(self.audioChannelBack[i])
+                audioChannelBack = builder.EndVector()
         if self.audioMetadata is not None:
             SensorBatchStartAudioMetadataVector(builder, len(self.audioMetadata))
             for i in reversed(range(len(self.audioMetadata))):
@@ -1620,8 +1805,14 @@ class SensorBatchT(object):
             SensorBatchAddEncoder(builder, encoder)
         if self.imu is not None:
             SensorBatchAddImu(builder, imu)
-        if self.audioBlob is not None:
-            SensorBatchAddAudioBlob(builder, audioBlob)
+        if self.audioChannelLeft is not None:
+            SensorBatchAddAudioChannelLeft(builder, audioChannelLeft)
+        if self.audioChannelRight is not None:
+            SensorBatchAddAudioChannelRight(builder, audioChannelRight)
+        if self.audioChannelFront is not None:
+            SensorBatchAddAudioChannelFront(builder, audioChannelFront)
+        if self.audioChannelBack is not None:
+            SensorBatchAddAudioChannelBack(builder, audioChannelBack)
         if self.audioMetadata is not None:
             SensorBatchAddAudioMetadata(builder, audioMetadata)
         if self.videoBlob is not None:

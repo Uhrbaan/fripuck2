@@ -35,8 +35,10 @@ void spi_recieve_cb(uint8_t* data, uint16_t length) {
     static const char TAG[] = "SPI RX CB";
     static telemetry_packet_t packet = {0};
     // Process your data here...
-    if (FripuckProtocol_Sensors_SensorBatch_verify_as_root(data, length) != 0) {
+    int ret = FripuckProtocol_Sensors_SensorBatch_verify_as_root(data, length);
+    if (ret != 0) {
         ESP_LOGW(TAG, "Failed to verify the data coming in.");
+        printf("verify: %s, addr&7=%u\n", flatcc_verify_error_string(ret), (unsigned)((uintptr_t)data & 7));
         return;
     }
     FripuckProtocol_Sensors_SensorBatch_table_t batch = FripuckProtocol_Sensors_SensorBatch_as_root(data);
@@ -73,9 +75,24 @@ void spi_recieve_cb(uint8_t* data, uint16_t length) {
         trigger_ground_hook(ground_data);
     }
 
+    // FripuckProtocol_Sensors_AudioMetadata_vec_t audio_meta_vec =
+    //     FripuckProtocol_Sensors_SensorBatch_audio_metadata(batch);
+    // size_t audio_meta_count = FripuckProtocol_Sensors_AudioMetadata_length(audio_meta_vec);
+    // if (audio_meta_vec != NULL && audio_meta_count > 0) {
+    //     // ESP_LOGI(TAG, "Batch contains %u GROUND data points.", ground_count);
+    //     FripuckProtocol_Sensors_AudioMetadata_struct_t audio_metadata =
+    //         FripuckProtocol_Sensors_AudioMetadata_vec_at(audio_meta_vec, 0);
+    //     printf("New audio sample! It has %d samples, with an offset of %d, for a total of %d bytes\n",
+    //            audio_metadata->sample_count, audio_metadata->offset, audio_metadata->length);
+
+    //     const uint8_t* audio_blob = FripuckProtocol_Sensors_SensorBatch_audio_blob(batch);
+    //     ESP_LOG_BUFFER_HEXDUMP("AUDIO BLOB", audio_blob, audio_metadata->length, ESP_LOG_INFO);
+    // }
+
     if (spi_to_udp_queue) {
         packet.length = length;
         memcpy(packet.data, data, length);
+        // int err =
         xQueueSend(spi_to_udp_queue, &packet, 0);
         // if (err != pdPASS) {
         //     ESP_LOGE(TAG, "Failed to send %u bytes to the UDP service: Queue Full !");

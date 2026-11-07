@@ -5,21 +5,26 @@
 #include <netdb.h>
 #include <string.h>
 #include <sys/socket.h>
+#include "spi/spi.h"
 
 #include <spi_conf.h>
 
 #include "udp.h"
 
-QueueHandle_t spi_to_udp_queue = NULL;
-static telemetry_packet_t item = {0};
 int udp_sock_fd = -1;
 
 static const char* TAG = "UDP TASK";
 
-void udp_init_(void) { spi_to_udp_queue = xQueueCreate(10, sizeof(telemetry_packet_t)); }
+// FIXME: actually only do the udp queue if in use
+extern QueueHandle_t spi_free_queue;
+extern QueueHandle_t spi_to_udp_queue;
+bool udp_active = false;
+
+void udp_init_(void) {}
 
 void udp_transmitter(void* pvParameters) {
     ESP_LOGI("UDP TRANSMITTER", "Starting the SPI -> UDP service.");
+    struct spi_receive_packet_size_wraper* packet = NULL;
 
     struct sockaddr_in client_addr = *(struct sockaddr_in*)pvParameters;
     struct sockaddr_in target_addr = {0};
@@ -41,23 +46,25 @@ void udp_transmitter(void* pvParameters) {
     }
 
     ESP_LOGI("UDP TRANSMITTER", "Service démarré vers %s:%d", inet_ntoa(target_addr.sin_addr), config_UDP_PORT);
+    udp_active = true;
 
     while (1) {
-        if (xQueueReceive(spi_to_udp_queue, &item, portMAX_DELAY) != pdTRUE) continue;
+        if (xQueueReceive(spi_to_udp_queue, &packet, portMAX_DELAY) == pdTRUE) continue;
+        size_t size = packet->size;
+        uint8_t* buffer = packet->buffer;
 
-        ssize_t bytes =
-            sendto(udp_sock_fd, item.data, item.length, 0, (struct sockaddr*)&target_addr, sizeof(target_addr));
+        ssize_t bytes = sendto(udp_sock_fd, buffer, size, 0, (struct sockaddr*)&target_addr, sizeof(target_addr));
         if (bytes < 0) {
             ESP_LOGE("UDP TRANSMITTER", "Error while sending data: %s (%d).", strerror(errno), errno);
             break;
         }
 
-        ESP_LOGI(TAG, "Sent %u bytes over UDP.", item.length);
-
         // vTaskDelay(pdMS_TO_TICKS(1000));
+        xQueueSend(spi_free_queue, &packet, 0);
     }
 
     ESP_LOGE("UDP TRANSMITTER", "Closing thread.");
+    udp_active = false;
     close(udp_sock_fd);
     vTaskDelete(NULL);
 }

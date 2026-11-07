@@ -12,121 +12,9 @@
 #include "nvs_flash.h"
 #include <stdio.h>
 #include <sys/socket.h>
-
-#include "esp_timer.h"
-
-#define UART_407 UART_NUM_1
-
-// Keep track of total bytes received
-volatile uint32_t total_bytes_received = 0;
-
-#include "sensors_builder.h"
-#include "sensors_reader.h"
-#include "sensors_verifier.h"
-#include <sys/socket.h>
-
 #include "luavm/vm.h"
-#include "luavm/all_lua_types.h"
 
-#include "commands/commands.h"
-
-extern QueueHandle_t spi_to_udp_queue;
-void spi_recieve_cb(uint8_t* data, uint16_t length) {
-    static const char TAG[] = "SPI RX CB";
-    static telemetry_packet_t packet = {0};
-    // Process your data here...
-    int ret = FripuckProtocol_Sensors_SensorBatch_verify_as_root(data, length);
-    if (ret != 0) {
-        ESP_LOGW(TAG, "Failed to verify the data coming in.");
-        printf("verify: %s, addr&7=%u\n", flatcc_verify_error_string(ret), (unsigned)((uintptr_t)data & 7));
-        return;
-    }
-    FripuckProtocol_Sensors_SensorBatch_table_t batch = FripuckProtocol_Sensors_SensorBatch_as_root(data);
-    // ESP_LOGI(TAG, "Recieved batch of size %u.", length);
-
-    // Log the first TOF element for logging purposes
-    FripuckProtocol_Sensors_TofData_vec_t tof_vec = FripuckProtocol_Sensors_SensorBatch_tof(batch);
-    size_t tof_count = FripuckProtocol_Sensors_TofData_vec_len(tof_vec);
-    if (tof_vec != NULL && tof_count > 0) {
-        // ESP_LOGI(TAG, "Batch contains %u TOF data points.", tof_count);
-        FripuckProtocol_Sensors_TofData_struct_t tof_data =
-            FripuckProtocol_Sensors_TofData_vec_at(tof_vec, tof_count - 1);
-        trigger_tof_hook(tof_data);
-    }
-
-    // Log proximity
-    FripuckProtocol_Sensors_ProximityData_vec_t prox_vec = FripuckProtocol_Sensors_SensorBatch_proximity(batch);
-    size_t prox_count = FripuckProtocol_Sensors_ProximityData_vec_len(prox_vec);
-    if (prox_vec != NULL && prox_count > 0) {
-    }
-
-    // Log IMU
-    FripuckProtocol_Sensors_ImuData_vec_t imu_vec = FripuckProtocol_Sensors_SensorBatch_imu(batch);
-    size_t imu_count = FripuckProtocol_Sensors_ImuData_vec_len(imu_vec);
-    if (imu_vec != NULL && imu_count > 0) {
-    }
-
-    FripuckProtocol_Sensors_GroundData_vec_t ground_vec = FripuckProtocol_Sensors_SensorBatch_ground(batch);
-    size_t ground_count = FripuckProtocol_Sensors_GroundData_vec_len(ground_vec);
-    if (ground_vec != NULL && ground_count > 0) {
-        // ESP_LOGI(TAG, "Batch contains %u GROUND data points.", ground_count);
-        FripuckProtocol_Sensors_GroundData_struct_t ground_data =
-            FripuckProtocol_Sensors_GroundData_vec_at(ground_vec, ground_count - 1);
-        trigger_ground_hook(ground_data);
-    }
-
-    // FripuckProtocol_Sensors_AudioMetadata_vec_t audio_meta_vec =
-    //     FripuckProtocol_Sensors_SensorBatch_audio_metadata(batch);
-    // size_t audio_meta_count = FripuckProtocol_Sensors_AudioMetadata_length(audio_meta_vec);
-    // if (audio_meta_vec != NULL && audio_meta_count > 0) {
-    //     // ESP_LOGI(TAG, "Batch contains %u GROUND data points.", ground_count);
-    //     FripuckProtocol_Sensors_AudioMetadata_struct_t audio_metadata =
-    //         FripuckProtocol_Sensors_AudioMetadata_vec_at(audio_meta_vec, 0);
-    //     printf("New audio sample! It has %d samples, with an offset of %d, for a total of %d bytes\n",
-    //            audio_metadata->sample_count, audio_metadata->offset, audio_metadata->length);
-
-    //     const uint8_t* audio_blob = FripuckProtocol_Sensors_SensorBatch_audio_blob(batch);
-    //     ESP_LOG_BUFFER_HEXDUMP("AUDIO BLOB", audio_blob, audio_metadata->length, ESP_LOG_INFO);
-    // }
-
-    if (spi_to_udp_queue) {
-        packet.length = length;
-        memcpy(packet.data, data, length);
-        // int err =
-        xQueueSend(spi_to_udp_queue, &packet, 0);
-        // if (err != pdPASS) {
-        //     ESP_LOGE(TAG, "Failed to send %u bytes to the UDP service: Queue Full !");
-        // }
-        // ESP_LOGI(TAG, "Sent %u bytes over UDP.", length);
-        total_bytes_received += length;
-    }
-}
-
-void throughput_monitor_task(void* pvParameters) {
-    uint32_t last_bytes = 0;
-    const uint32_t interval_ms = 2000;  // 2 seconds
-
-    while (1) {
-        vTaskDelay(pdMS_TO_TICKS(interval_ms));
-
-        // Get current snapshot and calculate delta
-        uint32_t current_bytes = total_bytes_received;
-        uint32_t delta = current_bytes - last_bytes;
-        last_bytes = current_bytes;
-
-        // Calculate Throughput (Bytes per second)
-        float throughput_bps = (float)delta / (interval_ms / 1000.0);
-
-        // Print in a human-readable format
-        if (throughput_bps < 1024) {
-            printf("Throughput: %.2f B/s\n", throughput_bps);
-        } else if (throughput_bps < (1024 * 1024)) {
-            printf("Throughput: %.2f KB/s\n", throughput_bps / 1024.0);
-        } else {
-            printf("Throughput: %.2f MB/s\n", throughput_bps / (1024.0 * 1024.0));
-        }
-    }
-}
+#include "sensors/sensors.h"
 
 void app_main(void) {
     int err;
@@ -134,27 +22,35 @@ void app_main(void) {
     // Initialize non-volatile memory
     nvs_flash_init();
 
-    // Net communication
-    wifi_init();
-    ESP_LOGI(TAG, "Finished Wi-Fi initialization.");
-    tcp_init_();
-    ESP_LOGI(TAG, "Finished TCP initialization");
-    udp_init_();
-    xTaskCreate(tcp_connection_manager, "tcp connection manager", 1024 * 4, NULL, 1, NULL);
-
     // Uart communication
     err = uart_init(NULL);
     if (err != ESP_OK) ESP_LOGE(TAG, "Failed to initilize UART bridge");
     ESP_LOGI(TAG, "Initialized UART communication. Send instructions into the ");
-    err = spi_init(SPI1_HOST, spi_recieve_cb);
-    assert(err == 0);
-    ESP_LOGI(TAG, "Finished SPI1 HW initialization");
 
     // Lua VM
     err = lua_vm_start();
     if (err != ESP_OK) {
         ESP_LOGE(TAG, "Failed to initialize Lua VM");
+    } else {
+        ESP_LOGI(TAG, "Successfully started Lua VM");
     }
+
+    // SPI communication
+    spi_init();
+    err = sensor_receiver_start();
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to start the sensor receiver task.");
+        exit(1);
+    }
+    ESP_LOGI(TAG, "Started sensor receiver task.");
+
+    // Net communication
+    // wifi_init();
+    // ESP_LOGI(TAG, "Finished Wi-Fi initialization.");
+    // tcp_init_();
+    // ESP_LOGI(TAG, "Finished TCP initialization");
+    // udp_init_();
+    // xTaskCreate(tcp_connection_manager, "tcp connection manager", 1024 * 4, NULL, 1, NULL);
 
     while (1) {
         vTaskDelay(pdMS_TO_TICKS(5000));

@@ -132,6 +132,12 @@ void ground_type_init(lua_State* L) {
     ESP_LOGI(TAG, "Created ambiant GroundArray in lua registry..");
 }
 
+// Push the persistent GroundData userdata from the registry.
+int push_ground_data(lua_State* L) {
+    lua_rawgeti(L, LUA_REGISTRYINDEX, ground_data_ref);
+    return 1;
+}
+
 static int ground_lua_func_ref = LUA_NOREF;
 
 /**

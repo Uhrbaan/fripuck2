@@ -7,7 +7,9 @@
 #include "commands_reader.h"
 #include "commands_verifier.h"
 
-#include "../luavm/all_lua_types.h"
+#include "luavm/tof.h"
+#include "luavm/ground.h"
+#include "luavm/custom.h"
 #include "opcodes.h"
 #include "commands.h"
 #include "uart/uart.h"

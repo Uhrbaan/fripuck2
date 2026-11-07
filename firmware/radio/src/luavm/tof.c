@@ -11,16 +11,16 @@ typedef struct FripuckProtocol_Sensors_TofData FripuckProtocol_Sensors_TofData_t
 typedef FripuckProtocol_Sensors_TofData_t TofData;
 
 // Double buffering to safely pass data between the SPI/ISR context and the Lua VM context
-static TofData double_tof_buffers[2] = {0};
+static TofData double_buffers[2] = {0};
 static volatile int active_tof_buffer = 0;
 
 void update_tof_c_state(const FripuckProtocol_Sensors_TofData_t* new_data) {
     int inactive_tof_buffer = 1 - active_tof_buffer;
-    double_tof_buffers[inactive_tof_buffer] = *new_data;
+    double_buffers[inactive_tof_buffer] = *new_data;
     active_tof_buffer = inactive_tof_buffer;
 }
 
-const TofData* get_current_tof_data(void) { return &double_tof_buffers[active_tof_buffer]; }
+const TofData* get_current_tof_data(void) { return &double_buffers[active_tof_buffer]; }
 
 // -------------------------------------------------------------------
 // Hook Management

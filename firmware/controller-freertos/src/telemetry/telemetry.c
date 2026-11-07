@@ -24,6 +24,7 @@
 #include "spi_conf.h"
 #include "leds/leds.h"
 #include "microphones/microphones.h"
+#include "selector/selector.h"
 
 #include "fb_custom_emitter.h"
 
@@ -45,6 +46,8 @@ void generic_pack(flatcc_builder_t* builder, struct sensor_fb_data* fb_data, int
 
     uint32_t available_frames =
         (write_idx >= read_idx) ? (write_idx - read_idx) : (fb_data->max_elem - read_idx + write_idx);
+    // Ensure sensor producers wrap write_pointer identically:
+    // *write_pointer = (*write_pointer + 1) % fb_data->max_elem;
 
     uint32_t frames_to_pack = 0;
     while (frames_to_pack < available_frames && (*bytes_written + fb_data->elem_size) <= budget) {
@@ -203,7 +206,7 @@ struct sensor_info* update_age_and_pick_sensor() {
 
     int i = 0;
     for (; i < TELEMETRY_SENSOR_LIST_SIZE; i++) {
-        registered_sensors[i].age += registered_sensors->age_step;  // update age
+        registered_sensors[i].age += registered_sensors[i].age_step;  // update age
         float priority = registered_sensors[i].age + registered_sensors[i].priority;
 
         // Make sure that we have higher priority, that the vector wasn't already ended, and that it is a valid slot
@@ -217,7 +220,7 @@ struct sensor_info* update_age_and_pick_sensor() {
     return s;
 }
 
-void* un_end_sensors() {
+void un_end_sensors() {
     for (int i = 0; i < TELEMETRY_SENSOR_LIST_SIZE; i++) {
         registered_sensors[i].ended = false;
     }
@@ -272,15 +275,16 @@ void TelemetryTask(void* argument) {
 
     for (;;) {
         // 1. Check for silent allocation failures!
+        // with-size should ensure it is size prefixed
         if (FripuckProtocol_Sensors_SensorBatch_start_as_root(&builder) != 0) {
             __BKPT(0);  // If this hits, your custom emitter is out of memory pages
         }
 
         uint32_t now = osKernelGetTickCount();
         uint32_t base = (now > 1000) ? now - 1000 : 0;  // 1 s of slack so no sample is older than the base
-        if (FripuckProtocol_Sensors_SensorBatch_base_timestamp_add(&builder, (uint64_t)base) != 0) {
-            __BKPT(0);
-        }
+        FripuckProtocol_Sensors_SensorBatch_base_timestamp_add(&builder, (uint64_t)base);
+
+        FripuckProtocol_Sensors_SensorBatch_selector_add(&builder, get_selector());
 
         int32_t budget_remainder = pack_loop(&builder, budget, (uint64_t)base);
         // int32_t budget_remainder = 500;
@@ -293,7 +297,7 @@ void TelemetryTask(void* argument) {
         // 3. Only send if we actually packed data
         if (budget_remainder < budget && buf != NULL) {
             if (final_size <= RADIO_MAX_PACKET_SIZE) {
-                spi_radio_send((uint8_t*)buf, (uint16_t)final_size);
+                spi_radio_send((uint8_t*)buf, final_size);
             } else {
                 __BKPT(0);  // Handle oversized packets
             }
@@ -303,11 +307,13 @@ void TelemetryTask(void* argument) {
         reset_emitter(&builder);
         un_end_sensors();
 
-        // if there is not much data to send, wait a little
-        if (budget_remainder > 100) {
-            uint32_t next = osKernelGetTickCount() + pdMS_TO_TICKS(MAX_TELEMETRY_DELAY_MS);
-            osDelayUntil(next);
-        }
+        // if there is not much data to send, wait a little. If budget is low, wait less
+        uint32_t delay_ms = (budget_remainder > 100) ? MAX_TELEMETRY_DELAY_MS : 2;  // 2ms minimum breather
+        uint32_t next = osKernelGetTickCount() + pdMS_TO_TICKS(delay_ms);
+        osDelayUntil(next);
+
+        // FIXME: ideally, the stm and esp chip would have a handshake through a gpio pin, but until all sensors are
+        // implemented, I'm not sure I have free pins available.
     }
 }
 

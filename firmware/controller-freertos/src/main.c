@@ -100,13 +100,12 @@ void StartDefaultTask(void* argument) {
     // start_instruction_handler(10);
     // err = ground_start(NULL);
     // if (err != 0) set_led(5, true);
-    // tof_start_task(NULL);
+    tof_start_task(NULL);
     telemetry_start_task(NULL);
 
-    err = microphones_init(&hi2s2, &hspi3, &htim9);
-    assert(err == 0);
-
-    microphones_start();
+    // err = microphones_init(&hi2s2, &hspi3, &htim9);
+    // assert(err == 0);
+    // microphones_start();
 
     while (1) {
         osDelay(100);

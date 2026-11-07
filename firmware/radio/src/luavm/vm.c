@@ -6,7 +6,10 @@
 #include <freertos/FreeRTOS.h>
 
 #include "vm.h"
-#include "all_lua_types.h"
+#include "ground.h"
+#include "tof.h"
+#include "selector.h"
+#include "custom.h"
 
 #define LUA_EVENT_POOL_SIZE 10
 
@@ -119,12 +122,14 @@ void lua_vm(void* argument) {
                     execute_ground_hook(L);
                     break;
                 case HOOK_TELEMETRY_TOF:
-                    execute_tof_hook(L);
+                    execute_selector_hook(L);
                     break;
                 // case HOOK_TELEMETRY_BATTERY:
                 //     break;
                 // case HOOK_TELEMETRY_ENCODER:
                 //     break;
+                case HOOK_TELEMETRY_SELECTOR:
+                    execute_selector_hook(L);
                 // case HOOK_TELEMETRY_IMU:
                 //     break;
                 // case HOOK_TELEMETRY_VOLUME:

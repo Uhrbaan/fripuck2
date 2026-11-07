@@ -12,15 +12,11 @@
 
 static const char TAG[] = "SPI";
 
-#define SPI_PACKET_MAX_SIZE 4092
-
-// static uint8_t* spi_transmit_buffer;
-__attribute__((aligned(8))) static uint8_t spi_receive_buffer[SPI_PACKET_MAX_SIZE] = {0};
-
-// static QueueHandle_t spi_request_queue; ///< Holds data sent from a remote client.
-// static EventGroupHandle_t spi_event_group;
-
-static spi_callback_fn user_callback = NULL;
+#define POOL_SIZE 5
+static struct spi_receive_packet_size_wraper packet_pool[POOL_SIZE];
+QueueHandle_t spi_free_queue;
+QueueHandle_t spi_sensor_queue;
+QueueHandle_t spi_to_udp_queue;
 
 void spi_receiver(void* pvParameters);
 
@@ -44,7 +40,24 @@ static spi_slave_interface_config_t spi_slave_config = {
     //.post_trans_cb=my_post_trans_cb
 };
 
-esp_err_t spi_init(spi_host_device_t host_device, spi_callback_fn callback) {
+void spi_init_queues() {
+    // Queues hold pointers (sizeof(void*)), not the structs themselves
+    spi_free_queue = xQueueCreate(POOL_SIZE, sizeof(struct spi_receive_packet_size_wraper*));
+    spi_sensor_queue = xQueueCreate(POOL_SIZE, sizeof(struct spi_receive_packet_size_wraper*));
+    spi_to_udp_queue = xQueueCreate(POOL_SIZE, sizeof(struct spi_receive_packet_size_wraper*));
+
+    // Fill the free queue with pointers to our static buffers
+    for (int i = 0; i < POOL_SIZE; i++) {
+        struct spi_receive_packet_size_wraper* ptr = &packet_pool[i];
+        xQueueSend(spi_free_queue, &ptr, 0);
+    }
+}
+
+/// @brief
+/// @param host_device
+/// @param spi_rx_queue Already initialized queue to put spi data in
+/// @return
+esp_err_t spi_init() {
     // Enable pull-ups on SPI lines so we don't detect rogue pulses when no master is connected.
     gpio_set_pull_mode(PIN_NUM_MOSI, GPIO_PULLUP_ONLY);
     gpio_set_pull_mode(PIN_NUM_CLK, GPIO_PULLUP_ONLY);
@@ -56,30 +69,10 @@ esp_err_t spi_init(spi_host_device_t host_device, spi_callback_fn callback) {
         return ESP_FAIL;
     }
 
-    // Create the buffers to hold spi data
-    // spi_transmit_buffer = (uint8_t*)heap_caps_malloc(SPI_PACKET_MAX_SIZE, MALLOC_CAP_DMA);
-    // if (spi_transmit_buffer == NULL) {
-    //     ESP_LOGE(TAG, "Could not allocate %d bytes for the spi transmit buffer.", SPI_PACKET_MAX_SIZE);
-    //     return ESP_FAIL;
-    // }
-    // memset(spi_transmit_buffer, 0, SPI_PACKET_MAX_SIZE);
-
-    // spi_receive_buffer = (uint8_t*)heap_caps_malloc(SPI_PACKET_MAX_SIZE, MALLOC_CAP_DMA);
-    // if (spi_receive_buffer == NULL) {
-    //     ESP_LOGE(TAG, "Could not allocate %d bytes for the spi receive buffer.", SPI_PACKET_MAX_SIZE);
-    //     return ESP_FAIL;
-    // }
-    // memset(spi_receive_buffer, 0, SPI_PACKET_MAX_SIZE);
-
-    user_callback = callback;
+    spi_init_queues();
 
     // Start main routine that monitors the spi connection
-    if (user_callback) {
-        xTaskCreate(spi_receiver, "spi_receiver", 4096, NULL, 5, NULL);
-    } else {
-        ESP_LOGE(TAG, "Failed to create the reciever task.");
-        return ESP_FAIL;
-    }
+    xTaskCreate(spi_receiver, "spi_receiver", 4096, NULL, 5, NULL);
 
     ESP_LOGI(TAG, "Susccessfully initialized SPI reception.");
     return ESP_OK;
@@ -88,33 +81,30 @@ esp_err_t spi_init(spi_host_device_t host_device, spi_callback_fn callback) {
 /// @brief Receives spi packets (flatbuffers format) and sends commands back (as slave)
 /// @param pvParameters
 void spi_receiver(void* pvParameters) {
-    esp_err_t err;
-
-    // We use the DMA-capable buffer allocated in spi_init
-    spi_slave_transaction_t transaction = {
-        // .tx_buffer = spi_transmit_buffer,  // We only care about receiving
-        .rx_buffer = spi_receive_buffer,
-        .length = SPI_PACKET_MAX_SIZE * 8,  // Maximum space available in bits
-    };
+    struct spi_receive_packet_size_wraper* current_packet = NULL;
 
     ESP_LOGI(TAG, "SPI Receiver Task started.");
 
     while (1) {
-        // Clear buffer before next use
-        memset(spi_receive_buffer, 0, SPI_PACKET_MAX_SIZE);
+        // Grab an empty buffer pointer from the pool
+        if (xQueueReceive(spi_free_queue, &current_packet, portMAX_DELAY) == pdTRUE) {
+            spi_slave_transaction_t transaction = {
+                .rx_buffer = current_packet->buffer,
+                .length = SPI_PACKET_MAX_SIZE * 8,
+            };
 
-        err = spi_slave_transmit(SPI3_HOST, &transaction, portMAX_DELAY);
-        // ESP_LOGI(TAG, "Recieved somthing: %d", err);
+            esp_err_t err = spi_slave_transmit(SPI3_HOST, &transaction, portMAX_DELAY);
 
-        if (err == ESP_OK) {
-            // trans_len is the number of bits actually clocked by the master
-            size_t received_bytes = transaction.trans_len / 8;
-
-            // Call the user-defined callback
-            if (user_callback) user_callback(spi_receive_buffer, received_bytes);
-        } else {
-            ESP_LOGE(TAG, "Slave receive failed: %s", esp_err_to_name(err));
-            vTaskDelay(pdMS_TO_TICKS(10));
+            if (err == ESP_OK) {
+                current_packet->size = transaction.trans_len / 8;
+                // Send the POINTER to the processing task
+                xQueueSend(spi_sensor_queue, &current_packet, 0);
+            } else {
+                ESP_LOGE(TAG, "Slave receive failed: %s", esp_err_to_name(err));
+                // Return buffer to pool on error
+                xQueueSend(spi_free_queue, &current_packet, 0);
+                vTaskDelay(pdMS_TO_TICKS(10));
+            }
         }
     }
 }

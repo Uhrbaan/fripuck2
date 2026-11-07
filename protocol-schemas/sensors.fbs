@@ -111,6 +111,7 @@ struct VideoMetadata {
 table SensorBatch {
     // Sensor readings
     base_timestamp: uint64;
+    selector: uint8;
     proximity: [ProximityData];
     ground: [GroundData];
     tof: [TofData];

@@ -495,19 +495,20 @@ static int FripuckProtocol_Sensors_SensorBatch_verify_table(flatcc_table_verifie
 {
     int ret;
     if ((ret = flatcc_verify_field(td, 0, 8, 8) /* base_timestamp */)) return ret;
-    if ((ret = flatcc_verify_vector_field(td, 1, 0, 36, 2, INT64_C(119304647)) /* proximity */)) return ret;
-    if ((ret = flatcc_verify_vector_field(td, 2, 0, 22, 2, INT64_C(195225786)) /* ground */)) return ret;
-    if ((ret = flatcc_verify_vector_field(td, 3, 0, 4, 2, INT64_C(1073741823)) /* tof */)) return ret;
-    if ((ret = flatcc_verify_vector_field(td, 4, 0, 4, 2, INT64_C(1073741823)) /* battery */)) return ret;
-    if ((ret = flatcc_verify_vector_field(td, 5, 0, 12, 4, INT64_C(357913941)) /* encoder */)) return ret;
-    if ((ret = flatcc_verify_vector_field(td, 6, 0, 44, 4, INT64_C(97612893)) /* imu */)) return ret;
-    if ((ret = flatcc_verify_vector_field(td, 7, 0, 1, 1, INT64_C(4294967295)) /* audio_channel_left */)) return ret;
-    if ((ret = flatcc_verify_vector_field(td, 8, 0, 1, 1, INT64_C(4294967295)) /* audio_channel_right */)) return ret;
-    if ((ret = flatcc_verify_vector_field(td, 9, 0, 1, 1, INT64_C(4294967295)) /* audio_channel_front */)) return ret;
-    if ((ret = flatcc_verify_vector_field(td, 10, 0, 1, 1, INT64_C(4294967295)) /* audio_channel_back */)) return ret;
-    if ((ret = flatcc_verify_vector_field(td, 11, 0, 10, 2, INT64_C(429496729)) /* audio_metadata */)) return ret;
-    if ((ret = flatcc_verify_vector_field(td, 12, 0, 1, 1, INT64_C(4294967295)) /* video_blob */)) return ret;
-    if ((ret = flatcc_verify_vector_field(td, 13, 0, 16, 4, INT64_C(268435455)) /* video_metadata */)) return ret;
+    if ((ret = flatcc_verify_field(td, 1, 1, 1) /* selector */)) return ret;
+    if ((ret = flatcc_verify_vector_field(td, 2, 0, 36, 2, INT64_C(119304647)) /* proximity */)) return ret;
+    if ((ret = flatcc_verify_vector_field(td, 3, 0, 22, 2, INT64_C(195225786)) /* ground */)) return ret;
+    if ((ret = flatcc_verify_vector_field(td, 4, 0, 4, 2, INT64_C(1073741823)) /* tof */)) return ret;
+    if ((ret = flatcc_verify_vector_field(td, 5, 0, 4, 2, INT64_C(1073741823)) /* battery */)) return ret;
+    if ((ret = flatcc_verify_vector_field(td, 6, 0, 12, 4, INT64_C(357913941)) /* encoder */)) return ret;
+    if ((ret = flatcc_verify_vector_field(td, 7, 0, 44, 4, INT64_C(97612893)) /* imu */)) return ret;
+    if ((ret = flatcc_verify_vector_field(td, 8, 0, 1, 1, INT64_C(4294967295)) /* audio_channel_left */)) return ret;
+    if ((ret = flatcc_verify_vector_field(td, 9, 0, 1, 1, INT64_C(4294967295)) /* audio_channel_right */)) return ret;
+    if ((ret = flatcc_verify_vector_field(td, 10, 0, 1, 1, INT64_C(4294967295)) /* audio_channel_front */)) return ret;
+    if ((ret = flatcc_verify_vector_field(td, 11, 0, 1, 1, INT64_C(4294967295)) /* audio_channel_back */)) return ret;
+    if ((ret = flatcc_verify_vector_field(td, 12, 0, 10, 2, INT64_C(429496729)) /* audio_metadata */)) return ret;
+    if ((ret = flatcc_verify_vector_field(td, 13, 0, 1, 1, INT64_C(4294967295)) /* video_blob */)) return ret;
+    if ((ret = flatcc_verify_vector_field(td, 14, 0, 16, 4, INT64_C(268435455)) /* video_metadata */)) return ret;
     return flatcc_verify_ok;
 }
 

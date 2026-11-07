@@ -2,8 +2,11 @@
 
 #include "robot_api.h"
 
-#include "all_lua_types.h"
 #include "commands/commands.h"
+#include "ground.h"
+#include "tof.h"
+#include "selector.h"
+#include "custom.h"
 #include "opcodes.h"
 
 static const char* TAG = "ROBOT API";
@@ -18,6 +21,7 @@ static const char* hook_names[HOOK_NUM] = {
     [HOOK_TELEMETRY_TOF] = "telemetry:tof",
     [HOOK_TELEMETRY_BATTERY] = "telemetry:battery",
     [HOOK_TELEMETRY_ENCODER] = "telemetry:encoder",
+    [HOOK_TELEMETRY_SELECTOR] = "telemetry:selector",
     [HOOK_TELEMETRY_IMU] = "telemetry:imu",
     [HOOK_TELEMETRY_VOLUME] = "telemetry:volume",
     // commands
@@ -28,12 +32,38 @@ static const char* hook_names[HOOK_NUM] = {
 };
 
 static const hook_register_fn hook_register_functions[] = {
-    [HOOK_TELEMETRY_PROXIMITY] = NULL,        [HOOK_TELEMETRY_GROUND] = register_ground_hook,
-    [HOOK_TELEMETRY_TOF] = register_tof_hook, [HOOK_TELEMETRY_BATTERY] = NULL,
-    [HOOK_TELEMETRY_ENCODER] = NULL,          [HOOK_TELEMETRY_IMU] = NULL,
-    [HOOK_TELEMETRY_VOLUME] = NULL,           [HOOK_COMMAND_CUSTOM] = register_custom_hook,
+    [HOOK_TELEMETRY_PROXIMITY] = NULL,
+    [HOOK_TELEMETRY_GROUND] = register_ground_hook,
+    [HOOK_TELEMETRY_TOF] = register_selector_hook,
+    [HOOK_TELEMETRY_BATTERY] = NULL,
+    [HOOK_TELEMETRY_ENCODER] = NULL,
+    [HOOK_TELEMETRY_SELECTOR] = register_selector_hook,
+    [HOOK_TELEMETRY_IMU] = NULL,
+    [HOOK_TELEMETRY_VOLUME] = NULL,
+    [HOOK_COMMAND_CUSTOM] = register_custom_hook,
     // TODO: commands
 };
+
+static int l_robot_index(lua_State* L) {
+    // arg 1: the robot userdata (unused, but checked for safety)
+    luaL_checkudata(L, 1, "Robot");
+    const char* key = luaL_checkstring(L, 2);
+
+    if (strcmp(key, "selector") == 0) {
+        return push_selector_data(L);
+    }
+    if (strcmp(key, "ground") == 0) {
+        return push_ground_data(L);
+    }
+    // ... add more sensors here as they come online:
+    // if (strcmp(key, "tof") == 0)  return push_tof_data(L);
+    // if (strcmp(key, "battery") == 0) return push_battery_data(L);
+
+    // Unknown key: return nil (Lua convention) rather than error,
+    // so users can do `if robot.foo then ... end`.
+    lua_pushnil(L);
+    return 1;
+}
 
 /**
  * This function register a hook to the lua VM. If the hook is created, as soon as a data piece is detected, the
@@ -147,4 +177,9 @@ int L_robot_set_modules(lua_State* L) {
     return 0;
 }
 
-const luaL_Reg robot_lib[] = {{"on", L_robot_on}, {"set_modules", L_robot_set_modules}, {NULL, NULL}};
+const luaL_Reg robot_lib[] = {
+    {"__index", l_robot_index},
+    {"on", L_robot_on},
+    {"set_modules", L_robot_set_modules},
+    {NULL, NULL},
+};

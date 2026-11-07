@@ -83,14 +83,20 @@ function init()
         -- -- this provided distance approaches the dynamic `d_stop` braking threshold.
         -- robot.drive(speed)
     end)
+    robot.on("telemetry:tof", function(value)
+        -- print("selector: " .. value)
+    end)
 end
 
 local counter = 0.0
 function update(dt)
-    counter = counter + dt
-    if counter > 5 then
-        print("Roughly " .. measurements_since_last / counter .. " tof measurements /s")
-        measurements_since_last = 0
-        counter = 0
-    end
+    -- if robot.selector > 3 then
+    --     robot.set_modules({
+    --         body_led = true
+    --     })
+    -- else
+    --     robot.set_modules({
+    --         body_led = false
+    --     })
+    -- end
 end

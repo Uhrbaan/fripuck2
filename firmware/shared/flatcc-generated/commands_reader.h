@@ -31,6 +31,10 @@ typedef const struct FripuckProtocol_Commands_MoveTrajectory_table *FripuckProto
 typedef struct FripuckProtocol_Commands_MoveTrajectory_table *FripuckProtocol_Commands_MoveTrajectory_mutable_table_t;
 typedef const flatbuffers_uoffset_t *FripuckProtocol_Commands_MoveTrajectory_vec_t;
 typedef flatbuffers_uoffset_t *FripuckProtocol_Commands_MoveTrajectory_mutable_vec_t;
+typedef const struct FripuckProtocol_Commands_FileTransfer_table *FripuckProtocol_Commands_FileTransfer_table_t;
+typedef struct FripuckProtocol_Commands_FileTransfer_table *FripuckProtocol_Commands_FileTransfer_mutable_table_t;
+typedef const flatbuffers_uoffset_t *FripuckProtocol_Commands_FileTransfer_vec_t;
+typedef flatbuffers_uoffset_t *FripuckProtocol_Commands_FileTransfer_mutable_vec_t;
 typedef const struct FripuckProtocol_Commands_Command_table *FripuckProtocol_Commands_Command_table_t;
 typedef struct FripuckProtocol_Commands_Command_table *FripuckProtocol_Commands_Command_mutable_table_t;
 typedef const flatbuffers_uoffset_t *FripuckProtocol_Commands_Command_vec_t;
@@ -74,6 +78,18 @@ typedef flatbuffers_uoffset_t *FripuckProtocol_Commands_CommandBatch_mutable_vec
 #define FripuckProtocol_Commands_MoveTrajectory_type_identifier "\x4f\x52\xa6\x3b"
 #ifndef FripuckProtocol_Commands_MoveTrajectory_file_extension
 #define FripuckProtocol_Commands_MoveTrajectory_file_extension "bin"
+#endif
+#ifndef FripuckProtocol_Commands_FileTransfer_file_identifier
+#define FripuckProtocol_Commands_FileTransfer_file_identifier 0
+#endif
+/* deprecated, use FripuckProtocol_Commands_FileTransfer_file_identifier */
+#ifndef FripuckProtocol_Commands_FileTransfer_identifier
+#define FripuckProtocol_Commands_FileTransfer_identifier 0
+#endif
+#define FripuckProtocol_Commands_FileTransfer_type_hash ((flatbuffers_thash_t)0x5bacd446)
+#define FripuckProtocol_Commands_FileTransfer_type_identifier "\x46\xd4\xac\x5b"
+#ifndef FripuckProtocol_Commands_FileTransfer_file_extension
+#define FripuckProtocol_Commands_FileTransfer_file_extension "bin"
 #endif
 #ifndef FripuckProtocol_Commands_Command_file_identifier
 #define FripuckProtocol_Commands_Command_file_identifier 0
@@ -204,6 +220,18 @@ __flatbuffers_define_scalar_field(3, FripuckProtocol_Commands_MoveTrajectory, ac
 __flatbuffers_define_scalar_field(4, FripuckProtocol_Commands_MoveTrajectory, decel, flatbuffers_float, float, 0.00000000f)
 __flatbuffers_define_scalar_field(5, FripuckProtocol_Commands_MoveTrajectory, notify, flatbuffers_bool, flatbuffers_bool_t, UINT8_C(0))
 __flatbuffers_define_scalar_field(6, FripuckProtocol_Commands_MoveTrajectory, synchronous, flatbuffers_bool, flatbuffers_bool_t, UINT8_C(0))
+
+struct FripuckProtocol_Commands_FileTransfer_table { uint8_t unused__; };
+
+static inline size_t FripuckProtocol_Commands_FileTransfer_vec_len(FripuckProtocol_Commands_FileTransfer_vec_t vec)
+__flatbuffers_vec_len(vec)
+static inline FripuckProtocol_Commands_FileTransfer_table_t FripuckProtocol_Commands_FileTransfer_vec_at(FripuckProtocol_Commands_FileTransfer_vec_t vec, size_t i)
+__flatbuffers_offset_vec_at(FripuckProtocol_Commands_FileTransfer_table_t, vec, i, 0)
+__flatbuffers_table_as_root(FripuckProtocol_Commands_FileTransfer)
+
+__flatbuffers_define_string_field(0, FripuckProtocol_Commands_FileTransfer, filename, 0)
+__flatbuffers_define_vector_field(1, FripuckProtocol_Commands_FileTransfer, content, flatbuffers_uint8_vec_t, 0)
+__flatbuffers_define_scalar_field(2, FripuckProtocol_Commands_FileTransfer, selector_slot, flatbuffers_int8, int8_t, INT8_C(-1))
 typedef uint8_t FripuckProtocol_Commands_Instruction_union_type_t;
 __flatbuffers_define_integer_type(FripuckProtocol_Commands_Instruction, FripuckProtocol_Commands_Instruction_union_type_t, 8)
 __flatbuffers_define_union(flatbuffers_, FripuckProtocol_Commands_Instruction)
@@ -211,6 +239,7 @@ __flatbuffers_define_union(flatbuffers_, FripuckProtocol_Commands_Instruction)
 #define FripuckProtocol_Commands_Instruction_Custom ((FripuckProtocol_Commands_Instruction_union_type_t)UINT8_C(1))
 #define FripuckProtocol_Commands_Instruction_EnableCommand ((FripuckProtocol_Commands_Instruction_union_type_t)UINT8_C(2))
 #define FripuckProtocol_Commands_Instruction_MoveTrajectory ((FripuckProtocol_Commands_Instruction_union_type_t)UINT8_C(3))
+#define FripuckProtocol_Commands_Instruction_FileTransfer ((FripuckProtocol_Commands_Instruction_union_type_t)UINT8_C(4))
 
 static inline const char *FripuckProtocol_Commands_Instruction_type_name(FripuckProtocol_Commands_Instruction_union_type_t type)
 {
@@ -219,6 +248,7 @@ static inline const char *FripuckProtocol_Commands_Instruction_type_name(Fripuck
     case FripuckProtocol_Commands_Instruction_Custom: return "Custom";
     case FripuckProtocol_Commands_Instruction_EnableCommand: return "EnableCommand";
     case FripuckProtocol_Commands_Instruction_MoveTrajectory: return "MoveTrajectory";
+    case FripuckProtocol_Commands_Instruction_FileTransfer: return "FileTransfer";
     default: return "";
     }
 }
@@ -230,6 +260,7 @@ static inline int FripuckProtocol_Commands_Instruction_is_known_type(FripuckProt
     case FripuckProtocol_Commands_Instruction_Custom: return 1;
     case FripuckProtocol_Commands_Instruction_EnableCommand: return 1;
     case FripuckProtocol_Commands_Instruction_MoveTrajectory: return 1;
+    case FripuckProtocol_Commands_Instruction_FileTransfer: return 1;
     default: return 0;
     }
 }

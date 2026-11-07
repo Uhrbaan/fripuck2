@@ -85,6 +85,12 @@ void lua_vm(void* argument) {
     luaL_openlibs(L);
     ESP_LOGI(TAG, "Loaded default lua libraries.");
 
+    // lua_getglobal(L, "package");
+    // lua_pushstring(L, "/lfs/?.lua;/lfs/?/init.lua");
+    // lua_setfield(L, -2, "path");
+    // lua_pop(L, 1);
+    // ESP_LOGI(TAG, "Loaded ability to load packages");
+
     // Initialize types
     ground_type_init(L);
     custom_type_init(L);
@@ -97,11 +103,24 @@ void lua_vm(void* argument) {
     lua_pop(L, 1);
     ESP_LOGI(TAG, "Registered robot libraries.");
 
-    if (luaL_loadbuffer(L, (const char*)src_luavm_example_script_lua, src_luavm_example_script_lua_len, "script") !=
-            0 ||
-        lua_pcall(L, 0, 0, 0) != 0) {
-        ESP_LOGE(TAG, "Error loading script: %s", lua_tostring(L, -1));
+    uint8_t current_slot = *get_current_selector_data();  // 0-15
+    char boot_script[64];
+    snprintf(boot_script, sizeof(boot_script), "/lfs/%X/init.lua", current_slot);
+
+    ESP_LOGI(TAG, "Booting selector slot %X -> %s", current_slot, boot_script);
+
+    // Attempt to load the slot's init.lua
+    if (luaL_loadfile(L, boot_script) != 0 || lua_pcall(L, 0, 0, 0) != 0) {
+        ESP_LOGW(TAG, "Failed to load %s: %s. Falling back to default.", boot_script, lua_tostring(L, -1));
         lua_pop(L, 1);
+
+        // Optional fallback
+        if (luaL_loadfile(L, "/lfs/default.lua") == 0) {
+            lua_pcall(L, 0, 0, 0);
+        } else {
+            ESP_LOGE(TAG, "Failed to load any lua script. Exiting lua VM.");
+            vTaskDelete(NULL);
+        }
     }
 
     lua_script_init(L);

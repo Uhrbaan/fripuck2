@@ -103,6 +103,13 @@ class Robot:
                 notify=intent["notify"],
                 synchronous=intent["synchronous"]
             )
+        elif intent["type"] == "FileTransfer":
+            cmd.commandType = commands.Instruction.FileTransfer
+            cmd.command = commands.FileTransferT(
+                filename=intent["filename"],
+                content=intent["content"],
+                selectorSlot=intent["selector_slot"]
+            )
             
         return cmd
 
@@ -222,3 +229,29 @@ class Robot:
         }
 
         self._queue_or_send(command_intent)
+        
+    def upload_file(self, local_path: str, remote_filename: str = None, selector_slot: int = -1):
+        """
+        Reads a local file and queues it to be sent to the robot.
+        
+        :param local_path: The path to the file on your computer.
+        :param remote_filename: Name to use on the robot. Defaults to the local file's name.
+        :param selector_slot: 0-15 to assign to a hardware selector slot. -1 for a shared module.
+        """
+        if remote_filename is None:
+            remote_filename = os.path.basename(local_path)
+            
+        try:
+            with open(local_path, "rb") as f:
+                file_content = f.read()
+        except FileNotFoundError:
+            print(f"Error: Could not find file '{local_path}'")
+            return
+
+        self._queue_or_send({
+            "type": "FileTransfer",
+            "filename": remote_filename,
+            # FlatBuffers Object API accepts a byte string / list of ints for [uint8]
+            "content": file_content, 
+            "selector_slot": selector_slot
+        })

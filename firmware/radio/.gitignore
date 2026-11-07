@@ -6,3 +6,4 @@ main
 network_config.*
 sdkconfig.*
 !sdkconfig.board
+managed_components

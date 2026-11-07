@@ -3,6 +3,7 @@ import threading
 import socket
 from collections.abc import Callable
 import queue
+import time
 
 class ConnectionManager:
     def __init__(self, tcp_port:int = 65430, udp_port: int=65431):
@@ -31,21 +32,25 @@ class ConnectionManager:
     def register_ip(self, ip: str, callback: Callable[[bytes], None]) -> Callable[[bytes | str], None]:
         """Registers the robot to the connection manager. 
 
-        You may provide an IP address AND a callback function, OR a single instance of Robot.
-        
-        :param ip: IPv4 address of the robot we want to connect to.
-        :param callback: Callback function that will be called when we recieve a udp or tcp packet from that robot. It contains the data being sent as a parameter.
-        :param tcp_port: Optional. Should only be changed if you use other firmware that does not use the port 65430.
-        :return: A function that can be used to send data to the robot.
+        Blocks until the connection is successfully established.
         """
+        print(f"Attempting to connect to robot {ip}...")
 
-        # Add the robot to the reconnect queue so it gets connected shortly.
-        self.reconnect_queue.put((ip, callback))
+        # Keep trying to connect until successful or the manager is shut down
+        connected = False
+        while not connected and self.running:
+            try:
+                self._reconnect(ip, callback)
+                connected = True
+            except Exception as e:
+                print(f"Failed to connect to {ip} ({e}). Retrying in 1 second...")
+                time.sleep(1)
+
         print(f"Registered robot {ip}")
 
         # Return the function so the robot can send tcp data
         return lambda data: self.send_tcp(ip=ip, data=data)
-
+    
     def _reconnect_pending(self):
         """Function that will try to reconnect a robot."""
         try:

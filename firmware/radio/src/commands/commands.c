@@ -13,6 +13,7 @@
 #include "opcodes.h"
 #include "commands.h"
 #include "uart/uart.h"
+#include <sys/stat.h>
 
 static const char* TAG = "COMMANDS";
 static uint32_t system_state = 0x00;
@@ -62,6 +63,49 @@ void process_command(FripuckProtocol_Commands_Command_table_t cmd) {
             bool notify = FripuckProtocol_Commands_MoveTrajectory_notify(table);
             bool synchronous = FripuckProtocol_Commands_MoveTrajectory_synchronous(table);
             command_move_trajectory(speed, distance, radius, accel, decel, notify, synchronous);
+            break;
+        }
+        case FripuckProtocol_Commands_Instruction_FileTransfer: {
+            FripuckProtocol_Commands_FileTransfer_table_t file_cmd = (FripuckProtocol_Commands_FileTransfer_table_t)val;
+            const char* filename = FripuckProtocol_Commands_FileTransfer_filename(file_cmd);
+            int8_t slot = FripuckProtocol_Commands_FileTransfer_selector_slot(file_cmd);
+
+            flatbuffers_uint8_vec_t content = FripuckProtocol_Commands_FileTransfer_content(file_cmd);
+            size_t content_len = flatbuffers_uint8_vec_len(content);
+
+            char filepath[64];
+            if (slot >= 0 && slot <= 15) {
+                // 1. Ensure the directory exists (LittleFS requires explicit directory creation)
+                char dirpath[16];
+                snprintf(dirpath, sizeof(dirpath), "/lfs/%X", slot);
+                mkdir(dirpath, 0777);  // Ignores error if directory already exists
+
+                // 2. Build the target file path
+                snprintf(filepath, sizeof(filepath), "/lfs/%X/%s", slot, filename);
+            } else {
+                // Shared module in the root directory
+                snprintf(filepath, sizeof(filepath), "/lfs/%s", filename);
+            }
+
+            // 3. Open, Write, and Close
+            FILE* f = fopen(filepath, "w");
+            if (f == NULL) {
+                ESP_LOGE("FILE", "Failed to open %s for writing", filepath);
+                break;
+            }
+
+            size_t written = fwrite(content, 1, content_len, f);
+            if (written != content_len) {
+                ESP_LOGE("FILE", "Incomplete write: %zu of %zu bytes", written, content_len);
+            } else {
+                ESP_LOGI("FILE", "Successfully saved %s", filepath);
+            }
+
+            fclose(f);
+
+            // Notify the VM to hot-reload if necessary
+            // lua_event_t event = {.type = HOOK_COMMAND_FILE};
+            // xQueueSend(lua_event_queue, &event, 0);
             break;
         }
         case FripuckProtocol_Commands_Instruction_NONE:

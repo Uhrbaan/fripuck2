@@ -14,6 +14,7 @@ const (
 	InstructionCustom         Instruction = 1
 	InstructionEnableCommand  Instruction = 2
 	InstructionMoveTrajectory Instruction = 3
+	InstructionFileTransfer   Instruction = 4
 )
 
 var EnumNamesInstruction = map[Instruction]string{
@@ -21,6 +22,7 @@ var EnumNamesInstruction = map[Instruction]string{
 	InstructionCustom:         "Custom",
 	InstructionEnableCommand:  "EnableCommand",
 	InstructionMoveTrajectory: "MoveTrajectory",
+	InstructionFileTransfer:   "FileTransfer",
 }
 
 var EnumValuesInstruction = map[string]Instruction{
@@ -28,6 +30,7 @@ var EnumValuesInstruction = map[string]Instruction{
 	"Custom":         InstructionCustom,
 	"EnableCommand":  InstructionEnableCommand,
 	"MoveTrajectory": InstructionMoveTrajectory,
+	"FileTransfer":   InstructionFileTransfer,
 }
 
 func (v Instruction) String() string {
@@ -53,6 +56,8 @@ func (t *InstructionT) Pack(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 		return t.Value.(*EnableCommandT).Pack(builder)
 	case InstructionMoveTrajectory:
 		return t.Value.(*MoveTrajectoryT).Pack(builder)
+	case InstructionFileTransfer:
+		return t.Value.(*FileTransferT).Pack(builder)
 	}
 	return 0
 }
@@ -71,6 +76,10 @@ func (rcv Instruction) UnPack(table flatbuffers.Table) *InstructionT {
 		var x MoveTrajectory
 		x.Init(table.Bytes, table.Pos)
 		return &InstructionT{Type: InstructionMoveTrajectory, Value: x.UnPack()}
+	case InstructionFileTransfer:
+		var x FileTransfer
+		x.Init(table.Bytes, table.Pos)
+		return &InstructionT{Type: InstructionFileTransfer, Value: x.UnPack()}
 	}
 	return nil
 }

@@ -64,7 +64,7 @@ int register_selector_hook(lua_State* L, int narg) {
 extern QueueHandle_t lua_event_queue;
 
 void trigger_selector_hook(const uint8_t* new_value) {
-    ESP_LOGI(TAG, "Triggered selector trigger: %x", *new_value);
+    // ESP_LOGI(TAG, "Triggered selector trigger: %x", *new_value);
     uint8_t old_value = *get_current_selector_data();
     update_selector_c_state(new_value);
 

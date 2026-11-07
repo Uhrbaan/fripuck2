@@ -40,7 +40,7 @@ void tcp_receiver(void* pvParameters) {
     const int socket = (int)(intptr_t)pvParameters;
     static const char TAG[] = "TCP RECEIVER";
 
-    enum { MAX_PAYLOAD = 2048 };
+    enum { MAX_PAYLOAD = 4096 };
     alignas(8) static uint8_t buf[4 + MAX_PAYLOAD];
 
     for (;;) {
@@ -174,7 +174,8 @@ retry:
     }
 
     xTaskCreate(tcp_transmitter, "tcp_transmitter", 1024 * 2, (void*)client_socket_fd, 1, &xTCPTransmitterHandle);
-    xTaskCreate(tcp_receiver, "tcp_receiver", 1024 * 2, (void*)client_socket_fd, 1, &xTCPRecieverHandle);
+    // more stack because lots of decoding
+    xTaskCreate(tcp_receiver, "tcp_receiver", 1024 * 6, (void*)client_socket_fd, 1, &xTCPRecieverHandle);
     xTaskCreate(udp_transmitter, "udp_transmitter", 1024 * 4, (void*)&client_addr, 1,
                 &xUDPTransmitterHandle);  // also close the UDP connection if we lose connection.
 

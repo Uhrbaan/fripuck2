@@ -39,10 +39,17 @@ table MoveTrajectory {
     synchronous: bool;
 }
 
+table FileTransfer {
+    filename: string;
+    content: [uint8];
+    selector_slot: int8 = -1; // -1 = module, 0-15 = boot slot
+}
+
 union Instruction {
     Custom,
     EnableCommand,
-    MoveTrajectory
+    MoveTrajectory,
+    FileTransfer
 }
 
 // Needed since flatbuffers doesn't support vectors of unions.

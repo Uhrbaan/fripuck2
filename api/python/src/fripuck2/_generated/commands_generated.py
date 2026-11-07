@@ -30,6 +30,7 @@ class Instruction(object):
     Custom = 1
     EnableCommand = 2
     MoveTrajectory = 3
+    FileTransfer = 4
 
 def InstructionCreator(unionType, table):
     from flatbuffers.table import Table
@@ -41,6 +42,8 @@ def InstructionCreator(unionType, table):
         return EnableCommandT.InitFromBuf(table.Bytes, table.Pos)
     if unionType == Instruction.MoveTrajectory:
         return MoveTrajectoryT.InitFromBuf(table.Bytes, table.Pos)
+    if unionType == Instruction.FileTransfer:
+        return FileTransferT.InitFromBuf(table.Bytes, table.Pos)
     return None
 
 
@@ -390,6 +393,162 @@ class MoveTrajectoryT(object):
         return moveTrajectory
 
 
+class FileTransfer(object):
+    __slots__ = ['_tab']
+
+    @classmethod
+    def GetRootAs(cls, buf, offset=0):
+        n = flatbuffers.encode.Get(flatbuffers.packer.uoffset, buf, offset)
+        x = FileTransfer()
+        x.Init(buf, n + offset)
+        return x
+
+    @classmethod
+    def GetRootAsFileTransfer(cls, buf, offset=0):
+        """This method is deprecated. Please switch to GetRootAs."""
+        return cls.GetRootAs(buf, offset)
+    # FileTransfer
+    def Init(self, buf, pos):
+        self._tab = flatbuffers.table.Table(buf, pos)
+
+    # FileTransfer
+    def Filename(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(4))
+        if o != 0:
+            return self._tab.String(o + self._tab.Pos)
+        return None
+
+    # FileTransfer
+    def Content(self, j):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(6))
+        if o != 0:
+            a = self._tab.Vector(o)
+            return self._tab.Get(flatbuffers.number_types.Uint8Flags, a + flatbuffers.number_types.UOffsetTFlags.py_type(j * 1))
+        return 0
+
+    # FileTransfer
+    def ContentAsNumpy(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(6))
+        if o != 0:
+            return self._tab.GetVectorAsNumpy(flatbuffers.number_types.Uint8Flags, o)
+        return 0
+
+    # FileTransfer
+    def ContentLength(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(6))
+        if o != 0:
+            return self._tab.VectorLen(o)
+        return 0
+
+    # FileTransfer
+    def ContentIsNone(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(6))
+        return o == 0
+
+    # FileTransfer
+    def SelectorSlot(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(8))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Int8Flags, o + self._tab.Pos)
+        return -1
+
+def FileTransferStart(builder):
+    builder.StartObject(3)
+
+def FileTransferAddFilename(builder, filename):
+    builder.PrependUOffsetTRelativeSlot(0, flatbuffers.number_types.UOffsetTFlags.py_type(filename), 0)
+
+def FileTransferAddContent(builder, content):
+    builder.PrependUOffsetTRelativeSlot(1, flatbuffers.number_types.UOffsetTFlags.py_type(content), 0)
+
+def FileTransferStartContentVector(builder, numElems):
+    return builder.StartVector(1, numElems, 1)
+
+def FileTransferCreateContentVector(builder, data):
+    data = list(data)
+    builder.StartVector(1, len(data), 1)
+    for item in reversed(data):
+        builder.PrependUint8(item)
+    return builder.EndVector()
+
+def FileTransferAddSelectorSlot(builder, selectorSlot):
+    builder.PrependInt8Slot(2, selectorSlot, -1)
+
+def FileTransferEnd(builder):
+    return builder.EndObject()
+
+
+try:
+    from typing import List
+except:
+    pass
+
+class FileTransferT(object):
+
+    # FileTransferT
+    def __init__(
+        self,
+        filename = None,
+        content = None,
+        selectorSlot = -1,
+    ):
+        self.filename = filename  # type: Optional[str]
+        self.content = content  # type: Optional[List[int]]
+        self.selectorSlot = selectorSlot  # type: int
+
+    @classmethod
+    def InitFromBuf(cls, buf, pos):
+        fileTransfer = FileTransfer()
+        fileTransfer.Init(buf, pos)
+        return cls.InitFromObj(fileTransfer)
+
+    @classmethod
+    def InitFromPackedBuf(cls, buf, pos=0):
+        n = flatbuffers.encode.Get(flatbuffers.packer.uoffset, buf, pos)
+        return cls.InitFromBuf(buf, pos+n)
+
+    @classmethod
+    def InitFromObj(cls, fileTransfer):
+        x = FileTransferT()
+        x._UnPack(fileTransfer)
+        return x
+
+    # FileTransferT
+    def _UnPack(self, fileTransfer):
+        if fileTransfer is None:
+            return
+        self.filename = fileTransfer.Filename()
+        if not fileTransfer.ContentIsNone():
+            if np is None:
+                self.content = []
+                for i in range(fileTransfer.ContentLength()):
+                    self.content.append(fileTransfer.Content(i))
+            else:
+                self.content = fileTransfer.ContentAsNumpy()
+        self.selectorSlot = fileTransfer.SelectorSlot()
+
+    # FileTransferT
+    def Pack(self, builder):
+        if self.filename is not None:
+            filename = builder.CreateString(self.filename)
+        if self.content is not None:
+            if np is not None and type(self.content) is np.ndarray:
+                content = builder.CreateNumpyVector(self.content)
+            else:
+                FileTransferStartContentVector(builder, len(self.content))
+                for i in reversed(range(len(self.content))):
+                    builder.PrependUint8(self.content[i])
+                content = builder.EndVector()
+        FileTransferStart(builder)
+        if self.filename is not None:
+            FileTransferAddFilename(builder, filename)
+        if self.content is not None:
+            FileTransferAddContent(builder, content)
+        FileTransferAddSelectorSlot(builder, self.selectorSlot)
+        fileTransfer = FileTransferEnd(builder)
+        return fileTransfer
+
+
 class Command(object):
     __slots__ = ['_tab']
 
@@ -452,7 +611,7 @@ class CommandT(object):
         command = None,
     ):
         self.commandType = commandType  # type: int
-        self.command = command  # type: Union[None, 'CustomT', 'EnableCommandT', 'MoveTrajectoryT']
+        self.command = command  # type: Union[None, 'CustomT', 'EnableCommandT', 'MoveTrajectoryT', 'FileTransferT']
 
     @classmethod
     def InitFromBuf(cls, buf, pos):

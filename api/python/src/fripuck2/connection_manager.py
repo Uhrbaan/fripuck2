@@ -37,16 +37,18 @@ class ConnectionManager:
         print(f"Attempting to connect to robot {ip}...")
 
         # Keep trying to connect until successful or the manager is shut down
-        connected = False
-        while not connected and self.running:
-            try:
-                self._reconnect(ip, callback)
-                connected = True
-            except Exception as e:
-                print(f"Failed to connect to {ip} ({e}). Retrying in 1 second...")
-                time.sleep(1)
+        # connected = False
+        # while not connected and self.running:
+        #     try:
+        #         self._reconnect(ip, callback)
+        #         connected = True
+        #     except Exception as e:
+        #         print(f"Failed to connect to {ip} ({e}). Retrying in 1 second...")
+        #         time.sleep(1)
 
-        print(f"Registered robot {ip}")
+        # print(f"Registered robot {ip}")
+        
+        self.reconnect_queue.put((ip, callback))
 
         # Return the function so the robot can send tcp data
         return lambda data: self.send_tcp(ip=ip, data=data)

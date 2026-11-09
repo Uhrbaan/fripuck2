@@ -41,7 +41,8 @@ class Robot:
 
     def _receive_packet(self, data: bytes):
         """Default callback function to recieve UDP/TCP packets."""
-        if sensors.SensorBatch.SensorBatchBufferHasIdentifier(data, 0):
+        if sensors.SensorBatch.SensorBatchBufferHasIdentifier(data, 8): # starts with crc and size, ignore for now
+            # TODO: actually analyze the crc and size
             self._parse_sensor_batch(data)
         elif commands.CommandBatch.CommandBatchBufferHasIdentifier(data, 0):
             self._parse_command_batch(data)
@@ -49,7 +50,7 @@ class Robot:
             print("Couldn't parse packet.")
 
     def _parse_sensor_batch(self, data: bytes):
-        batch = sensors.SensorBatch.GetRootAsSensorBatch(data, 0)
+        batch = sensors.SensorBatch.GetRootAsSensorBatch(data, 8)
         base_timestamp = batch.BaseTimestamp()
         self.tof._parse(base_timestamp, batch)
         self.prox._parse(base_timestamp, batch)

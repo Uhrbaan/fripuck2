@@ -103,7 +103,9 @@ void lua_vm(void* argument) {
     lua_pop(L, 1);
     ESP_LOGI(TAG, "Registered robot libraries.");
 
-    uint8_t current_slot = *get_current_selector_data();  // 0-15
+    int8_t current_slot = -1;
+    while ((current_slot = get_current_selector_data()) == -1) vTaskDelay(10);
+
     char boot_script[64];
     snprintf(boot_script, sizeof(boot_script), "/lfs/%X/init.lua", current_slot);
 
@@ -149,6 +151,7 @@ void lua_vm(void* argument) {
                 //     break;
                 case HOOK_TELEMETRY_SELECTOR:
                     execute_selector_hook(L);
+                    break;
                 // case HOOK_TELEMETRY_IMU:
                 //     break;
                 // case HOOK_TELEMETRY_VOLUME:

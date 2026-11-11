@@ -97,8 +97,8 @@ void sensor_receiver_task(void* arguments) {
             }
 
             // selector
-            const uint8_t selector = FripuckProtocol_Sensors_SensorBatch_selector(batch);
-            trigger_selector_hook(&selector);
+            const int8_t selector = FripuckProtocol_Sensors_SensorBatch_selector(batch);
+            trigger_selector_hook(selector);
 
             // FripuckProtocol_Sensors_AudioMetadata_vec_t audio_meta_vec =
             //     FripuckProtocol_Sensors_SensorBatch_audio_metadata(batch);

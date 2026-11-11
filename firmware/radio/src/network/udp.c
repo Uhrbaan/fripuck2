@@ -49,18 +49,20 @@ void udp_transmitter(void* pvParameters) {
     udp_active = true;
 
     while (1) {
-        if (xQueueReceive(spi_to_udp_queue, &packet, portMAX_DELAY) == pdTRUE) continue;
-        size_t size = packet->size;
-        uint8_t* buffer = packet->buffer;
+        if (xQueueReceive(spi_to_udp_queue, &packet, portMAX_DELAY) == pdTRUE) {
+            size_t size = packet->size;
+            uint8_t* buffer = packet->buffer;
 
-        ssize_t bytes = sendto(udp_sock_fd, buffer, size, 0, (struct sockaddr*)&target_addr, sizeof(target_addr));
-        if (bytes < 0) {
-            ESP_LOGE("UDP TRANSMITTER", "Error while sending data: %s (%d).", strerror(errno), errno);
-            break;
+            ssize_t bytes = sendto(udp_sock_fd, buffer, size, 0, (struct sockaddr*)&target_addr, sizeof(target_addr));
+            if (bytes < 0) {
+                ESP_LOGE("UDP TRANSMITTER", "Error while sending data: %s (%d).", strerror(errno), errno);
+                break;
+            }
+            ESP_LOGI(TAG, "Sent %d bytes over UDP", bytes);
+
+            // vTaskDelay(pdMS_TO_TICKS(1000));
+            xQueueSend(spi_free_queue, &packet, 0);
         }
-
-        // vTaskDelay(pdMS_TO_TICKS(1000));
-        xQueueSend(spi_free_queue, &packet, 0);
     }
 
     ESP_LOGE("UDP TRANSMITTER", "Closing thread.");

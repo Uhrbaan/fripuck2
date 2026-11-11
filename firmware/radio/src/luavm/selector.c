@@ -8,16 +8,16 @@
 static const char* TAG = "TOF LTYPE";
 
 // Double buffering to safely pass data between the SPI/ISR context and the Lua VM context
-static uint8_t double_buffers[2] = {0};
+static volatile int8_t double_buffers[2] = {-1, -1};  // unknown value
 static volatile int active_tof_buffer = 0;
 
-void update_selector_c_state(const uint8_t* new_data) {
+void update_selector_c_state(const int8_t new_data) {
     int inactive_tof_buffer = 1 - active_tof_buffer;
-    double_buffers[inactive_tof_buffer] = *new_data;
+    double_buffers[inactive_tof_buffer] = new_data;
     active_tof_buffer = inactive_tof_buffer;
 }
 
-const uint8_t* get_current_selector_data(void) { return &double_buffers[active_tof_buffer]; }
+int8_t get_current_selector_data(void) { return double_buffers[active_tof_buffer]; }
 
 // -------------------------------------------------------------------
 // Hook Management
@@ -27,7 +27,7 @@ static int selector_lua_func_ref = LUA_NOREF;
 
 // Push the current selector value (a plain integer) onto the stack.
 int push_selector_data(lua_State* L) {
-    lua_pushinteger(L, *get_current_selector_data());
+    lua_pushinteger(L, get_current_selector_data());
     return 1;
 }
 
@@ -63,22 +63,24 @@ int register_selector_hook(lua_State* L, int narg) {
 
 extern QueueHandle_t lua_event_queue;
 
-void trigger_selector_hook(const uint8_t* new_value) {
-    // ESP_LOGI(TAG, "Triggered selector trigger: %x", *new_value);
-    uint8_t old_value = *get_current_selector_data();
+void trigger_selector_hook(const int8_t new_value) {
+    int8_t old_value = get_current_selector_data();
+    bool value_changed = (old_value != new_value);
+
     update_selector_c_state(new_value);
 
-    if (lua_event_queue == NULL || old_value == *new_value) return;
+    if (lua_event_queue == NULL || !value_changed) return;
 
     lua_event_t evt = {.type = HOOK_TELEMETRY_SELECTOR};
     xQueueSend(lua_event_queue, &evt, 0);
+    ESP_LOGI(TAG, "Selector changed: %X. notifying lua.", new_value);
 }
 
 void execute_selector_hook(lua_State* L) {
     if (selector_lua_func_ref == LUA_NOREF) return;  // don't execute if no function was saved
 
     // Safely retrieve the latest data from the buffer
-    uint8_t current = *get_current_selector_data();
+    int8_t current = get_current_selector_data();
 
     lua_rawgeti(L, LUA_REGISTRYINDEX, selector_lua_func_ref);  // push the function to the stack
 

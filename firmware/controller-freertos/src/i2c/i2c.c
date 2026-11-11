@@ -19,6 +19,7 @@ static uint8_t i2c_device_num = 0;
 
 int i2c_scan_bus(uint8_t** out_device_list, uint8_t* out_device_num, I2C_HandleTypeDef* hi2c) {
     uint8_t devicesFound = 0;
+    if (hi2c == NULL) hi2c = i2c_handle;
 
     // 7-bit addressing goes from 0x01 to 0x7F (or 0x08 to 0x77 for valid standard addresses)
     for (uint16_t i = 1; i < 128; i++) {
@@ -29,7 +30,6 @@ int i2c_scan_bus(uint8_t** out_device_list, uint8_t* out_device_num, I2C_HandleT
         // Try to communicate with the device.
         // Parameters: Handle, Address, Trials, Timeout in ms
         if (HAL_I2C_IsDeviceReady(hi2c, address, 2, 100) == HAL_OK) {
-            printf("Found device at 7-bit address: 0x%02X (8-bit: 0x%02X)\r\n", i, address);
             i2c_device_list[devicesFound++] = address;
         }
     }
@@ -40,15 +40,14 @@ int i2c_scan_bus(uint8_t** out_device_list, uint8_t* out_device_num, I2C_HandleT
     for (int i = 0; i < sizeof(test_pairs); i++) {
         HAL_StatusTypeDef status = HAL_I2C_Master_Transmit(hi2c, test_pairs[i][0], &test_pairs[i][0], 1, 100);
         if (status == HAL_OK) {
-            printf("Camera ACK received at 8-bit address: 0x%02X\r\n", test_pairs[i][0]);
             i2c_device_list[devicesFound++] = test_pairs[i][0];
             break;
         }
     }
     i2c_device_num = devicesFound;
 
-    *out_device_list = i2c_device_list;
-    *out_device_num = devicesFound;
+    if (out_device_list) *out_device_list = i2c_device_list;
+    if (out_device_num) *out_device_num = devicesFound;
 
     if (devicesFound == 0) {
         __BKPT(0);
@@ -64,6 +63,9 @@ int i2c_init(I2C_HandleTypeDef* hi2c) {
     static const osMutexAttr_t mutex_attributes = {"i2c_bus_mutex", osMutexRecursive | osMutexPrioInherit, NULL, 0};
     i2c_mutex = osMutexNew(&mutex_attributes);
     if (i2c_mutex == NULL) return 1;
+
+    i2c_scan_bus(NULL, NULL, NULL);
+
     return 0;
 }
 
@@ -85,10 +87,10 @@ HAL_StatusTypeDef i2c_read_reg(uint8_t dev_addr, uint8_t reg, uint8_t* buffer, u
         int err = HAL_I2C_GetError(i2c_handle);
         // TODO: some errors may be solvable by re-initializing the i2c driver with the unstucking sequence. have to
         // implement that.
-        // i2c_reset(i2c_handle);
-        // if (err != HAL_OK) {
-        //     __BKPT(0);
-        // }
+        i2c_reset(i2c_handle);
+        if (err != HAL_OK) {
+            __BKPT(0);
+        }
     }
 #endif
 

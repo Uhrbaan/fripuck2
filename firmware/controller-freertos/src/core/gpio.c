@@ -32,15 +32,15 @@
 
 /* USER CODE END 1 */
 
-/** Configure pins
-     PE4   ------> DCMI_D4
-     PE5   ------> DCMI_D6
-     PE6   ------> DCMI_D7
-     PA4   ------> DCMI_HSYNC
-     PA6   ------> DCMI_PIXCLK
+/** Configure pins as
+        * Analog
+        * Input
+        * Output
+        * EVENT_OUT
+        * EXTI
+        * Free pins are configured automatically as Analog (this feature is enabled through
+        * the Code Generation settings)
      PB0   ------> SharedAnalog_PB0
-     PC6   ------> DCMI_D0
-     PC7   ------> DCMI_D1
      PC8   ------> SDIO_D0
      PC9   ------> SDIO_D1
      PA11   ------> USB_OTG_FS_DM
@@ -48,10 +48,6 @@
      PC11   ------> SDIO_D3
      PC12   ------> SDIO_CK
      PD2   ------> SDIO_CMD
-     PB6   ------> DCMI_D5
-     PB7   ------> DCMI_VSYNC
-     PE0   ------> DCMI_D2
-     PE1   ------> DCMI_D3
 */
 void MX_GPIO_Init(void)
 {
@@ -95,16 +91,6 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : CAM_D4_Pin CAM_D6_Pin CAM_D7_Pin CAM_D2_Pin
-                           CAM_D3_Pin */
-  GPIO_InitStruct.Pin = CAM_D4_Pin|CAM_D6_Pin|CAM_D7_Pin|CAM_D2_Pin
-                          |CAM_D3_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-  GPIO_InitStruct.Alternate = GPIO_AF13_DCMI;
-  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
-
   /*Configure GPIO pins : SEL_0_Pin SEL_1_Pin SEL_2_Pin */
   GPIO_InitStruct.Pin = SEL_0_Pin|SEL_1_Pin|SEL_2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
@@ -115,14 +101,6 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pin = BATT_AN_Pin|AUDIO_SPEAKER_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : CAM_HSYNC_Pin CAM_PCLK_Pin */
-  GPIO_InitStruct.Pin = CAM_HSYNC_Pin|CAM_PCLK_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-  GPIO_InitStruct.Alternate = GPIO_AF13_DCMI;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PROX5_Pin PB10 PB14 */
@@ -177,14 +155,6 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(IMU_INT_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : CAM_D0_Pin CAM_D1_Pin */
-  GPIO_InitStruct.Pin = CAM_D0_Pin|CAM_D1_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-  GPIO_InitStruct.Alternate = GPIO_AF13_DCMI;
-  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pins : SDIO_D0_Pin SDIO_D1_Pin SDIO_D3_Pin SDIO_CLK_Pin */
   GPIO_InitStruct.Pin = SDIO_D0_Pin|SDIO_D1_Pin|SDIO_D3_Pin|SDIO_CLK_Pin;
@@ -241,22 +211,6 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(SEL_3_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : CAM_D5_Pin */
-  GPIO_InitStruct.Pin = CAM_D5_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-  GPIO_InitStruct.Alternate = GPIO_AF13_DCMI;
-  HAL_GPIO_Init(CAM_D5_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : CAM_VSYNC_Pin */
-  GPIO_InitStruct.Pin = CAM_VSYNC_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-  GPIO_InitStruct.Alternate = GPIO_AF13_DCMI;
-  HAL_GPIO_Init(CAM_VSYNC_GPIO_Port, &GPIO_InitStruct);
 
 }
 

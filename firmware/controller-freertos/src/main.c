@@ -12,6 +12,7 @@
 #include "core/i2c.h"
 #include "core/i2s.h"
 #include "core/adc.h"
+#include "core/dcmi.h"
 
 #include "cmsis_os.h"
 #include "stm32f4xx_hal_tim.h"
@@ -39,6 +40,9 @@
 #include "instructions/instructions.h"
 #include "pdm2pcm_glo.h"
 
+#include "i2c/scan.h"
+#include "dcmi/dcmi.h"
+
 void vApplicationStackOverflowHook(TaskHandle_t xTask, char* pcTaskName) {
     __BKPT(0);  // Pauses debugger on stack overflow
 }
@@ -49,19 +53,19 @@ int init_hardware(void) {
     MX_GPIO_Init();
 
     MX_DMA_Init();
-    MX_CAN1_Init();
-    MX_TIM2_Init();
-    MX_TIM3_Init();  // motor left
-    MX_TIM4_Init();  // motor right
+    // MX_CAN1_Init();
+    // MX_TIM2_Init();
+    // MX_TIM3_Init();  // motor left
+    // MX_TIM4_Init();  // motor right
     MX_TIM5_Init();
-    MX_TIM9_Init();
-    MX_I2S2_Init();
-    HAL_TIM_PWM_Start(&htim5, TIM_CHANNEL_1);
-    HAL_Delay(1000);
-    MX_USART3_UART_Init();
-    MX_SPI1_Init();
-    MX_SPI3_Init();
+    // MX_TIM9_Init();
+    MX_DCMI_Init();
     MX_I2C1_Init();
+    HAL_Delay(1000);
+    // MX_I2S2_Init();
+    // MX_SPI1_Init();
+    // MX_SPI3_Init();
+    // MX_USART3_UART_Init();
 
     // Give time to the system to settle.
     HAL_Delay(500);
@@ -86,9 +90,9 @@ void StartDefaultTask(void* argument) {
 
     err = i2c_init(&hi2c1);
     configASSERT(err == 0);
-    err = tof_init(&hi2c1, TOF_HIGH_SPEED);
-    configASSERT(err == 0);
-    spi_bus_init(&hspi1);
+    // err = tof_init(&hi2c1, TOF_HIGH_SPEED);
+    // configASSERT(err == 0);
+    // spi_bus_init(&hspi1);
 
     // motors_init(&htim3, &htim4);
     // osThreadNew(motion_control_task, NULL, &motionTask_attributes);
@@ -100,12 +104,18 @@ void StartDefaultTask(void* argument) {
     // start_instruction_handler(10);
     // err = ground_start(NULL);
     // if (err != 0) set_led(5, true);
-    tof_start_task(NULL);
-    telemetry_start_task(NULL);
+    // tof_start_task(NULL);
+    // telemetry_start_task(NULL);
 
     // err = microphones_init(&hi2s2, &hspi3, &htim9);
     // assert(err == 0);
     // microphones_start();
+
+    // bb_scan();
+    // xclk_test();
+
+    camera_start();
+    // cam_signal_probe();
 
     while (1) {
         osDelay(100);

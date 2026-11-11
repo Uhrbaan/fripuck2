@@ -1,21 +1,21 @@
 /* USER CODE BEGIN Header */
 /**
- ******************************************************************************
- * @file           : main.h
- * @brief          : Header for main.c file.
- *                   This file contains the common defines of the application.
- ******************************************************************************
- * @attention
- *
- * Copyright (c) 2025 STMicroelectronics.
- * All rights reserved.
- *
- * This software is licensed under terms that can be found in the LICENSE file
- * in the root directory of this software component.
- * If no LICENSE file comes with this software, it is provided AS-IS.
- *
- ******************************************************************************
- */
+  ******************************************************************************
+  * @file           : main.h
+  * @brief          : Header for main.c file.
+  *                   This file contains the common defines of the application.
+  ******************************************************************************
+  * @attention
+  *
+  * Copyright (c) 2025 STMicroelectronics.
+  * All rights reserved.
+  *
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *
+  ******************************************************************************
+  */
 /* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
@@ -91,8 +91,6 @@ void Error_Handler(void);
 #define BATT_AN_GPIO_Port GPIOA
 #define c_Pin GPIO_PIN_2
 #define c_GPIO_Port GPIOA
-#define MIC_TIMER_OUT_Pin GPIO_PIN_3
-#define MIC_TIMER_OUT_GPIO_Port GPIOA
 #define CAM_HSYNC_Pin GPIO_PIN_4
 #define CAM_HSYNC_GPIO_Port GPIOA
 #define AUDIO_SPEAKER_Pin GPIO_PIN_5
@@ -129,16 +127,8 @@ void Error_Handler(void);
 #define MOT_R_IN3_GPIO_Port GPIOE
 #define MOT_R_IN4_Pin GPIO_PIN_15
 #define MOT_R_IN4_GPIO_Port GPIOE
-#define SPI1_CS_ENC_L_Pin GPIO_PIN_10
-#define SPI1_CS_ENC_L_GPIO_Port GPIOB
 #define ENC_L_INT_Pin GPIO_PIN_11
 #define ENC_L_INT_GPIO_Port GPIOB
-#define PULSE_0_Pin GPIO_PIN_12
-#define PULSE_0_GPIO_Port GPIOB
-#define MIC_SPI2_SCK_Pin GPIO_PIN_13
-#define MIC_SPI2_SCK_GPIO_Port GPIOB
-#define PULSE_1_Pin GPIO_PIN_14
-#define PULSE_1_GPIO_Port GPIOB
 #define MIC12_DATA_Pin GPIO_PIN_15
 #define MIC12_DATA_GPIO_Port GPIOB
 #define UART_TX_Pin GPIO_PIN_8
@@ -207,8 +197,6 @@ void Error_Handler(void);
 #define SPI1_SCK_GPIO_Port GPIOB
 #define SPI1_MISO_Pin GPIO_PIN_4
 #define SPI1_MISO_GPIO_Port GPIOB
-#define MIC34_DATA_Pin GPIO_PIN_5
-#define MIC34_DATA_GPIO_Port GPIOB
 #define CAM_D5_Pin GPIO_PIN_6
 #define CAM_D5_GPIO_Port GPIOB
 #define CAM_VSYNC_Pin GPIO_PIN_7

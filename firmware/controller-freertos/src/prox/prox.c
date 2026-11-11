@@ -105,7 +105,7 @@ int proximity_start(TIM_HandleTypeDef* tim2_handle, ADC_HandleTypeDef* adc1_hand
     err = HAL_ADC_Start_DMA(adc_handle, (uint32_t*)adc_buffer, 16);
     if (err != HAL_OK) return HAL_ERROR;
 
-    // Start TIM5 (Base, CH1 Interrupt, and CH2 PWM for ADC Trigger)
+    // Start TIM2 (Base, CH1 Interrupt, and CH2 PWM for ADC Trigger)
     err = HAL_TIM_Base_Start_IT(timer_handle);
     if (err != HAL_OK) return HAL_ERROR;
     err = HAL_TIM_OC_Start_IT(timer_handle, TIM_CHANNEL_1);
@@ -185,7 +185,7 @@ void proximity_timer_elapsed_cb(TIM_HandleTypeDef* htim) {
     }
 }
 
-// Gets called 300µs after TIM5 has elapsed to turn off all ir lights.
+// Gets called 300µs after TIM2 has elapsed to turn off all ir lights.
 // FIXME: it is currently possible to provide a htim handle that will fail here.
 void proximity_timer_channel1_disable_ir_cb(TIM_HandleTypeDef* htim) {
     if (htim->Instance == TIM2 && htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1) {

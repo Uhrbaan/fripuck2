@@ -1,5 +1,6 @@
 #include "dcmi.h"
 #include "stm32f4xx_hal.h"
+#include "i2c/scan.h"
 
 extern DCMI_HandleTypeDef hdcmi;
 extern TIM_HandleTypeDef htim5;
@@ -58,4 +59,24 @@ void xclk_test(void) {
     count_edges(cnt[2]);
 
     __BKPT(0);
+}
+
+extern TIM_HandleTypeDef htim5;
+volatile uint32_t live[4];  // xclk, pclk, href, vsync at scan time
+
+static void xclk_set(uint32_t arr, uint32_t ccr) {  // f = 42 MHz / (arr + 1)
+    HAL_TIM_PWM_Stop(&htim5, TIM_CHANNEL_1);
+    HAL_Delay(50);
+    __HAL_TIM_SET_AUTORELOAD(&htim5, arr);
+    __HAL_TIM_SET_COMPARE(&htim5, TIM_CHANNEL_1, ccr);
+    HAL_TIM_GenerateEvent(&htim5, TIM_EVENTSOURCE_UPDATE);  // load the preloaded ARR
+    HAL_TIM_PWM_Start(&htim5, TIM_CHANNEL_1);
+    HAL_Delay(200);
+}
+
+void scan_when_alive(void) {
+    xclk_set(1, 1);  // 14 MHz, known to make the sensor stream
+    count_edges(live);
+    if (live[2] == 0 || live[3] == 0) __BKPT(0);  // sensor silent: don't trust a scan now
+    bb_scan_noack();                              // ends with __BKPT, inspect bb_idle / bb_n / bb_found
 }

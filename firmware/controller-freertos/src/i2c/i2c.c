@@ -57,12 +57,44 @@ int i2c_scan_bus(uint8_t** out_device_list, uint8_t* out_device_num, I2C_HandleT
 }
 #endif
 
+void i2c_bus_clear(void) {
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+    // Temporarily take control of the SCL pin (PB8) as Output Open-Drain
+    GPIO_InitStruct.Pin = GPIO_PIN_8;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+    // Simulate 16 clock pulses to unblock the I2C peripheral
+    for (uint8_t i = 0; i < 32; i++) {
+        HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_8);
+        HAL_Delay(1);  // 1ms delay matches ChibiOS chThdSleepMilliseconds(1)
+    }
+
+    // Make sure the output is high before returning control
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, GPIO_PIN_SET);
+
+    // Give control of the pin back to the I2C alternate function
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
+    GPIO_InitStruct.Pull = GPIO_PULLUP;
+    GPIO_InitStruct.Alternate = GPIO_AF4_I2C1;  // STM32 AF4 is I2C1
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+}
+
 int i2c_init(I2C_HandleTypeDef* hi2c) {
     i2c_handle = hi2c;
 
     static const osMutexAttr_t mutex_attributes = {"i2c_bus_mutex", osMutexRecursive | osMutexPrioInherit, NULL, 0};
     i2c_mutex = osMutexNew(&mutex_attributes);
     if (i2c_mutex == NULL) return 1;
+
+    // Clear the bus before the first scan to ensure the camera is responsive
+    i2c_bus_clear();
+
+    // (Re-init the HAL peripheral just in case the clear disrupted the AF state machine)
+    HAL_I2C_Init(hi2c);
 
     i2c_scan_bus(NULL, NULL, NULL);
 
@@ -71,7 +103,7 @@ int i2c_init(I2C_HandleTypeDef* hi2c) {
 
 void i2c_reset(I2C_HandleTypeDef* hi2c) {
     HAL_I2C_DeInit(hi2c);
-    HAL_Delay(5);
+    i2c_bus_clear();  // Physically reset the stuck bus lines
     HAL_I2C_Init(hi2c);
 }
 

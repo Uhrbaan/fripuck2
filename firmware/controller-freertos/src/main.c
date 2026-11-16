@@ -58,6 +58,7 @@ int init_hardware(void) {
     // MX_TIM3_Init();  // motor left
     // MX_TIM4_Init();  // motor right
     MX_TIM5_Init();
+    HAL_TIM_PWM_Start(TIM5, TIM_CHANNEL_1);
     // MX_TIM9_Init();
     MX_DCMI_Init();
     MX_I2C1_Init();
@@ -88,8 +89,8 @@ const osThreadAttr_t motionTask_attributes = {
 void StartDefaultTask(void* argument) {
     int err = 0;
 
-    err = i2c_init(&hi2c1);
-    configASSERT(err == 0);
+    // err = i2c_init(&hi2c1);
+    // configASSERT(err == 0);
     // err = tof_init(&hi2c1, TOF_HIGH_SPEED);
     // configASSERT(err == 0);
     // spi_bus_init(&hspi1);
@@ -113,8 +114,9 @@ void StartDefaultTask(void* argument) {
 
     // bb_scan();
     // xclk_test();
+    scan_when_alive();
 
-    camera_start();
+    // camera_start();
     // cam_signal_probe();
 
     while (1) {

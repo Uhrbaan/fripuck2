@@ -36,9 +36,9 @@ __attribute__((aligned(4))) uint8_t g_camera_buffer[BUFFER_SIZE_BYTES];
 
 void camera_task(void const* argument) {
     // Enable camera clock
-    if (HAL_TIM_PWM_Start(&htim5, TIM_CHANNEL_1) != HAL_OK) {
-        Error_Handler();
-    }
+    // if (HAL_TIM_PWM_Start(&htim5, TIM_CHANNEL_1) != HAL_OK) {
+    //     Error_Handler();
+    // }
 
     // Let the clock stabilize
     osDelay(500);

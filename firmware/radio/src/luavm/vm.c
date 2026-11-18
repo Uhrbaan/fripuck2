@@ -17,6 +17,7 @@
 
 #include "robot_api.h"
 #include "api/movement.h"
+#include "api/sound.h"
 
 QueueHandle_t lua_event_queue = NULL;
 
@@ -101,6 +102,8 @@ void lua_vm(void* argument) {
     lua_pop(L, 1);
     luaL_register(L, "robot", robot_movement_lib);
     lua_pop(L, 1);
+    luaL_register(L, "robot", robot_sound_lib);
+    lua_pop(L, 1);
     ESP_LOGI(TAG, "Registered robot libraries.");
 
     int8_t current_slot = -1;
@@ -120,8 +123,14 @@ void lua_vm(void* argument) {
         if (luaL_loadfile(L, "/lfs/default.lua") == 0) {
             lua_pcall(L, 0, 0, 0);
         } else {
-            ESP_LOGE(TAG, "Failed to load any lua script. Exiting lua VM.");
-            vTaskDelete(NULL);
+            ESP_LOGE(TAG, "Failed to load any lua script. Loading buffer.");
+            if (luaL_loadbuffer(L, (const char*)src_luavm_example_script_lua, src_luavm_example_script_lua_len,
+                                "script") == 0) {
+                lua_pcall(L, 0, 0, 0);
+            } else {
+                ESP_LOGE(TAG, "Error loading script: %s. Exiting Lua VM.", lua_tostring(L, -1));
+                vTaskDelete(NULL);
+            }
         }
     }
 

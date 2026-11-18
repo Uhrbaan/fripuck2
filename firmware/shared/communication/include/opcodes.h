@@ -10,6 +10,7 @@
 typedef enum {
     ENABLE_ENABLE_OPCODE = 0x01,
     MOVEMENT_OPCODE = 0X02,
+    SOUND_OPCODE = 0x03,
 } command_opcodes;
 
 #pragma pack(push, 1)
@@ -36,12 +37,26 @@ typedef struct {
 } move_trajectory_payload_t;
 #pragma pack(pop)
 
+#define MML_MAX_STR_LEN (OPCODES_BUF_MAX_SIZE - 2)
+struct sound_command_t {
+    uint8_t mode;               // mml_play_mode_t (FORCE_REPLACE, QUEUE_NEXT, etc.)
+    char mml[MML_MAX_STR_LEN];  // Chaîne MML terminée par '\0'
+};
+
+#pragma pack(push, 1)
+typedef struct {
+    uint8_t opcode;
+    struct sound_command_t options;
+} sound_payload_t;
+#pragma pack(pop)
+
 #pragma pack(push, 1)
 typedef struct {
     uint8_t opcode;
     union {
         uint32_t mask;
         struct move_trajectory_t move_trajectory;
+        struct sound_command_t sound;
     };
 } unified_instruction_payload_t;
 #pragma pack(pop)

@@ -4,12 +4,13 @@
 #include "driver/uart.h"
 #include "uart_conf.h"
 #include <inttypes.h>
+#include "opcodes.h"
 
 #define UART_MAX_MSGS_NUM 5
 
 struct uart_packet {
-    uint16_t length;                                     // Actual size of payload inside array
-    uint8_t payload[RADIO2CONTROLLER_MAX_COMMAND_SIZE];  // Raw bytes (struct + CRC)
+    uint16_t length;                        // Actual size of payload inside array
+    uint8_t payload[OPCODES_BUF_MAX_SIZE];  // Raw bytes (struct + CRC)
 };
 
 typedef void (*uart_callback_fn)(uint8_t* data, uint16_t length);

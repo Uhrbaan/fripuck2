@@ -20,6 +20,9 @@
 #define __FripuckProtocol_Commands_ModuleMask_formal_args , FripuckProtocol_Commands_ModuleMask_enum_t v0
 #define __FripuckProtocol_Commands_ModuleMask_call_args , v0
 __flatbuffers_build_scalar(flatbuffers_, FripuckProtocol_Commands_ModuleMask, FripuckProtocol_Commands_ModuleMask_enum_t)
+#define __FripuckProtocol_Commands_PlayMode_formal_args , FripuckProtocol_Commands_PlayMode_enum_t v0
+#define __FripuckProtocol_Commands_PlayMode_call_args , v0
+__flatbuffers_build_scalar(flatbuffers_, FripuckProtocol_Commands_PlayMode, FripuckProtocol_Commands_PlayMode_enum_t)
 
 typedef flatbuffers_union_ref_t FripuckProtocol_Commands_Instruction_union_ref_t;
 typedef flatbuffers_union_vec_ref_t FripuckProtocol_Commands_Instruction_union_vec_ref_t;
@@ -44,6 +47,11 @@ static const flatbuffers_voffset_t __FripuckProtocol_Commands_FileTransfer_requi
 typedef flatbuffers_ref_t FripuckProtocol_Commands_FileTransfer_ref_t;
 static FripuckProtocol_Commands_FileTransfer_ref_t FripuckProtocol_Commands_FileTransfer_clone(flatbuffers_builder_t *B, FripuckProtocol_Commands_FileTransfer_table_t t);
 __flatbuffers_build_table(flatbuffers_, FripuckProtocol_Commands_FileTransfer, 3)
+
+static const flatbuffers_voffset_t __FripuckProtocol_Commands_PlaySound_required[] = { 0, 0 };
+typedef flatbuffers_ref_t FripuckProtocol_Commands_PlaySound_ref_t;
+static FripuckProtocol_Commands_PlaySound_ref_t FripuckProtocol_Commands_PlaySound_clone(flatbuffers_builder_t *B, FripuckProtocol_Commands_PlaySound_table_t t);
+__flatbuffers_build_table(flatbuffers_, FripuckProtocol_Commands_PlaySound, 2)
 
 static const flatbuffers_voffset_t __FripuckProtocol_Commands_Command_required[] = { 0 };
 typedef flatbuffers_ref_t FripuckProtocol_Commands_Command_ref_t;
@@ -79,6 +87,11 @@ __flatbuffers_build_table_prolog(flatbuffers_, FripuckProtocol_Commands_MoveTraj
 static inline FripuckProtocol_Commands_FileTransfer_ref_t FripuckProtocol_Commands_FileTransfer_create(flatbuffers_builder_t *B __FripuckProtocol_Commands_FileTransfer_formal_args);
 __flatbuffers_build_table_prolog(flatbuffers_, FripuckProtocol_Commands_FileTransfer, FripuckProtocol_Commands_FileTransfer_file_identifier, FripuckProtocol_Commands_FileTransfer_type_identifier)
 
+#define __FripuckProtocol_Commands_PlaySound_formal_args , flatbuffers_string_ref_t v0, FripuckProtocol_Commands_PlayMode_enum_t v1
+#define __FripuckProtocol_Commands_PlaySound_call_args , v0, v1
+static inline FripuckProtocol_Commands_PlaySound_ref_t FripuckProtocol_Commands_PlaySound_create(flatbuffers_builder_t *B __FripuckProtocol_Commands_PlaySound_formal_args);
+__flatbuffers_build_table_prolog(flatbuffers_, FripuckProtocol_Commands_PlaySound, FripuckProtocol_Commands_PlaySound_file_identifier, FripuckProtocol_Commands_PlaySound_type_identifier)
+
 #define __FripuckProtocol_Commands_Command_formal_args , FripuckProtocol_Commands_Instruction_union_ref_t v1
 #define __FripuckProtocol_Commands_Command_call_args , v1
 static inline FripuckProtocol_Commands_Command_ref_t FripuckProtocol_Commands_Command_create(flatbuffers_builder_t *B __FripuckProtocol_Commands_Command_formal_args);
@@ -99,6 +112,8 @@ static inline FripuckProtocol_Commands_Instruction_union_ref_t FripuckProtocol_C
 { FripuckProtocol_Commands_Instruction_union_ref_t uref; uref.type = FripuckProtocol_Commands_Instruction_MoveTrajectory; uref.value = ref; return uref; }
 static inline FripuckProtocol_Commands_Instruction_union_ref_t FripuckProtocol_Commands_Instruction_as_FileTransfer(FripuckProtocol_Commands_FileTransfer_ref_t ref)
 { FripuckProtocol_Commands_Instruction_union_ref_t uref; uref.type = FripuckProtocol_Commands_Instruction_FileTransfer; uref.value = ref; return uref; }
+static inline FripuckProtocol_Commands_Instruction_union_ref_t FripuckProtocol_Commands_Instruction_as_PlaySound(FripuckProtocol_Commands_PlaySound_ref_t ref)
+{ FripuckProtocol_Commands_Instruction_union_ref_t uref; uref.type = FripuckProtocol_Commands_Instruction_PlaySound; uref.value = ref; return uref; }
 __flatbuffers_build_union_vector(flatbuffers_, FripuckProtocol_Commands_Instruction)
 
 static FripuckProtocol_Commands_Instruction_union_ref_t FripuckProtocol_Commands_Instruction_clone(flatbuffers_builder_t *B, FripuckProtocol_Commands_Instruction_union_t u)
@@ -108,6 +123,7 @@ static FripuckProtocol_Commands_Instruction_union_ref_t FripuckProtocol_Commands
     case 2: return FripuckProtocol_Commands_Instruction_as_EnableCommand(FripuckProtocol_Commands_EnableCommand_clone(B, (FripuckProtocol_Commands_EnableCommand_table_t)u.value));
     case 3: return FripuckProtocol_Commands_Instruction_as_MoveTrajectory(FripuckProtocol_Commands_MoveTrajectory_clone(B, (FripuckProtocol_Commands_MoveTrajectory_table_t)u.value));
     case 4: return FripuckProtocol_Commands_Instruction_as_FileTransfer(FripuckProtocol_Commands_FileTransfer_clone(B, (FripuckProtocol_Commands_FileTransfer_table_t)u.value));
+    case 5: return FripuckProtocol_Commands_Instruction_as_PlaySound(FripuckProtocol_Commands_PlaySound_clone(B, (FripuckProtocol_Commands_PlaySound_table_t)u.value));
     default: return FripuckProtocol_Commands_Instruction_as_NONE();
     }
 }
@@ -226,11 +242,36 @@ static FripuckProtocol_Commands_FileTransfer_ref_t FripuckProtocol_Commands_File
     __flatbuffers_memoize_end(B, t, FripuckProtocol_Commands_FileTransfer_end(B));
 }
 
+__flatbuffers_build_string_field(0, flatbuffers_, FripuckProtocol_Commands_PlaySound_mml, FripuckProtocol_Commands_PlaySound)
+__flatbuffers_build_scalar_field(1, flatbuffers_, FripuckProtocol_Commands_PlaySound_mode, FripuckProtocol_Commands_PlayMode, FripuckProtocol_Commands_PlayMode_enum_t, 1, 1, UINT8_C(1), FripuckProtocol_Commands_PlaySound)
+
+static inline FripuckProtocol_Commands_PlaySound_ref_t FripuckProtocol_Commands_PlaySound_create(flatbuffers_builder_t *B __FripuckProtocol_Commands_PlaySound_formal_args)
+{
+    if (FripuckProtocol_Commands_PlaySound_start(B)
+        || FripuckProtocol_Commands_PlaySound_mml_add(B, v0)
+        || FripuckProtocol_Commands_PlaySound_mode_add(B, v1)) {
+        return 0;
+    }
+    return FripuckProtocol_Commands_PlaySound_end(B);
+}
+
+static FripuckProtocol_Commands_PlaySound_ref_t FripuckProtocol_Commands_PlaySound_clone(flatbuffers_builder_t *B, FripuckProtocol_Commands_PlaySound_table_t t)
+{
+    __flatbuffers_memoize_begin(B, t);
+    if (FripuckProtocol_Commands_PlaySound_start(B)
+        || FripuckProtocol_Commands_PlaySound_mml_pick(B, t)
+        || FripuckProtocol_Commands_PlaySound_mode_pick(B, t)) {
+        return 0;
+    }
+    __flatbuffers_memoize_end(B, t, FripuckProtocol_Commands_PlaySound_end(B));
+}
+
 __flatbuffers_build_union_field(1, flatbuffers_, FripuckProtocol_Commands_Command_command, FripuckProtocol_Commands_Instruction, FripuckProtocol_Commands_Command)
 __flatbuffers_build_union_table_value_field(flatbuffers_, FripuckProtocol_Commands_Command_command, FripuckProtocol_Commands_Instruction, Custom, FripuckProtocol_Commands_Custom)
 __flatbuffers_build_union_table_value_field(flatbuffers_, FripuckProtocol_Commands_Command_command, FripuckProtocol_Commands_Instruction, EnableCommand, FripuckProtocol_Commands_EnableCommand)
 __flatbuffers_build_union_table_value_field(flatbuffers_, FripuckProtocol_Commands_Command_command, FripuckProtocol_Commands_Instruction, MoveTrajectory, FripuckProtocol_Commands_MoveTrajectory)
 __flatbuffers_build_union_table_value_field(flatbuffers_, FripuckProtocol_Commands_Command_command, FripuckProtocol_Commands_Instruction, FileTransfer, FripuckProtocol_Commands_FileTransfer)
+__flatbuffers_build_union_table_value_field(flatbuffers_, FripuckProtocol_Commands_Command_command, FripuckProtocol_Commands_Instruction, PlaySound, FripuckProtocol_Commands_PlaySound)
 
 static inline FripuckProtocol_Commands_Command_ref_t FripuckProtocol_Commands_Command_create(flatbuffers_builder_t *B __FripuckProtocol_Commands_Command_formal_args)
 {

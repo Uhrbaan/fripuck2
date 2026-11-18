@@ -15,6 +15,8 @@
 #include "uart/uart.h"
 #include <sys/stat.h>
 
+#include "opcodes.h"
+
 static const char* TAG = "COMMANDS";
 static uint32_t system_state = 0x00;
 
@@ -108,6 +110,14 @@ void process_command(FripuckProtocol_Commands_Command_table_t cmd) {
             // xQueueSend(lua_event_queue, &event, 0);
             break;
         }
+
+        case FripuckProtocol_Commands_Instruction_PlaySound: {
+            FripuckProtocol_Commands_PlaySound_table_t tbl = (FripuckProtocol_Commands_PlaySound_table_t)val;
+            const flatbuffers_string_t mml = FripuckProtocol_Commands_PlaySound_mml(tbl);
+            const FripuckProtocol_Commands_PlayMode_enum_t mode = FripuckProtocol_Commands_PlaySound_mode(tbl);
+            command_play_sound(mml, (uint8_t)mode);
+        }
+
         case FripuckProtocol_Commands_Instruction_NONE:
         default:
             printf("    -> Instruction: NONE or Unknown (%d)\n", type);
@@ -193,4 +203,25 @@ void command_move_trajectory(float speed, float distance, float radius, float ac
     //     "Sent movement trajectory with speed=%.2f, distance=%.2f, radius=%.2f, accel=%.2f, decel=%.2f, notify = % s
     //     ", payload.options.speed, payload.options.distance, payload.options.radius, payload.options.accel,
     //     payload.options.decel, payload.options.notify ? "true" : "false");
+}
+
+void command_play_sound(const char* mml, uint8_t mode) {
+    sound_payload_t payload = {.opcode = SOUND_OPCODE,
+                               .options = {
+                                   .mode = mode,
+                               }};
+
+    // Copie sécurisée avec troncature propre si la chaîne dépasse MML_MAX_STR_LEN - 1
+    size_t str_len = strlen(mml);
+    if (str_len >= MML_MAX_STR_LEN) {
+        str_len = MML_MAX_STR_LEN - 1;
+    }
+    memcpy(payload.options.mml, mml, str_len);
+    payload.options.mml[str_len] = '\0';
+
+    // N'envoie que la taille réellement utile sur l'UART (opcode + mode + string + '\0')
+    size_t wire_size = sizeof(payload.opcode) + sizeof(payload.options.mode) + str_len + 1;
+    uart_send((void*)&payload, wire_size);
+
+    ESP_LOGI(TAG, "Sent melody %s.", payload.options.mml);
 }

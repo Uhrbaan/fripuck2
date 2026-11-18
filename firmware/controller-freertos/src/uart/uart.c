@@ -1,12 +1,13 @@
 #include "uart.h"
 #include "uart_conf.h"
 #include "cobs.h"
+#include "opcodes.h"
 
 static UART_HandleTypeDef* uart_handle = NULL;
 
-#define UART_ENCODED_BUFFER_SIZE (COBS_DECODE_DST_BUF_LEN_MAX(RADIO2CONTROLLER_MAX_COMMAND_SIZE) + 1)
+#define UART_ENCODED_BUFFER_SIZE (COBS_DECODE_DST_BUF_LEN_MAX(OPCODES_BUF_MAX_SIZE) + 1)
 static uint8_t uart_rx_raw_buffer[UART_ENCODED_BUFFER_SIZE] = {0};
-static uint8_t uart_decoded_buffer[RADIO2CONTROLLER_MAX_COMMAND_SIZE] = {0};
+static uint8_t uart_decoded_buffer[OPCODES_BUF_MAX_SIZE] = {0};
 
 typedef void (*uart_callback_fn)(uint8_t* data, uint16_t length);
 int uart_send(uint8_t* data, uint16_t length);
@@ -64,12 +65,12 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef* huart) {
 void uart_init(UART_HandleTypeDef* huart, uart_callback_fn function) {
     uart_handle = huart;
     user_callback = function;
-    HAL_UARTEx_ReceiveToIdle_IT(uart_handle, uart_rx_raw_buffer, RADIO2CONTROLLER_MAX_COMMAND_SIZE);
+    HAL_UARTEx_ReceiveToIdle_IT(uart_handle, uart_rx_raw_buffer, OPCODES_BUF_MAX_SIZE);
 }
 
 int uart_send(uint8_t* data, uint16_t length) {
     if (!uart_handle || data == NULL) return HAL_ERROR;
-    if (length > RADIO2CONTROLLER_MAX_COMMAND_SIZE) return HAL_ERROR;
+    if (length > OPCODES_BUF_MAX_SIZE) return HAL_ERROR;
 
     // Local buffer to hold COBS encoded packet + trailing 0x00 delimiter
     uint8_t tx_cobs_buffer[UART_ENCODED_BUFFER_SIZE];

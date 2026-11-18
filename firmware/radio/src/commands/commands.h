@@ -28,5 +28,6 @@ void init_commands(QueueHandle_t instruction_queue);
 void command_wheel_speed(float left, float right);
 void command_move_trajectory(float speed, float distance, float radius, float accel, float decel, bool notify,
                              bool synchronous);
+void command_play_sound(const char* mml, uint8_t mode);
 
 #endif

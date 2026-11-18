@@ -2,6 +2,7 @@
 #include "cobs.h"
 #include "driver/uart.h"
 #include "esp_log.h"
+#include "opcodes.h"
 
 const char* TAG = "UART";
 
@@ -72,8 +73,7 @@ int uart_send(uint8_t* data, uint16_t length) {
 void uart_reciever(void* pvParameters) {
     struct uart_packet packet;
     uart_event_t event;
-    uint8_t decoded_buffer[COBS_DECODE_DST_BUF_LEN_MAX(RADIO2CONTROLLER_MAX_COMMAND_SIZE) +
-                           1];  // leave space for delimiter
+    uint8_t decoded_buffer[COBS_DECODE_DST_BUF_LEN_MAX(OPCODES_BUF_MAX_SIZE) + 1];  // leave space for delimiter
 
     for (;;) {
         // Wait for something to appear in the automagic uart queue.
@@ -99,8 +99,7 @@ void uart_reciever(void* pvParameters) {
 
 void uart_transmitter(void* arguments) {
     struct uart_packet packet;
-    uint8_t encoded_buffer[COBS_ENCODE_DST_BUF_LEN_MAX(RADIO2CONTROLLER_MAX_COMMAND_SIZE) +
-                           1];  // leave space for delimiter
+    uint8_t encoded_buffer[COBS_ENCODE_DST_BUF_LEN_MAX(OPCODES_BUF_MAX_SIZE) + 1];  // leave space for delimiter
 
     for (;;) {
         if (xQueueReceive(uart_tx_queue_handle, &packet, portMAX_DELAY) == pdTRUE) {

@@ -45,11 +45,23 @@ table FileTransfer {
     selector_slot: int8 = -1; // -1 = module, 0-15 = boot slot
 }
 
+enum PlayMode : uint8 {
+    IfFree = 0,
+    Replace = 1,
+    Queue = 2
+}
+
+table PlaySound {
+    mml: string (required);
+    mode: PlayMode = Replace;
+}
+
 union Instruction {
     Custom,
     EnableCommand,
     MoveTrajectory,
-    FileTransfer
+    FileTransfer,
+    PlaySound
 }
 
 // Needed since flatbuffers doesn't support vectors of unions.

@@ -35,6 +35,10 @@ typedef const struct FripuckProtocol_Commands_FileTransfer_table *FripuckProtoco
 typedef struct FripuckProtocol_Commands_FileTransfer_table *FripuckProtocol_Commands_FileTransfer_mutable_table_t;
 typedef const flatbuffers_uoffset_t *FripuckProtocol_Commands_FileTransfer_vec_t;
 typedef flatbuffers_uoffset_t *FripuckProtocol_Commands_FileTransfer_mutable_vec_t;
+typedef const struct FripuckProtocol_Commands_PlaySound_table *FripuckProtocol_Commands_PlaySound_table_t;
+typedef struct FripuckProtocol_Commands_PlaySound_table *FripuckProtocol_Commands_PlaySound_mutable_table_t;
+typedef const flatbuffers_uoffset_t *FripuckProtocol_Commands_PlaySound_vec_t;
+typedef flatbuffers_uoffset_t *FripuckProtocol_Commands_PlaySound_mutable_vec_t;
 typedef const struct FripuckProtocol_Commands_Command_table *FripuckProtocol_Commands_Command_table_t;
 typedef struct FripuckProtocol_Commands_Command_table *FripuckProtocol_Commands_Command_mutable_table_t;
 typedef const flatbuffers_uoffset_t *FripuckProtocol_Commands_Command_vec_t;
@@ -90,6 +94,18 @@ typedef flatbuffers_uoffset_t *FripuckProtocol_Commands_CommandBatch_mutable_vec
 #define FripuckProtocol_Commands_FileTransfer_type_identifier "\x46\xd4\xac\x5b"
 #ifndef FripuckProtocol_Commands_FileTransfer_file_extension
 #define FripuckProtocol_Commands_FileTransfer_file_extension "bin"
+#endif
+#ifndef FripuckProtocol_Commands_PlaySound_file_identifier
+#define FripuckProtocol_Commands_PlaySound_file_identifier 0
+#endif
+/* deprecated, use FripuckProtocol_Commands_PlaySound_file_identifier */
+#ifndef FripuckProtocol_Commands_PlaySound_identifier
+#define FripuckProtocol_Commands_PlaySound_identifier 0
+#endif
+#define FripuckProtocol_Commands_PlaySound_type_hash ((flatbuffers_thash_t)0xc9014598)
+#define FripuckProtocol_Commands_PlaySound_type_identifier "\x98\x45\x01\xc9"
+#ifndef FripuckProtocol_Commands_PlaySound_file_extension
+#define FripuckProtocol_Commands_PlaySound_file_extension "bin"
 #endif
 #ifndef FripuckProtocol_Commands_Command_file_identifier
 #define FripuckProtocol_Commands_Command_file_identifier 0
@@ -181,6 +197,32 @@ static inline int FripuckProtocol_Commands_ModuleMask_is_known_value(FripuckProt
     }
 }
 
+typedef uint8_t FripuckProtocol_Commands_PlayMode_enum_t;
+__flatbuffers_define_integer_type(FripuckProtocol_Commands_PlayMode, FripuckProtocol_Commands_PlayMode_enum_t, 8)
+#define FripuckProtocol_Commands_PlayMode_IfFree ((FripuckProtocol_Commands_PlayMode_enum_t)UINT8_C(0))
+#define FripuckProtocol_Commands_PlayMode_Replace ((FripuckProtocol_Commands_PlayMode_enum_t)UINT8_C(1))
+#define FripuckProtocol_Commands_PlayMode_Queue ((FripuckProtocol_Commands_PlayMode_enum_t)UINT8_C(2))
+
+static inline const char *FripuckProtocol_Commands_PlayMode_name(FripuckProtocol_Commands_PlayMode_enum_t value)
+{
+    switch (value) {
+    case FripuckProtocol_Commands_PlayMode_IfFree: return "IfFree";
+    case FripuckProtocol_Commands_PlayMode_Replace: return "Replace";
+    case FripuckProtocol_Commands_PlayMode_Queue: return "Queue";
+    default: return "";
+    }
+}
+
+static inline int FripuckProtocol_Commands_PlayMode_is_known_value(FripuckProtocol_Commands_PlayMode_enum_t value)
+{
+    switch (value) {
+    case FripuckProtocol_Commands_PlayMode_IfFree: return 1;
+    case FripuckProtocol_Commands_PlayMode_Replace: return 1;
+    case FripuckProtocol_Commands_PlayMode_Queue: return 1;
+    default: return 0;
+    }
+}
+
 
 
 struct FripuckProtocol_Commands_Custom_table { uint8_t unused__; };
@@ -232,6 +274,17 @@ __flatbuffers_table_as_root(FripuckProtocol_Commands_FileTransfer)
 __flatbuffers_define_string_field(0, FripuckProtocol_Commands_FileTransfer, filename, 0)
 __flatbuffers_define_vector_field(1, FripuckProtocol_Commands_FileTransfer, content, flatbuffers_uint8_vec_t, 0)
 __flatbuffers_define_scalar_field(2, FripuckProtocol_Commands_FileTransfer, selector_slot, flatbuffers_int8, int8_t, INT8_C(-1))
+
+struct FripuckProtocol_Commands_PlaySound_table { uint8_t unused__; };
+
+static inline size_t FripuckProtocol_Commands_PlaySound_vec_len(FripuckProtocol_Commands_PlaySound_vec_t vec)
+__flatbuffers_vec_len(vec)
+static inline FripuckProtocol_Commands_PlaySound_table_t FripuckProtocol_Commands_PlaySound_vec_at(FripuckProtocol_Commands_PlaySound_vec_t vec, size_t i)
+__flatbuffers_offset_vec_at(FripuckProtocol_Commands_PlaySound_table_t, vec, i, 0)
+__flatbuffers_table_as_root(FripuckProtocol_Commands_PlaySound)
+
+__flatbuffers_define_string_field(0, FripuckProtocol_Commands_PlaySound, mml, 1)
+__flatbuffers_define_scalar_field(1, FripuckProtocol_Commands_PlaySound, mode, FripuckProtocol_Commands_PlayMode, FripuckProtocol_Commands_PlayMode_enum_t, UINT8_C(1))
 typedef uint8_t FripuckProtocol_Commands_Instruction_union_type_t;
 __flatbuffers_define_integer_type(FripuckProtocol_Commands_Instruction, FripuckProtocol_Commands_Instruction_union_type_t, 8)
 __flatbuffers_define_union(flatbuffers_, FripuckProtocol_Commands_Instruction)
@@ -240,6 +293,7 @@ __flatbuffers_define_union(flatbuffers_, FripuckProtocol_Commands_Instruction)
 #define FripuckProtocol_Commands_Instruction_EnableCommand ((FripuckProtocol_Commands_Instruction_union_type_t)UINT8_C(2))
 #define FripuckProtocol_Commands_Instruction_MoveTrajectory ((FripuckProtocol_Commands_Instruction_union_type_t)UINT8_C(3))
 #define FripuckProtocol_Commands_Instruction_FileTransfer ((FripuckProtocol_Commands_Instruction_union_type_t)UINT8_C(4))
+#define FripuckProtocol_Commands_Instruction_PlaySound ((FripuckProtocol_Commands_Instruction_union_type_t)UINT8_C(5))
 
 static inline const char *FripuckProtocol_Commands_Instruction_type_name(FripuckProtocol_Commands_Instruction_union_type_t type)
 {
@@ -249,6 +303,7 @@ static inline const char *FripuckProtocol_Commands_Instruction_type_name(Fripuck
     case FripuckProtocol_Commands_Instruction_EnableCommand: return "EnableCommand";
     case FripuckProtocol_Commands_Instruction_MoveTrajectory: return "MoveTrajectory";
     case FripuckProtocol_Commands_Instruction_FileTransfer: return "FileTransfer";
+    case FripuckProtocol_Commands_Instruction_PlaySound: return "PlaySound";
     default: return "";
     }
 }
@@ -261,6 +316,7 @@ static inline int FripuckProtocol_Commands_Instruction_is_known_type(FripuckProt
     case FripuckProtocol_Commands_Instruction_EnableCommand: return 1;
     case FripuckProtocol_Commands_Instruction_MoveTrajectory: return 1;
     case FripuckProtocol_Commands_Instruction_FileTransfer: return 1;
+    case FripuckProtocol_Commands_Instruction_PlaySound: return 1;
     default: return 0;
     }
 }

@@ -7,6 +7,7 @@
 #include <cmsis_os.h>
 
 #include "motors/motors.h"
+#include "speakers/mml_player.h"
 
 struct device_flags {
     unsigned mode_selector : 1;
@@ -33,9 +34,7 @@ void enable_instruction(struct device_flags);
 QueueHandle_t instruction_queue_handle = NULL;
 osThreadId_t instruction_handler_task = NULL;
 const osThreadAttr_t instruction_task_attributes = {
-    .name = "instruction-handler-task",
-    .priority = (osPriority_t)osPriorityNormal,
-};
+    .name = "instruction-handler-task", .priority = (osPriority_t)osPriorityNormal, .stack_size = 512 * 2};
 
 void handle_instruction(unified_instruction_payload_t* payload) {
     switch (payload->opcode)  // switch on the opcode
@@ -72,13 +71,19 @@ void handle_instruction(unified_instruction_payload_t* payload) {
             break;
         }
 
+        case (SOUND_OPCODE): {
+            payload->sound.mml[MML_MAX_STR_LEN - 1] = '\0';
+            mml_play(payload->sound.mml, (mml_play_mode_t)payload->sound.mode);
+            break;
+        }
+
         default:
             break;
     }
 }
 
 void instruction_handler(void* arguments) {
-    unified_instruction_payload_t payload = {0};
+    static unified_instruction_payload_t payload = {0};
     for (;;) {
         if (xQueueReceive(instruction_queue_handle, &payload, portMAX_DELAY)) {
             handle_instruction(&payload);

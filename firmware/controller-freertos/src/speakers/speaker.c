@@ -4,7 +4,7 @@
 #define SINUS_BUFFER_SIZE 360
 #define TIM6_CLOCK_HZ 84000000UL
 #define BASE_AMPLITUDE 256
-#define MAX_SINE_AMP 900
+#define MAX_SINE_AMP 1200
 
 extern DAC_HandleTypeDef hdac;
 extern TIM_HandleTypeDef htim6;

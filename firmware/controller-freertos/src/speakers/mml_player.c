@@ -6,6 +6,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
+#include "opcodes.h"
 
 #define MML_QUEUE_LENGTH 4
 #define MML_TASK_STACK_SIZE 256
@@ -177,7 +178,7 @@ static void execute_mml(const char* mml) {
             case 'T': {
                 mml++;
                 uint32_t val = parse_uint(&mml, 120);
-                if (val >= 30 && val <= 400) bpm = (uint16_t)val;
+                if (val >= 30 && val <= 600) bpm = (uint16_t)val;
                 break;
             }
 
@@ -300,29 +301,33 @@ void mml_player_init(void) {
 
 void mml_set_notation(mml_notation_t notation) { current_notation = notation; }
 
+#define MML_POOL_SIZE 4
+
+static char mml_pool[MML_POOL_SIZE][MML_MAX_STR_LEN];
+static uint8_t pool_write_idx = 0;
+
 void mml_play(const char* mml_string, mml_play_mode_t mode) {
     if (mml_string == NULL || xMmlQueue == NULL) return;
 
-    switch (mode) {
-        case MML_PLAY_IF_FREE:
-            if (uxQueueMessagesWaiting(xMmlQueue) == 0 && !speaker_is_playing()) {
-                xQueueSend(xMmlQueue, &mml_string, 0);
-            }
-            break;
+    if (mode == MML_PLAY_IF_FREE) {
+        if (uxQueueMessagesWaiting(xMmlQueue) > 0 || speaker_is_playing()) {
+            return;
+        }
+    }
 
-        case MML_FORCE_REPLACE:
-            xQueueReset(xMmlQueue);
-            abort_flag = 1;
-            xQueueSend(xMmlQueue, &mml_string, 0);
-            xTaskNotifyGive(xMmlTaskHandle);
-            break;
+    // Copie sécurisée dans le prochain slot libre du pool statique
+    char* slot = mml_pool[pool_write_idx];
+    strncpy(slot, mml_string, MML_MAX_STR_LEN - 1);
+    slot[MML_MAX_STR_LEN - 1] = '\0';
+    pool_write_idx = (pool_write_idx + 1) % MML_POOL_SIZE;
 
-        case MML_QUEUE_NEXT:
-            xQueueSend(xMmlQueue, &mml_string, portMAX_DELAY);
-            break;
-
-        default:
-            break;
+    if (mode == MML_FORCE_REPLACE) {
+        xQueueReset(xMmlQueue);
+        abort_flag = 1;
+        xQueueSend(xMmlQueue, &slot, 0);
+        xTaskNotifyGive(xMmlTaskHandle);
+    } else {
+        xQueueSend(xMmlQueue, &slot, (mode == MML_QUEUE_NEXT) ? portMAX_DELAY : 0);
     }
 }
 

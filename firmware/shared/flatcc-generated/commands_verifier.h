@@ -13,6 +13,7 @@ static int FripuckProtocol_Commands_Custom_verify_table(flatcc_table_verifier_de
 static int FripuckProtocol_Commands_EnableCommand_verify_table(flatcc_table_verifier_descriptor_t *td);
 static int FripuckProtocol_Commands_MoveTrajectory_verify_table(flatcc_table_verifier_descriptor_t *td);
 static int FripuckProtocol_Commands_FileTransfer_verify_table(flatcc_table_verifier_descriptor_t *td);
+static int FripuckProtocol_Commands_PlaySound_verify_table(flatcc_table_verifier_descriptor_t *td);
 static int FripuckProtocol_Commands_Command_verify_table(flatcc_table_verifier_descriptor_t *td);
 static int FripuckProtocol_Commands_CommandBatch_verify_table(flatcc_table_verifier_descriptor_t *td);
 
@@ -23,6 +24,7 @@ static int FripuckProtocol_Commands_Instruction_union_verifier(flatcc_union_veri
     case 2: return flatcc_verify_union_table(ud, FripuckProtocol_Commands_EnableCommand_verify_table); /* EnableCommand */
     case 3: return flatcc_verify_union_table(ud, FripuckProtocol_Commands_MoveTrajectory_verify_table); /* MoveTrajectory */
     case 4: return flatcc_verify_union_table(ud, FripuckProtocol_Commands_FileTransfer_verify_table); /* FileTransfer */
+    case 5: return flatcc_verify_union_table(ud, FripuckProtocol_Commands_PlaySound_verify_table); /* PlaySound */
     default: return flatcc_verify_ok;
     }
 }
@@ -223,6 +225,54 @@ static inline int FripuckProtocol_Commands_FileTransfer_verify_as_root_with_type
 static inline int FripuckProtocol_Commands_FileTransfer_verify_as_root_with_type_hash_and_size(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
 {
     return flatcc_verify_table_as_typed_root_with_size(buf, bufsiz, thash, &FripuckProtocol_Commands_FileTransfer_verify_table);
+}
+
+static int FripuckProtocol_Commands_PlaySound_verify_table(flatcc_table_verifier_descriptor_t *td)
+{
+    int ret;
+    if ((ret = flatcc_verify_string_field(td, 0, 1) /* mml */)) return ret;
+    if ((ret = flatcc_verify_field(td, 1, 1, 1) /* mode */)) return ret;
+    return flatcc_verify_ok;
+}
+
+static inline int FripuckProtocol_Commands_PlaySound_verify_as_root(const void *buf, size_t bufsiz)
+{
+    return flatcc_verify_table_as_root(buf, bufsiz, FripuckProtocol_Commands_PlaySound_identifier, &FripuckProtocol_Commands_PlaySound_verify_table);
+}
+
+static inline int FripuckProtocol_Commands_PlaySound_verify_as_root_with_size(const void *buf, size_t bufsiz)
+{
+    return flatcc_verify_table_as_root_with_size(buf, bufsiz, FripuckProtocol_Commands_PlaySound_identifier, &FripuckProtocol_Commands_PlaySound_verify_table);
+}
+
+static inline int FripuckProtocol_Commands_PlaySound_verify_as_typed_root(const void *buf, size_t bufsiz)
+{
+    return flatcc_verify_table_as_root(buf, bufsiz, FripuckProtocol_Commands_PlaySound_type_identifier, &FripuckProtocol_Commands_PlaySound_verify_table);
+}
+
+static inline int FripuckProtocol_Commands_PlaySound_verify_as_typed_root_with_size(const void *buf, size_t bufsiz)
+{
+    return flatcc_verify_table_as_root_with_size(buf, bufsiz, FripuckProtocol_Commands_PlaySound_type_identifier, &FripuckProtocol_Commands_PlaySound_verify_table);
+}
+
+static inline int FripuckProtocol_Commands_PlaySound_verify_as_root_with_identifier(const void *buf, size_t bufsiz, const char *fid)
+{
+    return flatcc_verify_table_as_root(buf, bufsiz, fid, &FripuckProtocol_Commands_PlaySound_verify_table);
+}
+
+static inline int FripuckProtocol_Commands_PlaySound_verify_as_root_with_identifier_and_size(const void *buf, size_t bufsiz, const char *fid)
+{
+    return flatcc_verify_table_as_root_with_size(buf, bufsiz, fid, &FripuckProtocol_Commands_PlaySound_verify_table);
+}
+
+static inline int FripuckProtocol_Commands_PlaySound_verify_as_root_with_type_hash(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
+{
+    return flatcc_verify_table_as_typed_root(buf, bufsiz, thash, &FripuckProtocol_Commands_PlaySound_verify_table);
+}
+
+static inline int FripuckProtocol_Commands_PlaySound_verify_as_root_with_type_hash_and_size(const void *buf, size_t bufsiz, flatbuffers_thash_t thash)
+{
+    return flatcc_verify_table_as_typed_root_with_size(buf, bufsiz, thash, &FripuckProtocol_Commands_PlaySound_verify_table);
 }
 
 static int FripuckProtocol_Commands_Command_verify_table(flatcc_table_verifier_descriptor_t *td)

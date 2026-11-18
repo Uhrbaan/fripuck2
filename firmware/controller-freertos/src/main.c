@@ -56,22 +56,22 @@ int init_hardware(void) {
     MX_GPIO_Init();
 
     MX_DMA_Init();
-    // MX_CAN1_Init();
-    // MX_TIM2_Init();
-    // MX_TIM3_Init();  // motor left
-    // MX_TIM4_Init();  // motor right
+    MX_CAN1_Init();
+    MX_TIM2_Init();
+    MX_TIM3_Init();  // motor left
+    MX_TIM4_Init();  // motor right
     MX_TIM5_Init();
     MX_TIM6_Init();
     HAL_TIM_PWM_Start(TIM5, TIM_CHANNEL_1);
-    // MX_TIM9_Init();
+    MX_TIM9_Init();
     MX_DCMI_Init();
     MX_I2C1_Init();
     MX_DAC_Init();
     HAL_Delay(1000);
-    // MX_I2S2_Init();
-    // MX_SPI1_Init();
-    // MX_SPI3_Init();
-    // MX_USART3_UART_Init();
+    MX_I2S2_Init();
+    MX_SPI1_Init();
+    MX_SPI3_Init();
+    MX_USART3_UART_Init();
 
     // Give time to the system to settle.
     HAL_Delay(500);
@@ -98,7 +98,7 @@ void StartDefaultTask(void* argument) {
     // configASSERT(err == 0);
     // err = tof_init(&hi2c1, TOF_HIGH_SPEED);
     // configASSERT(err == 0);
-    // spi_bus_init(&hspi1);
+    spi_bus_init(&hspi1);
 
     // motors_init(&htim3, &htim4);
     // osThreadNew(motion_control_task, NULL, &motionTask_attributes);
@@ -106,12 +106,12 @@ void StartDefaultTask(void* argument) {
     // if (err != 0) set_led(4, true);
     // err = imu_start();
     // if (err != 0) set_led(4, true);
-    // uart_init(&huart3, prepare_and_send_instruction);
-    // start_instruction_handler(10);
+    uart_init(&huart3, prepare_and_send_instruction);
+    start_instruction_handler(10);
     // err = ground_start(NULL);
     // if (err != 0) set_led(5, true);
     // tof_start_task(NULL);
-    // telemetry_start_task(NULL);
+    telemetry_start_task(NULL);
 
     // err = microphones_init(&hi2s2, &hspi3, &htim9);
     // assert(err == 0);
@@ -126,24 +126,7 @@ void StartDefaultTask(void* argument) {
 
     speaker_init();
     mml_player_init();
-    const char* melody =
-        "V0 I0 do I1 do I2 do I3 do"
-        "V1 I0 do I1 do I2 do I3 do"
-        "V2 I0 do I1 do I2 do I3 do"
-        "V3 I0 do I1 do I2 do I3 do"
-        "V4 I0 do I1 do I2 do I3 do"
-        "V5 I0 do I1 do I2 do I3 do"
-        "V6 I0 do I1 do I2 do I3 do"
-        "V7 I0 do I1 do I2 do I3 do"
-        "V8 I0 do I1 do I2 do I3 do"
-        "V9 I0 do I1 do I2 do I3 do"
-        "V10 I0 do I1 do I2 do I3 do"
-        "V11 I0 do I1 do I2 do I3 do"
-        "V12 I0 do I1 do I2 do I3 do"
-        "V13 I0 do I1 do I2 do I3 do"
-        "V14 I0 do I1 do I2 do I3 do"
-        "V15 I0 do I1 do I2 do I3 do";
-    mml_play(melody, MML_FORCE_REPLACE);
+    mml_play("T600 V3 I2 do&la&>do", MML_FORCE_REPLACE);
 
     while (1) {
         osDelay(100);

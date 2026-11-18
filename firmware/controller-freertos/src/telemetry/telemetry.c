@@ -295,7 +295,7 @@ void TelemetryTask(void* argument) {
         void* buf = get_final_buffer(&builder, &final_size);
 
         // 3. Only send if we actually packed data
-        if (budget_remainder < budget && buf != NULL) {
+        if (buf != NULL) {
             if (final_size <= RADIO_MAX_PACKET_SIZE) {
                 spi_radio_send((uint8_t*)buf, final_size);
             } else {

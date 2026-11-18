@@ -43,6 +43,9 @@
 #include "i2c/scan.h"
 #include "dcmi/dcmi.h"
 
+#include "speakers/speaker.h"
+#include "speakers/mml_player.h"
+
 void vApplicationStackOverflowHook(TaskHandle_t xTask, char* pcTaskName) {
     __BKPT(0);  // Pauses debugger on stack overflow
 }
@@ -58,10 +61,12 @@ int init_hardware(void) {
     // MX_TIM3_Init();  // motor left
     // MX_TIM4_Init();  // motor right
     MX_TIM5_Init();
+    MX_TIM6_Init();
     HAL_TIM_PWM_Start(TIM5, TIM_CHANNEL_1);
     // MX_TIM9_Init();
     MX_DCMI_Init();
     MX_I2C1_Init();
+    MX_DAC_Init();
     HAL_Delay(1000);
     // MX_I2S2_Init();
     // MX_SPI1_Init();
@@ -114,10 +119,31 @@ void StartDefaultTask(void* argument) {
 
     // bb_scan();
     // xclk_test();
-    scan_when_alive();
+    // scan_when_alive();
 
     // camera_start();
     // cam_signal_probe();
+
+    speaker_init();
+    mml_player_init();
+    const char* melody =
+        "V0 I0 do I1 do I2 do I3 do"
+        "V1 I0 do I1 do I2 do I3 do"
+        "V2 I0 do I1 do I2 do I3 do"
+        "V3 I0 do I1 do I2 do I3 do"
+        "V4 I0 do I1 do I2 do I3 do"
+        "V5 I0 do I1 do I2 do I3 do"
+        "V6 I0 do I1 do I2 do I3 do"
+        "V7 I0 do I1 do I2 do I3 do"
+        "V8 I0 do I1 do I2 do I3 do"
+        "V9 I0 do I1 do I2 do I3 do"
+        "V10 I0 do I1 do I2 do I3 do"
+        "V11 I0 do I1 do I2 do I3 do"
+        "V12 I0 do I1 do I2 do I3 do"
+        "V13 I0 do I1 do I2 do I3 do"
+        "V14 I0 do I1 do I2 do I3 do"
+        "V15 I0 do I1 do I2 do I3 do";
+    mml_play(melody, MML_FORCE_REPLACE);
 
     while (1) {
         osDelay(100);

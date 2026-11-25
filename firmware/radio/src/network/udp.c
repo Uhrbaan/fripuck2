@@ -58,7 +58,7 @@ void udp_transmitter(void* pvParameters) {
                 ESP_LOGE("UDP TRANSMITTER", "Error while sending data: %s (%d).", strerror(errno), errno);
                 break;
             }
-            ESP_LOGI(TAG, "Sent %d bytes over UDP", bytes);
+            // ESP_LOGI(TAG, "Sent %d bytes over UDP", bytes);
 
             // vTaskDelay(pdMS_TO_TICKS(1000));
             xQueueSend(spi_free_queue, &packet, 0);

@@ -67,7 +67,7 @@ void tcp_receiver(void* pvParameters) {
             vTaskDelay(portMAX_DELAY);  // Wait for the manager to clean up
         }
 
-        // ESP_LOG_BUFFER_HEX(TAG, buf, 16);  // should now match Python: 64 00 00 00 14 00 00 00 43 4d 4e 44 ...
+        ESP_LOGI(TAG, "Received %lu bytes over TCP.", (unsigned long)size);
 
         command_receive(buf, size + 4);
     }

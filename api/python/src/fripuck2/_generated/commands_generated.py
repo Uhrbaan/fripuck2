@@ -25,12 +25,19 @@ class ModuleMask(object):
     Ground = 16384
 
 
+class PlayMode(object):
+    IfFree = 0
+    Replace = 1
+    Queue = 2
+
+
 class Instruction(object):
     NONE = 0
     Custom = 1
     EnableCommand = 2
     MoveTrajectory = 3
     FileTransfer = 4
+    PlaySound = 5
 
 def InstructionCreator(unionType, table):
     from flatbuffers.table import Table
@@ -44,6 +51,8 @@ def InstructionCreator(unionType, table):
         return MoveTrajectoryT.InitFromBuf(table.Bytes, table.Pos)
     if unionType == Instruction.FileTransfer:
         return FileTransferT.InitFromBuf(table.Bytes, table.Pos)
+    if unionType == Instruction.PlaySound:
+        return PlaySoundT.InitFromBuf(table.Bytes, table.Pos)
     return None
 
 
@@ -549,6 +558,99 @@ class FileTransferT(object):
         return fileTransfer
 
 
+class PlaySound(object):
+    __slots__ = ['_tab']
+
+    @classmethod
+    def GetRootAs(cls, buf, offset=0):
+        n = flatbuffers.encode.Get(flatbuffers.packer.uoffset, buf, offset)
+        x = PlaySound()
+        x.Init(buf, n + offset)
+        return x
+
+    @classmethod
+    def GetRootAsPlaySound(cls, buf, offset=0):
+        """This method is deprecated. Please switch to GetRootAs."""
+        return cls.GetRootAs(buf, offset)
+    # PlaySound
+    def Init(self, buf, pos):
+        self._tab = flatbuffers.table.Table(buf, pos)
+
+    # PlaySound
+    def Mml(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(4))
+        if o != 0:
+            return self._tab.String(o + self._tab.Pos)
+        return None
+
+    # PlaySound
+    def Mode(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(6))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Uint8Flags, o + self._tab.Pos)
+        return 1
+
+def PlaySoundStart(builder):
+    builder.StartObject(2)
+
+def PlaySoundAddMml(builder, mml):
+    builder.PrependUOffsetTRelativeSlot(0, flatbuffers.number_types.UOffsetTFlags.py_type(mml), 0)
+
+def PlaySoundAddMode(builder, mode):
+    builder.PrependUint8Slot(1, mode, 1)
+
+def PlaySoundEnd(builder):
+    return builder.EndObject()
+
+
+
+class PlaySoundT(object):
+
+    # PlaySoundT
+    def __init__(
+        self,
+        mml = None,
+        mode = 1,
+    ):
+        self.mml = mml  # type: Optional[str]
+        self.mode = mode  # type: int
+
+    @classmethod
+    def InitFromBuf(cls, buf, pos):
+        playSound = PlaySound()
+        playSound.Init(buf, pos)
+        return cls.InitFromObj(playSound)
+
+    @classmethod
+    def InitFromPackedBuf(cls, buf, pos=0):
+        n = flatbuffers.encode.Get(flatbuffers.packer.uoffset, buf, pos)
+        return cls.InitFromBuf(buf, pos+n)
+
+    @classmethod
+    def InitFromObj(cls, playSound):
+        x = PlaySoundT()
+        x._UnPack(playSound)
+        return x
+
+    # PlaySoundT
+    def _UnPack(self, playSound):
+        if playSound is None:
+            return
+        self.mml = playSound.Mml()
+        self.mode = playSound.Mode()
+
+    # PlaySoundT
+    def Pack(self, builder):
+        if self.mml is not None:
+            mml = builder.CreateString(self.mml)
+        PlaySoundStart(builder)
+        if self.mml is not None:
+            PlaySoundAddMml(builder, mml)
+        PlaySoundAddMode(builder, self.mode)
+        playSound = PlaySoundEnd(builder)
+        return playSound
+
+
 class Command(object):
     __slots__ = ['_tab']
 
@@ -611,7 +713,7 @@ class CommandT(object):
         command = None,
     ):
         self.commandType = commandType  # type: int
-        self.command = command  # type: Union[None, 'CustomT', 'EnableCommandT', 'MoveTrajectoryT', 'FileTransferT']
+        self.command = command  # type: Union[None, 'CustomT', 'EnableCommandT', 'MoveTrajectoryT', 'FileTransferT', 'PlaySoundT']
 
     @classmethod
     def InitFromBuf(cls, buf, pos):

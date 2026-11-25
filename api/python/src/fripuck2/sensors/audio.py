@@ -5,7 +5,7 @@ from typing import Optional
 from .base import SensorHistory
 
 class AudioHistory(SensorHistory[float]):
-    """Each entry is (timestamp_seconds, int16 array of PCM samples) for one 10 ms frame."""
+    """Keeps one int16 array of PCM samples per 10 ms frame, with timestamps alongside."""
 
     def __init__(self, size=100, sample_rate=16000):
         super().__init__(size=size)
@@ -42,12 +42,16 @@ class AudioHistory(SensorHistory[float]):
             if meta.SampleCount() and meta.SampleCount() != len(pcm):
                 print(f"Audio frame: read {len(pcm)} samples, metadata says {meta.SampleCount()}")
                 
-            self._add(((base_timestamp + meta.TimestampOffset()) / 1000, pcm))
+            self._add(pcm, (base_timestamp + meta.TimestampOffset()) / 1000)
 
     def get_pcm(self) -> np.ndarray:
-        """All buffered audio as one flat int16 array; clears the buffer."""
-        frames = [pcm for _, pcm in self.get_all()]
+        """All buffered audio as one flat int16 array. Leaves the buffer untouched."""
+        frames = list(self._values)
         return np.concatenate(frames) if frames else np.empty(0, dtype=np.int16)
+
+    def clear(self):
+        """Empties the buffer. Call this after get_pcm()/save_wav() if you don't want to keep the audio in memory."""
+        super().clear()
 
     def save_wav(self, path: str):
         """Writes buffered audio as a standard mono 16kHz WAV file."""

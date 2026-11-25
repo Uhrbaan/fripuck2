@@ -1,3 +1,3 @@
-from .instructions import ModuleMask
+from .instructions import ModuleMask, PlayMode
 
-__all__ = ["ModuleMask"]
+__all__ = ["ModuleMask", "PlayMode"]

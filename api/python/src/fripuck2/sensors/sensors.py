@@ -9,7 +9,7 @@ from .base import SensorHistory
 import numpy
 import time
 
-class TofHisory(SensorHistory[Tuple[float, float]]):
+class TofHisory(SensorHistory[float]):
     def __init__(self, size=100):
         super().__init__(size=size)
 
@@ -18,9 +18,9 @@ class TofHisory(SensorHistory[Tuple[float, float]]):
             for i in range(batch.TofLength()):
                 item = sensors.TofDataT.InitFromObj(batch.Tof(i))
                 seconds = (base_timestamp + item.timestampOffset)/1000
-                self._add((seconds, item.distance))
+                self._add(item.distance, seconds)
 
-class ProxHisory(SensorHistory[Tuple[float, List[float]]]):
+class ProxHisory(SensorHistory[List[float]]):
     def __init__(self, size=100):
         super().__init__(size=size)
 
@@ -32,7 +32,7 @@ class ProxHisory(SensorHistory[Tuple[float, List[float]]]):
                 ambients = sensors.Uint16Array8()
                 item.Proximity(proximities)
                 item.AmbientLight(ambients)
-                self._add(((base_timestamp + item.TimestampOffset())/1000, [ 
+                self._add([ 
                     proximities.A0() - ambients.A0(), # Calculate the difference
                     proximities.A1() - ambients.A1(), 
                     proximities.A2() - ambients.A2(), 
@@ -41,9 +41,9 @@ class ProxHisory(SensorHistory[Tuple[float, List[float]]]):
                     proximities.A5() - ambients.A5(), 
                     proximities.A6() - ambients.A6(), 
                     proximities.A7() - ambients.A7()
-                ]))
+                ], (base_timestamp + item.TimestampOffset())/1000)
 
-class ImuHistory(SensorHistory[Tuple[float, sensors.ImuDataT]]):
+class ImuHistory(SensorHistory[sensors.ImuDataT]):
     def __init__(self, size=100):
         super().__init__(size=size)
 
@@ -51,9 +51,9 @@ class ImuHistory(SensorHistory[Tuple[float, sensors.ImuDataT]]):
         if not batch.ImuIsNone(): 
             for i in range(batch.ImuLength()):
                 item = sensors.ImuDataT.InitFromObj(batch.Imu(i))
-                self._add(((base_timestamp + item.timestampOffset)/1000, item))
+                self._add(item, (base_timestamp + item.timestampOffset)/1000)
 
-class GroundHistory(SensorHistory[Tuple[float, sensors.GroundDataT]]):
+class GroundHistory(SensorHistory[sensors.GroundDataT]):
     def __init__(self, size=100):
         super().__init__(size=size)
     
@@ -61,4 +61,4 @@ class GroundHistory(SensorHistory[Tuple[float, sensors.GroundDataT]]):
         if not batch.ImuIsNone(): 
             for i in range(batch.GroundLength()):
                 item = sensors.GroundDataT.InitFromObj(batch.Ground(i))
-                self._add(((base_timestamp + item.timestampOffset)/1000, item))
+                self._add(item, (base_timestamp + item.timestampOffset)/1000)

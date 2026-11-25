@@ -13,7 +13,8 @@ class ConnectionManager:
         
         self.lock = threading.Lock()
         self.selector = selectors.DefaultSelector() # to pack tcp sockets together
-        self.registry = dict[str, tuple[socket.socket, Callable[[bytes], None]]]() # stores the callbacks and the sockets for each robot
+        # ip -> (tcp socket, packet callback, on_connect callback)
+        self.registry: dict[str, tuple[socket.socket, Callable[[bytes], None], Callable[[bool], None] | None]] = {}
         self.reconnect_queue = queue.Queue()
 
         # Set up the shared UDP socket
@@ -29,10 +30,14 @@ class ConnectionManager:
         self.thread.start()
 
     # TODO: Add option to automatically try to run register_robot again if the connection is lost.
-    def register_ip(self, ip: str, callback: Callable[[bytes], None]) -> Callable[[bytes | str], None]:
+    def register_ip(self, ip: str, callback: Callable[[bytes], None],
+                    on_connect: Callable[[bool], None] = None) -> Callable[[bytes | str], None]:
         """Registers the robot to the connection manager. 
 
-        Blocks until the connection is successfully established.
+        :param ip: IP address of the robot.
+        :param callback: called with every packet (TCP or UDP) received from the robot.
+        :param on_connect: optional callback called with True when the TCP connection 
+            is established, and False when it is lost. Useful to keep a 'connected' flag.
         """
         print(f"Attempting to connect to robot {ip}...")
 
@@ -48,7 +53,7 @@ class ConnectionManager:
 
         # print(f"Registered robot {ip}")
         
-        self.reconnect_queue.put((ip, callback))
+        self.reconnect_queue.put((ip, callback, on_connect))
 
         # Return the function so the robot can send tcp data
         return lambda data: self.send_tcp(ip=ip, data=data)
@@ -57,18 +62,19 @@ class ConnectionManager:
         """Function that will try to reconnect a robot."""
         try:
             to_be_connected = self.reconnect_queue.get(block=False)
-            ip, cb = to_be_connected
+            ip, cb, on_connect = to_be_connected
             try:
-                self._reconnect(ip, cb)
+                self._reconnect(ip, cb, on_connect)
             except Exception as e:
                 print(f"Was unable to (re)connect robot {ip} because of {e}.")
                 # place the robot on the back of the queue 
-                self.reconnect_queue.put((ip, cb))    
+                self.reconnect_queue.put((ip, cb, on_connect))    
         except queue.Empty:
             # If there is nothing to reconnect, just continue.
             pass 
     
-    def _reconnect(self, ipv4addr: str, callback: Callable[[bytes], None]):
+    def _reconnect(self, ipv4addr: str, callback: Callable[[bytes], None],
+                   on_connect: Callable[[bool], None] = None):
         # create a new TCP sockec for this robot
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.setblocking(True) # TODO: change this for a more complex non-blocking method.
@@ -89,7 +95,10 @@ class ConnectionManager:
         with self.lock:
             # Register the socket to the selector wo we can watch it for read events with the other sockets.
             self.selector.register(sock, selectors.EVENT_READ, data=(ipv4addr, callback))
-            self.registry[ipv4addr] = (sock, callback)
+            self.registry[ipv4addr] = (sock, callback, on_connect)
+
+        if callable(on_connect):
+            on_connect(True)
     
     def _udp_task(self):
         """Manages the UDP connection for all the robots."""
@@ -102,7 +111,7 @@ class ConnectionManager:
                 ip = addr[0]
                 with self.lock: # locking because we don't want to change the registry while it is being read
                     if ip in self.registry: 
-                        _, callback = self.registry[ip]
+                        _, callback, _ = self.registry[ip]
                         callback(data) # the callback should technically only unpack the flatbuffers, which is very efficient.
 
             except socket.timeout:
@@ -142,7 +151,7 @@ class ConnectionManager:
         
         with self.lock:
             if ip in self.registry:
-                sock, _ = self.registry[ip]
+                sock, _, _ = self.registry[ip]
                 
         if not sock:
             print(f"Cannot send: Robot {ip} is not currently connected.")
@@ -161,9 +170,11 @@ class ConnectionManager:
             try:
                 self.selector.unregister(sock)
                 if ip in self.registry:
-                    _, callback = self.registry[ip]
-                    self.reconnect_queue.put((ip, callback)) # send it to the queue to be reconnected when the robot comes online again
+                    _, callback, on_connect = self.registry[ip]
+                    self.reconnect_queue.put((ip, callback, on_connect)) # send it to the queue to be reconnected when the robot comes online again
                     del self.registry[ip]
+                    if callable(on_connect):
+                        on_connect(False)
                 sock.close()
                 print(f"Cleanly unregistered {ip}")
             except Exception as e:
@@ -177,7 +188,7 @@ class ConnectionManager:
         
         # Cleanup all remaining sockets
         with self.lock:
-            for ip, (sock, _) in list(self.registry.items()): # ignore cb
+            for ip, (sock, _, _) in list(self.registry.items()): # ignore cb
                 self._unregister(ip, sock)
             self.selector.unregister(self.udp_sock)
             self.udp_sock.close()

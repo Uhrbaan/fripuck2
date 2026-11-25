@@ -23,6 +23,32 @@ __flatbuffers_build_scalar(flatbuffers_, FripuckProtocol_Commands_ModuleMask, Fr
 #define __FripuckProtocol_Commands_PlayMode_formal_args , FripuckProtocol_Commands_PlayMode_enum_t v0
 #define __FripuckProtocol_Commands_PlayMode_call_args , v0
 __flatbuffers_build_scalar(flatbuffers_, FripuckProtocol_Commands_PlayMode, FripuckProtocol_Commands_PlayMode_enum_t)
+#define __FripuckProtocol_Commands_LedTarget_formal_args , FripuckProtocol_Commands_LedTarget_enum_t v0
+#define __FripuckProtocol_Commands_LedTarget_call_args , v0
+__flatbuffers_build_scalar(flatbuffers_, FripuckProtocol_Commands_LedTarget, FripuckProtocol_Commands_LedTarget_enum_t)
+
+#define __FripuckProtocol_Commands_RgbColor_formal_args , uint8_t v0, uint8_t v1, uint8_t v2
+#define __FripuckProtocol_Commands_RgbColor_call_args , v0, v1, v2
+static inline FripuckProtocol_Commands_RgbColor_t *FripuckProtocol_Commands_RgbColor_assign(FripuckProtocol_Commands_RgbColor_t *p, uint8_t v0, uint8_t v1, uint8_t v2)
+{ p->r = v0; p->g = v1; p->b = v2;
+  return p; }
+static inline FripuckProtocol_Commands_RgbColor_t *FripuckProtocol_Commands_RgbColor_copy(FripuckProtocol_Commands_RgbColor_t *p, const FripuckProtocol_Commands_RgbColor_t *p2)
+{ p->r = p2->r; p->g = p2->g; p->b = p2->b;
+  return p; }
+static inline FripuckProtocol_Commands_RgbColor_t *FripuckProtocol_Commands_RgbColor_assign_to_pe(FripuckProtocol_Commands_RgbColor_t *p, uint8_t v0, uint8_t v1, uint8_t v2)
+{ p->r = v0; p->g = v1; p->b = v2;
+  return p; }
+static inline FripuckProtocol_Commands_RgbColor_t *FripuckProtocol_Commands_RgbColor_copy_to_pe(FripuckProtocol_Commands_RgbColor_t *p, const FripuckProtocol_Commands_RgbColor_t *p2)
+{ p->r = p2->r; p->g = p2->g; p->b = p2->b;
+  return p; }
+static inline FripuckProtocol_Commands_RgbColor_t *FripuckProtocol_Commands_RgbColor_assign_from_pe(FripuckProtocol_Commands_RgbColor_t *p, uint8_t v0, uint8_t v1, uint8_t v2)
+{ p->r = v0; p->g = v1; p->b = v2;
+  return p; }
+static inline FripuckProtocol_Commands_RgbColor_t *FripuckProtocol_Commands_RgbColor_copy_from_pe(FripuckProtocol_Commands_RgbColor_t *p, const FripuckProtocol_Commands_RgbColor_t *p2)
+{ p->r = p2->r; p->g = p2->g; p->b = p2->b;
+  return p; }
+__flatbuffers_build_struct(flatbuffers_, FripuckProtocol_Commands_RgbColor, 3, 1, FripuckProtocol_Commands_RgbColor_file_identifier, FripuckProtocol_Commands_RgbColor_type_identifier)
+__flatbuffers_define_fixed_array_primitives(flatbuffers_, FripuckProtocol_Commands_RgbColor, FripuckProtocol_Commands_RgbColor_t)
 
 typedef flatbuffers_union_ref_t FripuckProtocol_Commands_Instruction_union_ref_t;
 typedef flatbuffers_union_vec_ref_t FripuckProtocol_Commands_Instruction_union_vec_ref_t;
@@ -52,6 +78,16 @@ static const flatbuffers_voffset_t __FripuckProtocol_Commands_PlaySound_required
 typedef flatbuffers_ref_t FripuckProtocol_Commands_PlaySound_ref_t;
 static FripuckProtocol_Commands_PlaySound_ref_t FripuckProtocol_Commands_PlaySound_clone(flatbuffers_builder_t *B, FripuckProtocol_Commands_PlaySound_table_t t);
 __flatbuffers_build_table(flatbuffers_, FripuckProtocol_Commands_PlaySound, 2)
+
+static const flatbuffers_voffset_t __FripuckProtocol_Commands_LedEntry_required[] = { 0 };
+typedef flatbuffers_ref_t FripuckProtocol_Commands_LedEntry_ref_t;
+static FripuckProtocol_Commands_LedEntry_ref_t FripuckProtocol_Commands_LedEntry_clone(flatbuffers_builder_t *B, FripuckProtocol_Commands_LedEntry_table_t t);
+__flatbuffers_build_table(flatbuffers_, FripuckProtocol_Commands_LedEntry, 4)
+
+static const flatbuffers_voffset_t __FripuckProtocol_Commands_SetLeds_required[] = { 0 };
+typedef flatbuffers_ref_t FripuckProtocol_Commands_SetLeds_ref_t;
+static FripuckProtocol_Commands_SetLeds_ref_t FripuckProtocol_Commands_SetLeds_clone(flatbuffers_builder_t *B, FripuckProtocol_Commands_SetLeds_table_t t);
+__flatbuffers_build_table(flatbuffers_, FripuckProtocol_Commands_SetLeds, 2)
 
 static const flatbuffers_voffset_t __FripuckProtocol_Commands_Command_required[] = { 0 };
 typedef flatbuffers_ref_t FripuckProtocol_Commands_Command_ref_t;
@@ -92,6 +128,16 @@ __flatbuffers_build_table_prolog(flatbuffers_, FripuckProtocol_Commands_FileTran
 static inline FripuckProtocol_Commands_PlaySound_ref_t FripuckProtocol_Commands_PlaySound_create(flatbuffers_builder_t *B __FripuckProtocol_Commands_PlaySound_formal_args);
 __flatbuffers_build_table_prolog(flatbuffers_, FripuckProtocol_Commands_PlaySound, FripuckProtocol_Commands_PlaySound_file_identifier, FripuckProtocol_Commands_PlaySound_type_identifier)
 
+#define __FripuckProtocol_Commands_LedEntry_formal_args , FripuckProtocol_Commands_LedTarget_enum_t v0, flatbuffers_bool_t v1, FripuckProtocol_Commands_RgbColor_t *v2, uint8_t v3
+#define __FripuckProtocol_Commands_LedEntry_call_args , v0, v1, v2, v3
+static inline FripuckProtocol_Commands_LedEntry_ref_t FripuckProtocol_Commands_LedEntry_create(flatbuffers_builder_t *B __FripuckProtocol_Commands_LedEntry_formal_args);
+__flatbuffers_build_table_prolog(flatbuffers_, FripuckProtocol_Commands_LedEntry, FripuckProtocol_Commands_LedEntry_file_identifier, FripuckProtocol_Commands_LedEntry_type_identifier)
+
+#define __FripuckProtocol_Commands_SetLeds_formal_args , FripuckProtocol_Commands_LedEntry_vec_ref_t v0, uint16_t v1
+#define __FripuckProtocol_Commands_SetLeds_call_args , v0, v1
+static inline FripuckProtocol_Commands_SetLeds_ref_t FripuckProtocol_Commands_SetLeds_create(flatbuffers_builder_t *B __FripuckProtocol_Commands_SetLeds_formal_args);
+__flatbuffers_build_table_prolog(flatbuffers_, FripuckProtocol_Commands_SetLeds, FripuckProtocol_Commands_SetLeds_file_identifier, FripuckProtocol_Commands_SetLeds_type_identifier)
+
 #define __FripuckProtocol_Commands_Command_formal_args , FripuckProtocol_Commands_Instruction_union_ref_t v1
 #define __FripuckProtocol_Commands_Command_call_args , v1
 static inline FripuckProtocol_Commands_Command_ref_t FripuckProtocol_Commands_Command_create(flatbuffers_builder_t *B __FripuckProtocol_Commands_Command_formal_args);
@@ -114,6 +160,8 @@ static inline FripuckProtocol_Commands_Instruction_union_ref_t FripuckProtocol_C
 { FripuckProtocol_Commands_Instruction_union_ref_t uref; uref.type = FripuckProtocol_Commands_Instruction_FileTransfer; uref.value = ref; return uref; }
 static inline FripuckProtocol_Commands_Instruction_union_ref_t FripuckProtocol_Commands_Instruction_as_PlaySound(FripuckProtocol_Commands_PlaySound_ref_t ref)
 { FripuckProtocol_Commands_Instruction_union_ref_t uref; uref.type = FripuckProtocol_Commands_Instruction_PlaySound; uref.value = ref; return uref; }
+static inline FripuckProtocol_Commands_Instruction_union_ref_t FripuckProtocol_Commands_Instruction_as_SetLeds(FripuckProtocol_Commands_SetLeds_ref_t ref)
+{ FripuckProtocol_Commands_Instruction_union_ref_t uref; uref.type = FripuckProtocol_Commands_Instruction_SetLeds; uref.value = ref; return uref; }
 __flatbuffers_build_union_vector(flatbuffers_, FripuckProtocol_Commands_Instruction)
 
 static FripuckProtocol_Commands_Instruction_union_ref_t FripuckProtocol_Commands_Instruction_clone(flatbuffers_builder_t *B, FripuckProtocol_Commands_Instruction_union_t u)
@@ -124,6 +172,7 @@ static FripuckProtocol_Commands_Instruction_union_ref_t FripuckProtocol_Commands
     case 3: return FripuckProtocol_Commands_Instruction_as_MoveTrajectory(FripuckProtocol_Commands_MoveTrajectory_clone(B, (FripuckProtocol_Commands_MoveTrajectory_table_t)u.value));
     case 4: return FripuckProtocol_Commands_Instruction_as_FileTransfer(FripuckProtocol_Commands_FileTransfer_clone(B, (FripuckProtocol_Commands_FileTransfer_table_t)u.value));
     case 5: return FripuckProtocol_Commands_Instruction_as_PlaySound(FripuckProtocol_Commands_PlaySound_clone(B, (FripuckProtocol_Commands_PlaySound_table_t)u.value));
+    case 6: return FripuckProtocol_Commands_Instruction_as_SetLeds(FripuckProtocol_Commands_SetLeds_clone(B, (FripuckProtocol_Commands_SetLeds_table_t)u.value));
     default: return FripuckProtocol_Commands_Instruction_as_NONE();
     }
 }
@@ -266,12 +315,67 @@ static FripuckProtocol_Commands_PlaySound_ref_t FripuckProtocol_Commands_PlaySou
     __flatbuffers_memoize_end(B, t, FripuckProtocol_Commands_PlaySound_end(B));
 }
 
+__flatbuffers_build_scalar_field(0, flatbuffers_, FripuckProtocol_Commands_LedEntry_target, FripuckProtocol_Commands_LedTarget, FripuckProtocol_Commands_LedTarget_enum_t, 1, 1, UINT8_C(1), FripuckProtocol_Commands_LedEntry)
+__flatbuffers_build_scalar_field(1, flatbuffers_, FripuckProtocol_Commands_LedEntry_on, flatbuffers_bool, flatbuffers_bool_t, 1, 1, UINT8_C(0), FripuckProtocol_Commands_LedEntry)
+__flatbuffers_build_struct_field(2, flatbuffers_, FripuckProtocol_Commands_LedEntry_color, FripuckProtocol_Commands_RgbColor, 3, 1, FripuckProtocol_Commands_LedEntry)
+__flatbuffers_build_scalar_field(3, flatbuffers_, FripuckProtocol_Commands_LedEntry_intensity, flatbuffers_uint8, uint8_t, 1, 1, UINT8_C(100), FripuckProtocol_Commands_LedEntry)
+
+static inline FripuckProtocol_Commands_LedEntry_ref_t FripuckProtocol_Commands_LedEntry_create(flatbuffers_builder_t *B __FripuckProtocol_Commands_LedEntry_formal_args)
+{
+    if (FripuckProtocol_Commands_LedEntry_start(B)
+        || FripuckProtocol_Commands_LedEntry_target_add(B, v0)
+        || FripuckProtocol_Commands_LedEntry_on_add(B, v1)
+        || FripuckProtocol_Commands_LedEntry_color_add(B, v2)
+        || FripuckProtocol_Commands_LedEntry_intensity_add(B, v3)) {
+        return 0;
+    }
+    return FripuckProtocol_Commands_LedEntry_end(B);
+}
+
+static FripuckProtocol_Commands_LedEntry_ref_t FripuckProtocol_Commands_LedEntry_clone(flatbuffers_builder_t *B, FripuckProtocol_Commands_LedEntry_table_t t)
+{
+    __flatbuffers_memoize_begin(B, t);
+    if (FripuckProtocol_Commands_LedEntry_start(B)
+        || FripuckProtocol_Commands_LedEntry_target_pick(B, t)
+        || FripuckProtocol_Commands_LedEntry_on_pick(B, t)
+        || FripuckProtocol_Commands_LedEntry_color_pick(B, t)
+        || FripuckProtocol_Commands_LedEntry_intensity_pick(B, t)) {
+        return 0;
+    }
+    __flatbuffers_memoize_end(B, t, FripuckProtocol_Commands_LedEntry_end(B));
+}
+
+__flatbuffers_build_table_vector_field(0, flatbuffers_, FripuckProtocol_Commands_SetLeds_entries, FripuckProtocol_Commands_LedEntry, FripuckProtocol_Commands_SetLeds)
+__flatbuffers_build_scalar_field(1, flatbuffers_, FripuckProtocol_Commands_SetLeds_fade_ms, flatbuffers_uint16, uint16_t, 2, 2, UINT16_C(0), FripuckProtocol_Commands_SetLeds)
+
+static inline FripuckProtocol_Commands_SetLeds_ref_t FripuckProtocol_Commands_SetLeds_create(flatbuffers_builder_t *B __FripuckProtocol_Commands_SetLeds_formal_args)
+{
+    if (FripuckProtocol_Commands_SetLeds_start(B)
+        || FripuckProtocol_Commands_SetLeds_entries_add(B, v0)
+        || FripuckProtocol_Commands_SetLeds_fade_ms_add(B, v1)) {
+        return 0;
+    }
+    return FripuckProtocol_Commands_SetLeds_end(B);
+}
+
+static FripuckProtocol_Commands_SetLeds_ref_t FripuckProtocol_Commands_SetLeds_clone(flatbuffers_builder_t *B, FripuckProtocol_Commands_SetLeds_table_t t)
+{
+    __flatbuffers_memoize_begin(B, t);
+    if (FripuckProtocol_Commands_SetLeds_start(B)
+        || FripuckProtocol_Commands_SetLeds_entries_pick(B, t)
+        || FripuckProtocol_Commands_SetLeds_fade_ms_pick(B, t)) {
+        return 0;
+    }
+    __flatbuffers_memoize_end(B, t, FripuckProtocol_Commands_SetLeds_end(B));
+}
+
 __flatbuffers_build_union_field(1, flatbuffers_, FripuckProtocol_Commands_Command_command, FripuckProtocol_Commands_Instruction, FripuckProtocol_Commands_Command)
 __flatbuffers_build_union_table_value_field(flatbuffers_, FripuckProtocol_Commands_Command_command, FripuckProtocol_Commands_Instruction, Custom, FripuckProtocol_Commands_Custom)
 __flatbuffers_build_union_table_value_field(flatbuffers_, FripuckProtocol_Commands_Command_command, FripuckProtocol_Commands_Instruction, EnableCommand, FripuckProtocol_Commands_EnableCommand)
 __flatbuffers_build_union_table_value_field(flatbuffers_, FripuckProtocol_Commands_Command_command, FripuckProtocol_Commands_Instruction, MoveTrajectory, FripuckProtocol_Commands_MoveTrajectory)
 __flatbuffers_build_union_table_value_field(flatbuffers_, FripuckProtocol_Commands_Command_command, FripuckProtocol_Commands_Instruction, FileTransfer, FripuckProtocol_Commands_FileTransfer)
 __flatbuffers_build_union_table_value_field(flatbuffers_, FripuckProtocol_Commands_Command_command, FripuckProtocol_Commands_Instruction, PlaySound, FripuckProtocol_Commands_PlaySound)
+__flatbuffers_build_union_table_value_field(flatbuffers_, FripuckProtocol_Commands_Command_command, FripuckProtocol_Commands_Instruction, SetLeds, FripuckProtocol_Commands_SetLeds)
 
 static inline FripuckProtocol_Commands_Command_ref_t FripuckProtocol_Commands_Command_create(flatbuffers_builder_t *B __FripuckProtocol_Commands_Command_formal_args)
 {

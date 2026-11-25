@@ -14,8 +14,11 @@
 #include "commands.h"
 #include "uart/uart.h"
 #include <sys/stat.h>
-
+#include "rgbleds/rgbleds.h"
 #include "opcodes.h"
+
+#undef ns
+#define ns(x) FLATBUFFERS_WRAP_NAMESPACE(FripuckProtocol_Commands, x)
 
 static const char* TAG = "COMMANDS";
 static uint32_t system_state = 0x00;
@@ -29,6 +32,74 @@ void update_system_state(uint32_t enable_mask, uint32_t disable_mask) {
 
     enable_command_payload_t payload = {.opcode = ENABLE_ENABLE_OPCODE, .mask = system_state};
     uart_send((void*)&payload, sizeof(payload));
+}
+
+static void apply_fb_led_entry(ns(LedTarget_enum_t) target, bool is_on, rgb_color_t rgb, uint8_t intensity,
+                               uint16_t fade_ms, uint32_t* enable_mask, uint32_t* disable_mask) {
+    uint32_t uart_mask = 0;
+    rgb_led_name_t rgb_target;
+    bool is_rgb = false;
+
+    switch (target) {
+        case ns(LedTarget_RING_1):
+            uart_mask = MASK_LED_1;
+            break;
+        case ns(LedTarget_RING_3):
+            uart_mask = MASK_LED_3;
+            break;
+        case ns(LedTarget_RING_5):
+            uart_mask = MASK_LED_5;
+            break;
+        case ns(LedTarget_RING_7):
+            uart_mask = MASK_LED_7;
+            break;
+        case ns(LedTarget_BODY):
+            uart_mask = MASK_BODY_LED;
+            break;
+        case ns(LedTarget_FRONT):
+            uart_mask = MASK_FRONT_LED;
+            break;
+
+        case ns(LedTarget_RING_2):
+            rgb_target = LED2;
+            is_rgb = true;
+            break;
+        case ns(LedTarget_RING_4):
+            rgb_target = LED4;
+            is_rgb = true;
+            break;
+        case ns(LedTarget_RING_6):
+            rgb_target = LED6;
+            is_rgb = true;
+            break;
+        case ns(LedTarget_RING_8):
+            rgb_target = LED8;
+            is_rgb = true;
+            break;
+
+        case ns(LedTarget_ALL): {
+            ns(LedTarget_enum_t)
+                all[] = {ns(LedTarget_RING_1), ns(LedTarget_RING_2), ns(LedTarget_RING_3), ns(LedTarget_RING_4),
+                         ns(LedTarget_RING_5), ns(LedTarget_RING_6), ns(LedTarget_RING_7), ns(LedTarget_RING_8),
+                         ns(LedTarget_BODY),   ns(LedTarget_FRONT)};
+            for (size_t i = 0; i < sizeof(all) / sizeof(all[0]); i++) {
+                apply_fb_led_entry(all[i], is_on, rgb, intensity, fade_ms, enable_mask, disable_mask);
+            }
+            return;
+        }
+        default:
+            return;
+    }
+
+    if (is_rgb) {
+        rgb_set_color(rgb_target, intensity, &rgb, fade_ms);
+    } else {
+        if (is_on) {
+            *enable_mask |= uart_mask;
+        } else {
+            *disable_mask |= uart_mask;
+        }
+    }
 }
 
 void process_command(FripuckProtocol_Commands_Command_table_t cmd) {
@@ -116,6 +187,51 @@ void process_command(FripuckProtocol_Commands_Command_table_t cmd) {
             const flatbuffers_string_t mml = FripuckProtocol_Commands_PlaySound_mml(tbl);
             const FripuckProtocol_Commands_PlayMode_enum_t mode = FripuckProtocol_Commands_PlaySound_mode(tbl);
             command_play_sound(mml, (uint8_t)mode);
+            break;
+        }
+
+        case FripuckProtocol_Commands_Instruction_SetLeds: {
+            FripuckProtocol_Commands_SetLeds_table_t tbl = (FripuckProtocol_Commands_SetLeds_table_t)val;
+            uint16_t fade_ms = FripuckProtocol_Commands_SetLeds_fade_ms(tbl);
+            ns(LedEntry_vec_t) entries = ns(SetLeds_entries(tbl));
+            size_t count = ns(LedEntry_vec_len(entries));
+
+            uint32_t enable_mask = 0;
+            uint32_t disable_mask = 0;
+
+            for (size_t i = 0; i < count; i++) {
+                ns(LedEntry_table_t) entry = ns(LedEntry_vec_at(entries, i));
+                ns(LedTarget_enum_t) target = ns(LedEntry_target(entry));
+                bool is_on = ns(LedEntry_on(entry));
+                uint8_t intensity = ns(LedEntry_intensity(entry));
+                if (intensity > 100) intensity = 100;
+
+                rgb_color_t rgb = {0, 0, 0};
+                ns(RgbColor_struct_t) fb_color = ns(LedEntry_color(entry));
+                if (fb_color) {
+                    rgb.red = ns(RgbColor_r(fb_color));
+                    rgb.green = ns(RgbColor_g(fb_color));
+                    rgb.blue = ns(RgbColor_b(fb_color));
+                } else if (is_on) {
+                    rgb = color[WHITE];
+                }
+
+                // Treat {0, 0, 0} or intensity == 0 as off for binary LEDs too
+                if (fb_color && (rgb.red == 0 && rgb.green == 0 && rgb.blue == 0)) {
+                    is_on = false;
+                }
+                if (intensity == 0) {
+                    is_on = false;
+                }
+
+                apply_fb_led_entry(target, is_on, rgb, intensity, fade_ms, &enable_mask, &disable_mask);
+            }
+
+            if (enable_mask != 0 || disable_mask != 0) {
+                update_system_state(enable_mask, disable_mask);
+            }
+
+            break;
         }
 
         case FripuckProtocol_Commands_Instruction_NONE:

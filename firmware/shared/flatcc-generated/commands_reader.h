@@ -18,6 +18,11 @@
 #define flatbuffers_extension "bin"
 #endif
 
+typedef struct FripuckProtocol_Commands_RgbColor FripuckProtocol_Commands_RgbColor_t;
+typedef const FripuckProtocol_Commands_RgbColor_t *FripuckProtocol_Commands_RgbColor_struct_t;
+typedef FripuckProtocol_Commands_RgbColor_t *FripuckProtocol_Commands_RgbColor_mutable_struct_t;
+typedef const FripuckProtocol_Commands_RgbColor_t *FripuckProtocol_Commands_RgbColor_vec_t;
+typedef FripuckProtocol_Commands_RgbColor_t *FripuckProtocol_Commands_RgbColor_mutable_vec_t;
 
 typedef const struct FripuckProtocol_Commands_Custom_table *FripuckProtocol_Commands_Custom_table_t;
 typedef struct FripuckProtocol_Commands_Custom_table *FripuckProtocol_Commands_Custom_mutable_table_t;
@@ -39,6 +44,14 @@ typedef const struct FripuckProtocol_Commands_PlaySound_table *FripuckProtocol_C
 typedef struct FripuckProtocol_Commands_PlaySound_table *FripuckProtocol_Commands_PlaySound_mutable_table_t;
 typedef const flatbuffers_uoffset_t *FripuckProtocol_Commands_PlaySound_vec_t;
 typedef flatbuffers_uoffset_t *FripuckProtocol_Commands_PlaySound_mutable_vec_t;
+typedef const struct FripuckProtocol_Commands_LedEntry_table *FripuckProtocol_Commands_LedEntry_table_t;
+typedef struct FripuckProtocol_Commands_LedEntry_table *FripuckProtocol_Commands_LedEntry_mutable_table_t;
+typedef const flatbuffers_uoffset_t *FripuckProtocol_Commands_LedEntry_vec_t;
+typedef flatbuffers_uoffset_t *FripuckProtocol_Commands_LedEntry_mutable_vec_t;
+typedef const struct FripuckProtocol_Commands_SetLeds_table *FripuckProtocol_Commands_SetLeds_table_t;
+typedef struct FripuckProtocol_Commands_SetLeds_table *FripuckProtocol_Commands_SetLeds_mutable_table_t;
+typedef const flatbuffers_uoffset_t *FripuckProtocol_Commands_SetLeds_vec_t;
+typedef flatbuffers_uoffset_t *FripuckProtocol_Commands_SetLeds_mutable_vec_t;
 typedef const struct FripuckProtocol_Commands_Command_table *FripuckProtocol_Commands_Command_table_t;
 typedef struct FripuckProtocol_Commands_Command_table *FripuckProtocol_Commands_Command_mutable_table_t;
 typedef const flatbuffers_uoffset_t *FripuckProtocol_Commands_Command_vec_t;
@@ -106,6 +119,42 @@ typedef flatbuffers_uoffset_t *FripuckProtocol_Commands_CommandBatch_mutable_vec
 #define FripuckProtocol_Commands_PlaySound_type_identifier "\x98\x45\x01\xc9"
 #ifndef FripuckProtocol_Commands_PlaySound_file_extension
 #define FripuckProtocol_Commands_PlaySound_file_extension "bin"
+#endif
+#ifndef FripuckProtocol_Commands_RgbColor_file_identifier
+#define FripuckProtocol_Commands_RgbColor_file_identifier 0
+#endif
+/* deprecated, use FripuckProtocol_Commands_RgbColor_file_identifier */
+#ifndef FripuckProtocol_Commands_RgbColor_identifier
+#define FripuckProtocol_Commands_RgbColor_identifier 0
+#endif
+#define FripuckProtocol_Commands_RgbColor_type_hash ((flatbuffers_thash_t)0xa389f475)
+#define FripuckProtocol_Commands_RgbColor_type_identifier "\x75\xf4\x89\xa3"
+#ifndef FripuckProtocol_Commands_RgbColor_file_extension
+#define FripuckProtocol_Commands_RgbColor_file_extension "bin"
+#endif
+#ifndef FripuckProtocol_Commands_LedEntry_file_identifier
+#define FripuckProtocol_Commands_LedEntry_file_identifier 0
+#endif
+/* deprecated, use FripuckProtocol_Commands_LedEntry_file_identifier */
+#ifndef FripuckProtocol_Commands_LedEntry_identifier
+#define FripuckProtocol_Commands_LedEntry_identifier 0
+#endif
+#define FripuckProtocol_Commands_LedEntry_type_hash ((flatbuffers_thash_t)0x8febefe0)
+#define FripuckProtocol_Commands_LedEntry_type_identifier "\xe0\xef\xeb\x8f"
+#ifndef FripuckProtocol_Commands_LedEntry_file_extension
+#define FripuckProtocol_Commands_LedEntry_file_extension "bin"
+#endif
+#ifndef FripuckProtocol_Commands_SetLeds_file_identifier
+#define FripuckProtocol_Commands_SetLeds_file_identifier 0
+#endif
+/* deprecated, use FripuckProtocol_Commands_SetLeds_file_identifier */
+#ifndef FripuckProtocol_Commands_SetLeds_identifier
+#define FripuckProtocol_Commands_SetLeds_identifier 0
+#endif
+#define FripuckProtocol_Commands_SetLeds_type_hash ((flatbuffers_thash_t)0xa0ecaa27)
+#define FripuckProtocol_Commands_SetLeds_type_identifier "\x27\xaa\xec\xa0"
+#ifndef FripuckProtocol_Commands_SetLeds_file_extension
+#define FripuckProtocol_Commands_SetLeds_file_extension "bin"
 #endif
 #ifndef FripuckProtocol_Commands_Command_file_identifier
 #define FripuckProtocol_Commands_Command_file_identifier 0
@@ -223,6 +272,76 @@ static inline int FripuckProtocol_Commands_PlayMode_is_known_value(FripuckProtoc
     }
 }
 
+typedef uint8_t FripuckProtocol_Commands_LedTarget_enum_t;
+__flatbuffers_define_integer_type(FripuckProtocol_Commands_LedTarget, FripuckProtocol_Commands_LedTarget_enum_t, 8)
+#define FripuckProtocol_Commands_LedTarget_RING_1 ((FripuckProtocol_Commands_LedTarget_enum_t)UINT8_C(1))
+#define FripuckProtocol_Commands_LedTarget_RING_2 ((FripuckProtocol_Commands_LedTarget_enum_t)UINT8_C(2))
+#define FripuckProtocol_Commands_LedTarget_RING_3 ((FripuckProtocol_Commands_LedTarget_enum_t)UINT8_C(3))
+#define FripuckProtocol_Commands_LedTarget_RING_4 ((FripuckProtocol_Commands_LedTarget_enum_t)UINT8_C(4))
+#define FripuckProtocol_Commands_LedTarget_RING_5 ((FripuckProtocol_Commands_LedTarget_enum_t)UINT8_C(5))
+#define FripuckProtocol_Commands_LedTarget_RING_6 ((FripuckProtocol_Commands_LedTarget_enum_t)UINT8_C(6))
+#define FripuckProtocol_Commands_LedTarget_RING_7 ((FripuckProtocol_Commands_LedTarget_enum_t)UINT8_C(7))
+#define FripuckProtocol_Commands_LedTarget_RING_8 ((FripuckProtocol_Commands_LedTarget_enum_t)UINT8_C(8))
+#define FripuckProtocol_Commands_LedTarget_BODY ((FripuckProtocol_Commands_LedTarget_enum_t)UINT8_C(9))
+#define FripuckProtocol_Commands_LedTarget_FRONT ((FripuckProtocol_Commands_LedTarget_enum_t)UINT8_C(10))
+#define FripuckProtocol_Commands_LedTarget_ALL ((FripuckProtocol_Commands_LedTarget_enum_t)UINT8_C(11))
+
+static inline const char *FripuckProtocol_Commands_LedTarget_name(FripuckProtocol_Commands_LedTarget_enum_t value)
+{
+    switch (value) {
+    case FripuckProtocol_Commands_LedTarget_RING_1: return "RING_1";
+    case FripuckProtocol_Commands_LedTarget_RING_2: return "RING_2";
+    case FripuckProtocol_Commands_LedTarget_RING_3: return "RING_3";
+    case FripuckProtocol_Commands_LedTarget_RING_4: return "RING_4";
+    case FripuckProtocol_Commands_LedTarget_RING_5: return "RING_5";
+    case FripuckProtocol_Commands_LedTarget_RING_6: return "RING_6";
+    case FripuckProtocol_Commands_LedTarget_RING_7: return "RING_7";
+    case FripuckProtocol_Commands_LedTarget_RING_8: return "RING_8";
+    case FripuckProtocol_Commands_LedTarget_BODY: return "BODY";
+    case FripuckProtocol_Commands_LedTarget_FRONT: return "FRONT";
+    case FripuckProtocol_Commands_LedTarget_ALL: return "ALL";
+    default: return "";
+    }
+}
+
+static inline int FripuckProtocol_Commands_LedTarget_is_known_value(FripuckProtocol_Commands_LedTarget_enum_t value)
+{
+    switch (value) {
+    case FripuckProtocol_Commands_LedTarget_RING_1: return 1;
+    case FripuckProtocol_Commands_LedTarget_RING_2: return 1;
+    case FripuckProtocol_Commands_LedTarget_RING_3: return 1;
+    case FripuckProtocol_Commands_LedTarget_RING_4: return 1;
+    case FripuckProtocol_Commands_LedTarget_RING_5: return 1;
+    case FripuckProtocol_Commands_LedTarget_RING_6: return 1;
+    case FripuckProtocol_Commands_LedTarget_RING_7: return 1;
+    case FripuckProtocol_Commands_LedTarget_RING_8: return 1;
+    case FripuckProtocol_Commands_LedTarget_BODY: return 1;
+    case FripuckProtocol_Commands_LedTarget_FRONT: return 1;
+    case FripuckProtocol_Commands_LedTarget_ALL: return 1;
+    default: return 0;
+    }
+}
+
+
+struct FripuckProtocol_Commands_RgbColor {
+    alignas(1) uint8_t r;
+    alignas(1) uint8_t g;
+    alignas(1) uint8_t b;
+};
+static_assert(sizeof(FripuckProtocol_Commands_RgbColor_t) == 3, "struct size mismatch");
+
+static inline const FripuckProtocol_Commands_RgbColor_t *FripuckProtocol_Commands_RgbColor__const_ptr_add(const FripuckProtocol_Commands_RgbColor_t *p, size_t i) { return p + i; }
+static inline FripuckProtocol_Commands_RgbColor_t *FripuckProtocol_Commands_RgbColor__ptr_add(FripuckProtocol_Commands_RgbColor_t *p, size_t i) { return p + i; }
+static inline FripuckProtocol_Commands_RgbColor_struct_t FripuckProtocol_Commands_RgbColor_vec_at(FripuckProtocol_Commands_RgbColor_vec_t vec, size_t i)
+__flatbuffers_struct_vec_at(vec, i)
+static inline size_t FripuckProtocol_Commands_RgbColor__size(void) { return 3; }
+static inline size_t FripuckProtocol_Commands_RgbColor_vec_len(FripuckProtocol_Commands_RgbColor_vec_t vec)
+__flatbuffers_vec_len(vec)
+__flatbuffers_struct_as_root(FripuckProtocol_Commands_RgbColor)
+
+__flatbuffers_define_struct_scalar_field(FripuckProtocol_Commands_RgbColor, r, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(FripuckProtocol_Commands_RgbColor, g, flatbuffers_uint8, uint8_t)
+__flatbuffers_define_struct_scalar_field(FripuckProtocol_Commands_RgbColor, b, flatbuffers_uint8, uint8_t)
 
 
 struct FripuckProtocol_Commands_Custom_table { uint8_t unused__; };
@@ -285,6 +404,30 @@ __flatbuffers_table_as_root(FripuckProtocol_Commands_PlaySound)
 
 __flatbuffers_define_string_field(0, FripuckProtocol_Commands_PlaySound, mml, 1)
 __flatbuffers_define_scalar_field(1, FripuckProtocol_Commands_PlaySound, mode, FripuckProtocol_Commands_PlayMode, FripuckProtocol_Commands_PlayMode_enum_t, UINT8_C(1))
+
+struct FripuckProtocol_Commands_LedEntry_table { uint8_t unused__; };
+
+static inline size_t FripuckProtocol_Commands_LedEntry_vec_len(FripuckProtocol_Commands_LedEntry_vec_t vec)
+__flatbuffers_vec_len(vec)
+static inline FripuckProtocol_Commands_LedEntry_table_t FripuckProtocol_Commands_LedEntry_vec_at(FripuckProtocol_Commands_LedEntry_vec_t vec, size_t i)
+__flatbuffers_offset_vec_at(FripuckProtocol_Commands_LedEntry_table_t, vec, i, 0)
+__flatbuffers_table_as_root(FripuckProtocol_Commands_LedEntry)
+
+__flatbuffers_define_scalar_field(0, FripuckProtocol_Commands_LedEntry, target, FripuckProtocol_Commands_LedTarget, FripuckProtocol_Commands_LedTarget_enum_t, UINT8_C(1))
+__flatbuffers_define_scalar_field(1, FripuckProtocol_Commands_LedEntry, on, flatbuffers_bool, flatbuffers_bool_t, UINT8_C(0))
+__flatbuffers_define_struct_field(2, FripuckProtocol_Commands_LedEntry, color, FripuckProtocol_Commands_RgbColor_struct_t, 0)
+__flatbuffers_define_scalar_field(3, FripuckProtocol_Commands_LedEntry, intensity, flatbuffers_uint8, uint8_t, UINT8_C(100))
+
+struct FripuckProtocol_Commands_SetLeds_table { uint8_t unused__; };
+
+static inline size_t FripuckProtocol_Commands_SetLeds_vec_len(FripuckProtocol_Commands_SetLeds_vec_t vec)
+__flatbuffers_vec_len(vec)
+static inline FripuckProtocol_Commands_SetLeds_table_t FripuckProtocol_Commands_SetLeds_vec_at(FripuckProtocol_Commands_SetLeds_vec_t vec, size_t i)
+__flatbuffers_offset_vec_at(FripuckProtocol_Commands_SetLeds_table_t, vec, i, 0)
+__flatbuffers_table_as_root(FripuckProtocol_Commands_SetLeds)
+
+__flatbuffers_define_vector_field(0, FripuckProtocol_Commands_SetLeds, entries, FripuckProtocol_Commands_LedEntry_vec_t, 0)
+__flatbuffers_define_scalar_field(1, FripuckProtocol_Commands_SetLeds, fade_ms, flatbuffers_uint16, uint16_t, UINT16_C(0))
 typedef uint8_t FripuckProtocol_Commands_Instruction_union_type_t;
 __flatbuffers_define_integer_type(FripuckProtocol_Commands_Instruction, FripuckProtocol_Commands_Instruction_union_type_t, 8)
 __flatbuffers_define_union(flatbuffers_, FripuckProtocol_Commands_Instruction)
@@ -294,6 +437,7 @@ __flatbuffers_define_union(flatbuffers_, FripuckProtocol_Commands_Instruction)
 #define FripuckProtocol_Commands_Instruction_MoveTrajectory ((FripuckProtocol_Commands_Instruction_union_type_t)UINT8_C(3))
 #define FripuckProtocol_Commands_Instruction_FileTransfer ((FripuckProtocol_Commands_Instruction_union_type_t)UINT8_C(4))
 #define FripuckProtocol_Commands_Instruction_PlaySound ((FripuckProtocol_Commands_Instruction_union_type_t)UINT8_C(5))
+#define FripuckProtocol_Commands_Instruction_SetLeds ((FripuckProtocol_Commands_Instruction_union_type_t)UINT8_C(6))
 
 static inline const char *FripuckProtocol_Commands_Instruction_type_name(FripuckProtocol_Commands_Instruction_union_type_t type)
 {
@@ -304,6 +448,7 @@ static inline const char *FripuckProtocol_Commands_Instruction_type_name(Fripuck
     case FripuckProtocol_Commands_Instruction_MoveTrajectory: return "MoveTrajectory";
     case FripuckProtocol_Commands_Instruction_FileTransfer: return "FileTransfer";
     case FripuckProtocol_Commands_Instruction_PlaySound: return "PlaySound";
+    case FripuckProtocol_Commands_Instruction_SetLeds: return "SetLeds";
     default: return "";
     }
 }
@@ -317,6 +462,7 @@ static inline int FripuckProtocol_Commands_Instruction_is_known_type(FripuckProt
     case FripuckProtocol_Commands_Instruction_MoveTrajectory: return 1;
     case FripuckProtocol_Commands_Instruction_FileTransfer: return 1;
     case FripuckProtocol_Commands_Instruction_PlaySound: return 1;
+    case FripuckProtocol_Commands_Instruction_SetLeds: return 1;
     default: return 0;
     }
 }

@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <sys/socket.h>
 #include "luavm/vm.h"
+#include "rgbleds/rgbleds.h"
 
 #include "sensors/sensors.h"
 
@@ -70,6 +71,11 @@ void app_main(void) {
     } else {
         ESP_LOGI(TAG, "Successfully started Lua VM");
     }
+
+    // RGB LEDs
+    rgb_init();
+    // Optional: Start the background task if you plan to use rgb_update_all() / rgb_update_led2()
+    xTaskCreate(rgb_task, "rgb_task", 2048, NULL, 5, NULL);
 
     // Net communication
     wifi_init();

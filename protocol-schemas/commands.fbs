@@ -56,12 +56,45 @@ table PlaySound {
     mode: PlayMode = Replace;
 }
 
+enum LedTarget : ubyte {
+    RING_1 = 1,
+    RING_2 = 2,
+    RING_3 = 3,
+    RING_4 = 4,
+    RING_5 = 5,
+    RING_6 = 6,
+    RING_7 = 7,
+    RING_8 = 8,
+    BODY   = 9,
+    FRONT  = 10,
+    ALL    = 11
+}
+
+struct RgbColor {
+    r: ubyte;
+    g: ubyte;
+    b: ubyte;
+}
+
+table LedEntry {
+    target: LedTarget = RING_1;
+    on: bool = false;
+    color: RgbColor;          // Used when target is RING_2, 4, 6, 8, or ALL
+    intensity: ubyte = 100;   // 0..100
+}
+
+table SetLeds {
+    entries: [LedEntry];
+    fade_ms: uint16 = 0;
+}
+
 union Instruction {
     Custom,
     EnableCommand,
     MoveTrajectory,
     FileTransfer,
-    PlaySound
+    PlaySound,
+    SetLeds
 }
 
 // Needed since flatbuffers doesn't support vectors of unions.

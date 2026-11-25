@@ -274,11 +274,17 @@ void rgb_set_color(rgb_led_name_t rgb_led, uint8_t intensity, rgb_color_t* color
           RGB_MAX_DUTY) /
          RGB_MAX_INTENSITY);
 
-    uint8_t led = 0;
-    for (led = 0; led < NUM_LED; led++) {
-        ledc_set_fade_with_time(led_config[rgb_led][led].speed_mode, led_config[rgb_led][led].channel, value_color[led],
-                                time_ms);
-        ledc_fade_start(led_config[rgb_led][led].speed_mode, led_config[rgb_led][led].channel, LEDC_FADE_NO_WAIT);
+    for (uint8_t led = 0; led < NUM_LED; led++) {
+        ledc_mode_t mode = led_config[rgb_led][led].speed_mode;
+        ledc_channel_t channel = led_config[rgb_led][led].channel;
+
+        if (time_ms == 0) {
+            ledc_set_duty(mode, channel, value_color[led]);
+            ledc_update_duty(mode, channel);
+        } else {
+            ledc_set_fade_with_time(mode, channel, value_color[led], time_ms);
+            ledc_fade_start(mode, channel, LEDC_FADE_NO_WAIT);
+        }
     }
 }
 

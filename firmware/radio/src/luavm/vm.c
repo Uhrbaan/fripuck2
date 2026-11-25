@@ -18,6 +18,7 @@
 #include "robot_api.h"
 #include "api/movement.h"
 #include "api/sound.h"
+#include "api/leds.h"
 
 QueueHandle_t lua_event_queue = NULL;
 
@@ -103,6 +104,8 @@ void lua_vm(void* argument) {
     luaL_register(L, "robot", robot_movement_lib);
     lua_pop(L, 1);
     luaL_register(L, "robot", robot_sound_lib);
+    lua_pop(L, 1);
+    luaL_register(L, "robot", robot_leds_lib);
     lua_pop(L, 1);
     ESP_LOGI(TAG, "Registered robot libraries.");
 

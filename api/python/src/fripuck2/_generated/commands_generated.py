@@ -31,6 +31,20 @@ class PlayMode(object):
     Queue = 2
 
 
+class LedTarget(object):
+    RING_1 = 1
+    RING_2 = 2
+    RING_3 = 3
+    RING_4 = 4
+    RING_5 = 5
+    RING_6 = 6
+    RING_7 = 7
+    RING_8 = 8
+    BODY = 9
+    FRONT = 10
+    ALL = 11
+
+
 class Instruction(object):
     NONE = 0
     Custom = 1
@@ -38,6 +52,7 @@ class Instruction(object):
     MoveTrajectory = 3
     FileTransfer = 4
     PlaySound = 5
+    SetLeds = 6
 
 def InstructionCreator(unionType, table):
     from flatbuffers.table import Table
@@ -53,6 +68,8 @@ def InstructionCreator(unionType, table):
         return FileTransferT.InitFromBuf(table.Bytes, table.Pos)
     if unionType == Instruction.PlaySound:
         return PlaySoundT.InitFromBuf(table.Bytes, table.Pos)
+    if unionType == Instruction.SetLeds:
+        return SetLedsT.InitFromBuf(table.Bytes, table.Pos)
     return None
 
 
@@ -651,6 +668,336 @@ class PlaySoundT(object):
         return playSound
 
 
+class RgbColor(object):
+    __slots__ = ['_tab']
+
+    @classmethod
+    def SizeOf(cls):
+        return 3
+
+    # RgbColor
+    def Init(self, buf, pos):
+        self._tab = flatbuffers.table.Table(buf, pos)
+
+    # RgbColor
+    def R(self): return self._tab.Get(flatbuffers.number_types.Uint8Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(0))
+    # RgbColor
+    def G(self): return self._tab.Get(flatbuffers.number_types.Uint8Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(1))
+    # RgbColor
+    def B(self): return self._tab.Get(flatbuffers.number_types.Uint8Flags, self._tab.Pos + flatbuffers.number_types.UOffsetTFlags.py_type(2))
+
+def CreateRgbColor(builder, r, g, b):
+    builder.Prep(1, 3)
+    builder.PrependUint8(b)
+    builder.PrependUint8(g)
+    builder.PrependUint8(r)
+    return builder.Offset()
+
+
+class RgbColorT(object):
+
+    # RgbColorT
+    def __init__(
+        self,
+        r = 0,
+        g = 0,
+        b = 0,
+    ):
+        self.r = r  # type: int
+        self.g = g  # type: int
+        self.b = b  # type: int
+
+    @classmethod
+    def InitFromBuf(cls, buf, pos):
+        rgbColor = RgbColor()
+        rgbColor.Init(buf, pos)
+        return cls.InitFromObj(rgbColor)
+
+    @classmethod
+    def InitFromPackedBuf(cls, buf, pos=0):
+        n = flatbuffers.encode.Get(flatbuffers.packer.uoffset, buf, pos)
+        return cls.InitFromBuf(buf, pos+n)
+
+    @classmethod
+    def InitFromObj(cls, rgbColor):
+        x = RgbColorT()
+        x._UnPack(rgbColor)
+        return x
+
+    # RgbColorT
+    def _UnPack(self, rgbColor):
+        if rgbColor is None:
+            return
+        self.r = rgbColor.R()
+        self.g = rgbColor.G()
+        self.b = rgbColor.B()
+
+    # RgbColorT
+    def Pack(self, builder):
+        return CreateRgbColor(builder, self.r, self.g, self.b)
+
+
+class LedEntry(object):
+    __slots__ = ['_tab']
+
+    @classmethod
+    def GetRootAs(cls, buf, offset=0):
+        n = flatbuffers.encode.Get(flatbuffers.packer.uoffset, buf, offset)
+        x = LedEntry()
+        x.Init(buf, n + offset)
+        return x
+
+    @classmethod
+    def GetRootAsLedEntry(cls, buf, offset=0):
+        """This method is deprecated. Please switch to GetRootAs."""
+        return cls.GetRootAs(buf, offset)
+    # LedEntry
+    def Init(self, buf, pos):
+        self._tab = flatbuffers.table.Table(buf, pos)
+
+    # LedEntry
+    def Target(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(4))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Uint8Flags, o + self._tab.Pos)
+        return 1
+
+    # LedEntry
+    def On(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(6))
+        if o != 0:
+            return bool(self._tab.Get(flatbuffers.number_types.BoolFlags, o + self._tab.Pos))
+        return False
+
+    # LedEntry
+    def Color(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(8))
+        if o != 0:
+            x = o + self._tab.Pos
+            obj = RgbColor()
+            obj.Init(self._tab.Bytes, x)
+            return obj
+        return None
+
+    # LedEntry
+    def Intensity(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(10))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Uint8Flags, o + self._tab.Pos)
+        return 100
+
+def LedEntryStart(builder):
+    builder.StartObject(4)
+
+def LedEntryAddTarget(builder, target):
+    builder.PrependUint8Slot(0, target, 1)
+
+def LedEntryAddOn(builder, on):
+    builder.PrependBoolSlot(1, on, 0)
+
+def LedEntryAddColor(builder, color):
+    builder.PrependStructSlot(2, flatbuffers.number_types.UOffsetTFlags.py_type(color), 0)
+
+def LedEntryAddIntensity(builder, intensity):
+    builder.PrependUint8Slot(3, intensity, 100)
+
+def LedEntryEnd(builder):
+    return builder.EndObject()
+
+
+try:
+    from typing import Optional
+except:
+    pass
+
+class LedEntryT(object):
+
+    # LedEntryT
+    def __init__(
+        self,
+        target = 1,
+        on = False,
+        color = None,
+        intensity = 100,
+    ):
+        self.target = target  # type: int
+        self.on = on  # type: bool
+        self.color = color  # type: Optional[RgbColorT]
+        self.intensity = intensity  # type: int
+
+    @classmethod
+    def InitFromBuf(cls, buf, pos):
+        ledEntry = LedEntry()
+        ledEntry.Init(buf, pos)
+        return cls.InitFromObj(ledEntry)
+
+    @classmethod
+    def InitFromPackedBuf(cls, buf, pos=0):
+        n = flatbuffers.encode.Get(flatbuffers.packer.uoffset, buf, pos)
+        return cls.InitFromBuf(buf, pos+n)
+
+    @classmethod
+    def InitFromObj(cls, ledEntry):
+        x = LedEntryT()
+        x._UnPack(ledEntry)
+        return x
+
+    # LedEntryT
+    def _UnPack(self, ledEntry):
+        if ledEntry is None:
+            return
+        self.target = ledEntry.Target()
+        self.on = ledEntry.On()
+        if ledEntry.Color() is not None:
+            self.color = RgbColorT.InitFromObj(ledEntry.Color())
+        self.intensity = ledEntry.Intensity()
+
+    # LedEntryT
+    def Pack(self, builder):
+        LedEntryStart(builder)
+        LedEntryAddTarget(builder, self.target)
+        LedEntryAddOn(builder, self.on)
+        if self.color is not None:
+            color = self.color.Pack(builder)
+            LedEntryAddColor(builder, color)
+        LedEntryAddIntensity(builder, self.intensity)
+        ledEntry = LedEntryEnd(builder)
+        return ledEntry
+
+
+class SetLeds(object):
+    __slots__ = ['_tab']
+
+    @classmethod
+    def GetRootAs(cls, buf, offset=0):
+        n = flatbuffers.encode.Get(flatbuffers.packer.uoffset, buf, offset)
+        x = SetLeds()
+        x.Init(buf, n + offset)
+        return x
+
+    @classmethod
+    def GetRootAsSetLeds(cls, buf, offset=0):
+        """This method is deprecated. Please switch to GetRootAs."""
+        return cls.GetRootAs(buf, offset)
+    # SetLeds
+    def Init(self, buf, pos):
+        self._tab = flatbuffers.table.Table(buf, pos)
+
+    # SetLeds
+    def Entries(self, j):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(4))
+        if o != 0:
+            x = self._tab.Vector(o)
+            x += flatbuffers.number_types.UOffsetTFlags.py_type(j) * 4
+            x = self._tab.Indirect(x)
+            obj = LedEntry()
+            obj.Init(self._tab.Bytes, x)
+            return obj
+        return None
+
+    # SetLeds
+    def EntriesLength(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(4))
+        if o != 0:
+            return self._tab.VectorLen(o)
+        return 0
+
+    # SetLeds
+    def EntriesIsNone(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(4))
+        return o == 0
+
+    # SetLeds
+    def FadeMs(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(6))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Uint16Flags, o + self._tab.Pos)
+        return 0
+
+def SetLedsStart(builder):
+    builder.StartObject(2)
+
+def SetLedsAddEntries(builder, entries):
+    builder.PrependUOffsetTRelativeSlot(0, flatbuffers.number_types.UOffsetTFlags.py_type(entries), 0)
+
+def SetLedsStartEntriesVector(builder, numElems):
+    return builder.StartVector(4, numElems, 4)
+
+def SetLedsCreateEntriesVector(builder, data):
+    return builder.CreateVectorOfTables(data)
+
+def SetLedsAddFadeMs(builder, fadeMs):
+    builder.PrependUint16Slot(1, fadeMs, 0)
+
+def SetLedsEnd(builder):
+    return builder.EndObject()
+
+
+try:
+    from typing import List
+except:
+    pass
+
+class SetLedsT(object):
+
+    # SetLedsT
+    def __init__(
+        self,
+        entries = None,
+        fadeMs = 0,
+    ):
+        self.entries = entries  # type: Optional[List[LedEntryT]]
+        self.fadeMs = fadeMs  # type: int
+
+    @classmethod
+    def InitFromBuf(cls, buf, pos):
+        setLeds = SetLeds()
+        setLeds.Init(buf, pos)
+        return cls.InitFromObj(setLeds)
+
+    @classmethod
+    def InitFromPackedBuf(cls, buf, pos=0):
+        n = flatbuffers.encode.Get(flatbuffers.packer.uoffset, buf, pos)
+        return cls.InitFromBuf(buf, pos+n)
+
+    @classmethod
+    def InitFromObj(cls, setLeds):
+        x = SetLedsT()
+        x._UnPack(setLeds)
+        return x
+
+    # SetLedsT
+    def _UnPack(self, setLeds):
+        if setLeds is None:
+            return
+        if not setLeds.EntriesIsNone():
+            self.entries = []
+            for i in range(setLeds.EntriesLength()):
+                if setLeds.Entries(i) is None:
+                    self.entries.append(None)
+                else:
+                    ledEntry_ = LedEntryT.InitFromObj(setLeds.Entries(i))
+                    self.entries.append(ledEntry_)
+        self.fadeMs = setLeds.FadeMs()
+
+    # SetLedsT
+    def Pack(self, builder):
+        if self.entries is not None:
+            entrieslist = []
+            for i in range(len(self.entries)):
+                entrieslist.append(self.entries[i].Pack(builder))
+            SetLedsStartEntriesVector(builder, len(self.entries))
+            for i in reversed(range(len(self.entries))):
+                builder.PrependUOffsetTRelative(entrieslist[i])
+            entries = builder.EndVector()
+        SetLedsStart(builder)
+        if self.entries is not None:
+            SetLedsAddEntries(builder, entries)
+        SetLedsAddFadeMs(builder, self.fadeMs)
+        setLeds = SetLedsEnd(builder)
+        return setLeds
+
+
 class Command(object):
     __slots__ = ['_tab']
 
@@ -713,7 +1060,7 @@ class CommandT(object):
         command = None,
     ):
         self.commandType = commandType  # type: int
-        self.command = command  # type: Union[None, 'CustomT', 'EnableCommandT', 'MoveTrajectoryT', 'FileTransferT', 'PlaySoundT']
+        self.command = command  # type: Union[None, 'CustomT', 'EnableCommandT', 'MoveTrajectoryT', 'FileTransferT', 'PlaySoundT', 'SetLedsT']
 
     @classmethod
     def InitFromBuf(cls, buf, pos):

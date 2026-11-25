@@ -3,11 +3,11 @@ SCHEMAS = $(wildcard $(SCHEMA_DIR)/*.fbs)
 
 generate: 
 	mkdir -p firmware/shared/flatcc-generated
-	mkdir -p api/go/internal
+	# mkdir -p api/go/internal
 	mkdir -p api/python/src/fripuck2/_generated
 	
 	flatcc -a -I $(SCHEMA_DIR) -o firmware/shared/flatcc-generated $(SCHEMAS)
-	flatc --go --gen-object-api -I $(SCHEMA_DIR) -o api/go/internal $(SCHEMAS)
+	# flatc --go --gen-object-api -I $(SCHEMA_DIR) -o api/go/internal $(SCHEMAS)
 	flatc --python --gen-object-api --gen-onefile -I $(SCHEMA_DIR) -o api/python/src/fripuck2/_generated $(SCHEMAS)
 
 clean: 
